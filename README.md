@@ -1,12 +1,12 @@
 # RoomSched
-Инициализация базы данных (первый вариант - тестовый):
+РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… (РїРµСЂРІС‹Р№ РІР°СЂРёР°РЅС‚ - С‚РµСЃС‚РѕРІС‹Р№):
 
-1. Запустить PostgreSQL:
+1. Р—Р°РїСѓСЃС‚РёС‚СЊ PostgreSQL:
    sudo service postgresql start
    sudo -u postgres psql < backend/postgresql/database_main.sql
 
-2. Простой тест:
+2. РџСЂРѕСЃС‚РѕР№ С‚РµСЃС‚:
    psql -d roomsched -c "SELECT * FROM test;
 
-   Так компилировать С++ файл:
+   РўР°Рє РєРѕРјРїРёР»РёСЂРѕРІР°С‚СЊ РЎ++ С„Р°Р№Р»:
    sudo -u postgres ./a.out
