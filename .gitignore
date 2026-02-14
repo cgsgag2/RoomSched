@@ -22,3 +22,21 @@ rad.json
 TestResults.xml
 #Visual Studio files
 .vs/
+# Compiled files
+*.exe
+*.out
+test_server
+backend/server/src/test_server
+
+# Build folders
+build/
+cmake-build-*/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
