@@ -1,7 +1,7 @@
-#include "buildings.h"
-#include "json_utils.h"
+#include "buildings.hpp"
+#include "json_utils.hpp"
 
-crow::response get_all_buildings() {
+crow::response roomsched::BuildingsHandler::get_all_buildings() {
     crow::json::wvalue data;
     data["buildings"] = crow::json::wvalue::list({
         crow::json::wvalue{
@@ -16,10 +16,10 @@ crow::response get_all_buildings() {
         }
     });
     
-    return json_utils::success_response("Buildings revealed", data);
+    return roomsched::json_utils::success_response("Buildings revealed", data);
 }
 
-crow::response get_building(int id) {
+crow::response roomsched::BuildingsHandler::get_building(int id) {
     crow::json::wvalue data;
     if (id == 1){
         data["id"] = id;
@@ -32,14 +32,14 @@ crow::response get_building(int id) {
         data["type"] = "public";
     }
     else {
-        return json_utils::error_response("Building not found", 404);
+        return roomsched::json_utils::error_response("Building not found", 404);
     }
     
     
-    return json_utils::success_response("Building revealed", data);
+    return roomsched::json_utils::success_response("Building revealed", data);
 }
 
-crow::response get_building_rooms(int building_id) {
+crow::response roomsched::BuildingsHandler::get_building_rooms(int building_id) {
     crow::json::wvalue data;
     data["building_id"] = building_id;
     if (building_id == 1){
@@ -86,10 +86,10 @@ crow::response get_building_rooms(int building_id) {
     });
     }
     else {
-        return json_utils::error_response("Building not found", 404);
+        return roomsched::json_utils::error_response("Building not found", 404);
     }
     
     
-    return json_utils::success_response("Rooms revealed", data);
+    return roomsched::json_utils::success_response("Rooms revealed", data);
 }
 
