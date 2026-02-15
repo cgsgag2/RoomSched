@@ -22,3 +22,20 @@ rad.json
 TestResults.xml
 #Visual Studio files
 .vs/
+#C++ Qt specific files ---
+build/
+*/build/
+bin/
+obj/
+#personal settings Qt Creator
+*.user
+*.user.*
+.qtcreator/
+# temporary compilation files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
