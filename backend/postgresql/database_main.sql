@@ -1,10 +1,10 @@
-CREATE DATABASE first_test_db;
+--TEST
 
-\c first_test_db
-
-CREATE TABLE test (
-    message TEXT
+CREATE TABLE first_info (
+    message TEXT,
+    num INTEGER
 );
 
-INSERT INTO test (message)
-VALUES ('First roomsched data base!');
+INSERT INTO first_info (message, num) VALUES 
+('First roomsched data base!', 30),
+('HSE AMI 2025-2026', 100);
