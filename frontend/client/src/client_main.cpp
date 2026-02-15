@@ -1,23 +1,18 @@
 #include "client_main.hpp"
 #include <QApplication>
-#include <QLabel>
+#include "authwindow.h"
 
 namespace roomsched {
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-    this->setWindowTitle("RoomSched - Client");
+int run_client(int argc, char *argv[]) {
+    QApplication app(argc, argv);
 
-    this->resize(400, 300);
-    QLabel *label = new QLabel("Добро пожаловать в RoomSched!", this);
-    label->setGeometry(0, 0, 400, 300);
-    label->setAlignment(Qt::AlignCenter);
+    // Создаем наше окно авторизации
+    AuthWindow auth;
+    auth.show();
+
+    // Запускаем бесконечный цикл обработки событий Qt
+    return app.exec();
 }
 
 }  // namespace roomsched
-
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
-    roomsched::MainWindow window;
-    window.show();
-    return app.exec();
-}
