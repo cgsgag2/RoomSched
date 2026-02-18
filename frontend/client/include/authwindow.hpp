@@ -21,6 +21,9 @@ public:
     ~AuthWindow();
 
 private slots:
+    bool CheckName(QString EnterName);
+    bool CheckEmail(QString EnterEmail);
+    bool CheckPhone();
     void onLoginClicked();
 
 private:
