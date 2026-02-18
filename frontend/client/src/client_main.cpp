@@ -10,11 +10,11 @@ int run_client(int argc, char *argv[]) {
 
     int test_case = 0;
     if (test_case == 0) {
-        AuthWindow auth;
+        roomsched::authwindow::AuthWindow auth;
         auth.show();
         return app.exec();
     } else if (test_case == 1) {
-        RoomListWindow roomList;
+        roomsched::roomlistwindow::RoomListWindow roomList;
         roomList.show();
         return app.exec();
     }

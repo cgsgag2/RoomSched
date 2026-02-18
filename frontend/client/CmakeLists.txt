@@ -4,23 +4,16 @@ project(RoomSchedClient LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Включаем магию Qt (автосборка интерфейсов)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# Ищем Qt 6
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
-# Собираем все .cpp из src и все .hpp из include
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.hpp" "include/*.h")
+file(GLOB_RECURSE HEADERS "include/*.hpp")
 
-# Указываем путь к папке с заголовками, чтобы #include "file.hpp" работал
-include_directories(include)
-
-# Создаем программу
 add_executable(RoomSchedClient ${SOURCES} ${HEADERS})
-
-# Подключаем библиотеки Qt
+target_include_directories(RoomSchedClient PRIVATE include ui)
+include_directories(include)
 target_link_libraries(RoomSchedClient PRIVATE Qt6::Widgets)

@@ -2,9 +2,10 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QRegularExpressionValidator>
+#include "roomlistwindow.hpp"
 #include "ui_authwindow.h"
 
-namespace roomsched {
+namespace roomsched::authwindow {
 
 AuthWindow::AuthWindow(QWidget *parent)
     : QWidget(parent), ui(new Ui::AuthWindow) {
@@ -56,8 +57,14 @@ void AuthWindow::onLoginClicked() {
         );
         return;
     }
-    QMessageBox::information(nullptr, "Успех", "Данные успешно приняты!");
     // часть с отправкой данных на сервак
+    // отправить данные на сервак, дождаться от него ответ
+    // если сервак ответил ок, то идем в открытие окно дальше
+    // если нет - точно так же кинуть плашку об ошибке как выше
+    auto *rooms =
+        new roomsched::roomlistwindow::RoomListWindow(name, email, phone);
+    rooms->show();
+    this->close();
 }
 
-}  // namespace roomsched
+}  // namespace roomsched::authwindow

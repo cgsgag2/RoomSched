@@ -11,7 +11,7 @@ class AuthWindow;
 
 QT_END_NAMESPACE
 
-namespace roomsched {
+namespace roomsched::authwindow {
 
 class AuthWindow : public QWidget {
     Q_OBJECT
@@ -30,6 +30,6 @@ private:
     Ui::AuthWindow *ui;
 };
 
-}  // namespace roomsched
+}  // namespace roomsched::authwindow
 
 #endif

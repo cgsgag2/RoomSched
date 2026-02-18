@@ -7,9 +7,22 @@
 #include <QVBoxLayout>
 #include "ui_roomlistwindow.h"
 
-namespace roomsched {
+namespace roomsched::roomlistwindow {
 
+// по факту осталось только для тестов
+// это открытие без данных пользователя
 RoomListWindow::RoomListWindow(QWidget *parent)
+    : QWidget(parent), ui(new Ui::RoomListWindow) {
+    ui->setupUi(this);
+    setupRooms();
+}
+
+RoomListWindow::RoomListWindow(
+    QString userName,
+    QString userEmail,
+    QString userPhone,
+    QWidget *parent
+)
     : QWidget(parent), ui(new Ui::RoomListWindow) {
     ui->setupUi(this);
     setupRooms();
@@ -84,7 +97,8 @@ void RoomListWindow::showRoomDetails(const QString &roomName) {
         msgBox.setText("Вы успешно забронировали " + roomName);
         msgBox.setIcon(QMessageBox::Information);
         msgBox.setStyleSheet(
-            "QLabel{ color: black; } QPushButton{ background-color: lightgray; "
+            "QLabel{ color: black; } QPushButton{ background-color: "
+            "lightgray; "
             "color: black; }"
         );
         msgBox.exec();
@@ -94,4 +108,4 @@ void RoomListWindow::showRoomDetails(const QString &roomName) {
     dialog->exec();
 }
 
-}  // namespace roomsched
+}  // namespace roomsched::roomlistwindow

@@ -11,13 +11,19 @@ class RoomListWindow;
 
 QT_END_NAMESPACE
 
-namespace roomsched {
+namespace roomsched::roomlistwindow {
 
 class RoomListWindow : public QWidget {
     Q_OBJECT
 
 public:
     explicit RoomListWindow(QWidget *parent = nullptr);
+    RoomListWindow(
+        QString userName,
+        QString userEmail,
+        QString userPhone,
+        QWidget *parent = nullptr
+    );
     ~RoomListWindow();
 
 private:
@@ -26,6 +32,6 @@ private:
     void showRoomDetails(const QString &roomName);
 };
 
-}  // namespace roomsched
+}  // namespace roomsched::roomlistwindow
 
 #endif  // ROOMLISTWINDOW_HPP
