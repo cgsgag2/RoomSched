@@ -39,3 +39,20 @@ obj/
 *.so
 *.dll
 *.exe
+# CMake и Ninja специфичные файлы
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+.cmake/
+_deps/
+
+# Дополнительные папки Qt Creator
+.qtc_clangd/
+*.autosave
+
+# Логи сборки Ninja
+.ninja_deps
+.ninja_log
