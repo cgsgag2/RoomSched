@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.16)
+project(RoomSchedClient LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "include/*.hpp")
+
+add_executable(RoomSchedClient ${SOURCES} ${HEADERS})
+target_include_directories(RoomSchedClient PRIVATE include ui)
+include_directories(include)
+target_link_libraries(RoomSchedClient PRIVATE Qt6::Widgets)
