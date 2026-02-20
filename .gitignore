@@ -22,21 +22,42 @@ rad.json
 TestResults.xml
 #Visual Studio files
 .vs/
-# Compiled files
+
+### Compiled files (both backend and frontend) ###
 *.exe
 *.out
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
 test_server
 backend/server/src/test_server
 
-# Build folders
+### Build folders ###
 build/
-cmake-build-*/
+*/build/
+bin/
+obj/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+.cmake/
+_deps/
 
-# IDE files
-.vscode/
+### IDE files ###
 .idea/
 *.swp
+.qtcreator/
+*.user
+*.user.*
+.qtc_clangd/
+*.autosave
 
-# OS files
+### OS files ###
 .DS_Store
 Thumbs.db
