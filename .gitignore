@@ -60,4 +60,5 @@ _deps/
 
 ### OS files ###
 .DS_Store
-Thumbs.db
+Thumbs.dbtest_server
+backend/server/src/test_server
