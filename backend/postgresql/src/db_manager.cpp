@@ -2,21 +2,22 @@
  * Database manager module (source).
  ***/
 
-#include "../include/db_manager.hpp"
+#include "db_manager.hpp"
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <pqxx/pqxx>
 #include <string>
-#include "../include/db_users.hpp"
+#include "db_users.hpp"
 
 bool roomsched::db::database_manager::init() {
     std::cout << "----------Init data base----------" << std::endl;
 
     // Connect to DB
     try {
-        std::string conn_str = "host=" + DB_HOST + " dbname=" + DB_NAME +
-                               " user=" + DB_USER + " password=" + DB_PASSWORD;
+        const std::string conn_str = "host=" + DB_HOST + " dbname=" + DB_NAME +
+                                     " user=" + DB_USER +
+                                     " password=" + DB_PASSWORD;
 
         conn = std::make_unique<pqxx::connection>(conn_str);
 
@@ -36,7 +37,7 @@ bool roomsched::db::database_manager::init() {
     return false;
 }
 
-bool roomsched::db::database_manager::createUser(
+bool roomsched::db::database_manager::create_user(
     const std::string &username,
     const std::string &password
 ) {
@@ -44,7 +45,7 @@ bool roomsched::db::database_manager::createUser(
         pqxx::work txn(*conn);
 
         // TODO: real hash (to passwords)
-        std::string password_hash = password;
+        const std::string &password_hash = password;
 
         txn.exec_params(
             "INSERT INTO users (username, password_hash) VALUES ($1, $2)",
@@ -64,11 +65,11 @@ bool roomsched::db::database_manager::createUser(
     }
 }
 
-void roomsched::db::database_manager::printAllUsers() {
+void roomsched::db::database_manager::print_all_users() {
     try {
         pqxx::work txn(*conn);
 
-        pqxx::result result = txn.exec(
+        const pqxx::result result = txn.exec(
             "SELECT id, username, created_at, last_login FROM users ORDER BY id"
         );
 
@@ -93,7 +94,35 @@ void roomsched::db::database_manager::printAllUsers() {
     }
 }
 
-bool roomsched::db::database_manager::entryUser(
+std::vector<roomsched::db::user> roomsched::db::database_manager::get_all_users(
+) {
+    std::vector<user> all_users;
+
+    try {
+        pqxx::work txn(*conn);
+
+        const pqxx::result result = txn.exec(
+            "SELECT id, username, created_at, last_login FROM users ORDER BY id"
+        );
+
+        for (const auto &row : result) {
+            user current_user;
+            current_user.id = row["id"].as<int>();
+            current_user.username = row["username"].as<std::string>();
+            current_user.created_at = row["created_at"].as<std::string>();
+            current_user.last_login = row["last_login"].is_null()
+                                          ? "Never"
+                                          : row["last_login"].as<std::string>();
+            // std::cout << current_user;
+            all_users.push_back(current_user);
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error in query of users: " << e.what() << std::endl;
+    }
+    return all_users;
+}
+
+bool roomsched::db::database_manager::entry_user(
     const std::string &username,
     const std::string &password
 ) {
@@ -101,9 +130,9 @@ bool roomsched::db::database_manager::entryUser(
         pqxx::work txn(*conn);
 
         // TODO: real hash
-        std::string password_hash = password;
+        const std::string &password_hash = password;
 
-        pqxx::result result = txn.exec_params(
+        const pqxx::result result = txn.exec_params(
             "SELECT id FROM users WHERE username = $1 AND password_hash = $2",
             username, password_hash
         );
