@@ -8,10 +8,8 @@
 #include <ostream>
 #include <string>
 
-// project namespace
-namespace roomsched {
-// database module namespace
-namespace db {
+// project namespace, database module namespace
+namespace roomsched::db {
 class user {
 public:
     int id;
@@ -22,7 +20,6 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &os, const user &user);
-}  // namespace db
-}  // namespace roomsched
+}  // namespace roomsched::db
 
 #endif  // DB_USERS_HPP_

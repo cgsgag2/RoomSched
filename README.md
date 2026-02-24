@@ -17,3 +17,11 @@ Introduction for using client-part in 'roomsched' project
 5. cmake --build .
 6. "C:\Qt\6.10.2\msvc2022_64\bin\windeployqt.exe" RoomSchedClient.exe  // your path to Qt in the beginning
 7. RoomSchedClient.exe  // just type this in terminal after all and enjoy
+---
+How to use together DB and server:
+1. sudo -u postgres psql -f create_database.sql
+2. psql -U rsched_user -d roomsched -h localhost // Check connection
+3. PGPASSWORD='...' psql -h localhost -U rsched_user -d roomsched -f create_tables.sql
+4. cmake .. // From /build
+5. cmake --build .
+6. ./backend/server/server

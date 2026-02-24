@@ -8,11 +8,11 @@
 #include <memory>
 #include <pqxx/pqxx>
 #include <string>
+#include <vector>
+#include "db_users.hpp"
 
-// project namespace
-namespace roomsched {
-// database module namespace
-namespace db {
+// project namespace, database module namespace
+namespace roomsched::db {
 class database_manager {
 private:
     std::unique_ptr<pqxx::connection> conn;
@@ -25,13 +25,14 @@ public:
     // TODO: Log file (to execute all comands from console) - ?
     bool init();
 
-    bool createUser(const std::string &username, const std::string &password);
+    bool create_user(const std::string &username, const std::string &password);
 
-    void printAllUsers();
+    void print_all_users();
 
-    bool entryUser(const std::string &username, const std::string &password);
+    std::vector<user> get_all_users();
+
+    bool entry_user(const std::string &username, const std::string &password);
 };
-}  // namespace db
-}  // namespace roomsched
+}  // namespace roomsched::db
 
 #endif  // DB_MANAGER_HPP_

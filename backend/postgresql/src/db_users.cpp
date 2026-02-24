@@ -2,7 +2,7 @@
  * Database users module (source).
  ***/
 
-#include "../include/db_users.hpp"
+#include "db_users.hpp"
 #include <iostream>
 
 std::ostream &roomsched::db::operator<<(
