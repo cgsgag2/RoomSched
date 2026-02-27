@@ -2,6 +2,7 @@
 #define ROOMLISTWINDOW_HPP
 
 #include <QWidget>
+#include "api_client.hpp"
 
 QT_BEGIN_NAMESPACE
 
@@ -29,7 +30,9 @@ public:
 private:
     Ui::RoomListWindow *ui;
     void setupRooms();
-    void showRoomDetails(const QString &roomName);
+    void showRoomDetails(const QJsonObject &room);
+    roomsched::client::ApiClient *api;
+    QJsonArray rooms;
 };
 
 }  // namespace roomsched::roomlistwindow

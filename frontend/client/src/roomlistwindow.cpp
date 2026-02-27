@@ -25,7 +25,15 @@ RoomListWindow::RoomListWindow(
 )
     : QWidget(parent), ui(new Ui::RoomListWindow) {
     ui->setupUi(this);
-    setupRooms();
+    api = new roomsched::client::ApiClient(this);
+    connect(
+        api, &roomsched::client::ApiClient::roomsLoaded, this,
+        [this](QJsonArray arr) {
+            rooms = arr;
+            setupRooms();
+        }
+    );
+    api->getRooms(1);
 }
 
 RoomListWindow::~RoomListWindow() {
@@ -41,9 +49,13 @@ void RoomListWindow::setupRooms() {
     layout->setSpacing(15);
     layout->setContentsMargins(10, 10, 10, 10);
 
-    for (int i = 0; i < 16; ++i) {
-        QString roomName = QString("Аудитория %1").arg(101 + i);
-        QPushButton *btn = new QPushButton(roomName);
+    for (int i = 0; i < rooms.size(); ++i) {
+        QJsonObject room = rooms[i].toObject();
+        QString name = room["name"].toString();
+        int capacity = room["capacity"].toInt();
+        QPushButton *btn = new QPushButton(
+            QString("%1\nВместимость: %2").arg(name).arg(capacity)
+        );
         btn->setMinimumSize(200, 120);
         btn->setStyleSheet(
             "QPushButton {"
@@ -60,50 +72,59 @@ void RoomListWindow::setupRooms() {
             "  border: none; "
             "}"
         );
-        connect(btn, &QPushButton::clicked, this, [this, roomName]() {
-            showRoomDetails(roomName);
+        connect(btn, &QPushButton::clicked, this, [this, room]() {
+            showRoomDetails(room);
         });
         layout->addWidget(btn, i / 4, i % 4);
     }
 }
 
-void RoomListWindow::showRoomDetails(const QString &roomName) {
+void RoomListWindow::showRoomDetails(const QJsonObject &room) {
+    QString name = room["name"].toString();
+    int capacity = room["capacity"].toInt();
+
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("Информация об аудитории");
+    dialog->setWindowTitle(name);
     dialog->setMinimumWidth(300);
     dialog->setStyleSheet("background-color: white;");
+
     QVBoxLayout *layout = new QVBoxLayout(dialog);
     layout->setSpacing(15);
     layout->setContentsMargins(20, 20, 20, 20);
-    QLabel *title = new QLabel(roomName, dialog);
+
+    QLabel *title = new QLabel(name, dialog);
     title->setStyleSheet("font-size: 20px; font-weight: bold; color: #3A6161;");
     layout->addWidget(title);
-    QLabel *info =
-        new QLabel("Доступное время:\n10:00 - 12:00\n14:00 - 18:00", dialog);
+
+    QLabel *info = new QLabel(
+        QString(
+            "Вместимость: %1\nДоступное время:\n10:00 - 12:00\n14:00 - 18:00"
+        )
+            .arg(capacity),
+        dialog
+    );
     info->setStyleSheet("font-size: 14px; color: #333;");
     layout->addWidget(info);
+
     QPushButton *bookBtn = new QPushButton("Забронировать", dialog);
     bookBtn->setCursor(Qt::PointingHandCursor);
     bookBtn->setStyleSheet(
         "QPushButton {"
         "  background-color: #3A6161; color: white; border-radius: 10px; "
-        "padding: 10px; font-weight: bold;"
+        "  padding: 10px; font-weight: bold;"
         "}"
         "QPushButton:hover { background-color: #447575; }"
     );
-    connect(bookBtn, &QPushButton::clicked, [dialog, roomName]() {
+
+    connect(bookBtn, &QPushButton::clicked, [dialog, name]() {
         QMessageBox msgBox(dialog);
         msgBox.setWindowTitle("Успех");
-        msgBox.setText("Вы успешно забронировали " + roomName);
+        msgBox.setText("Вы успешно забронировали " + name);
         msgBox.setIcon(QMessageBox::Information);
-        msgBox.setStyleSheet(
-            "QLabel{ color: black; } QPushButton{ background-color: "
-            "lightgray; "
-            "color: black; }"
-        );
         msgBox.exec();
         dialog->accept();
     });
+
     layout->addWidget(bookBtn);
     dialog->exec();
 }
