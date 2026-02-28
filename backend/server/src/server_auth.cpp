@@ -54,7 +54,7 @@ crow::response roomsched::server::auth_handler::handle_register(
     const std::string password = json["password"].s();
     const std::string email = json["email"].s();
 
-    if (username.empty() || password.empty() || email.empty()) {
+    if (username.empty() || email.empty()) {
         return json_utils::error_response("Fields cannot be empty");
     }
 
@@ -62,11 +62,12 @@ crow::response roomsched::server::auth_handler::handle_register(
         return json_utils::error_response("Invalid email format");
     }
 
-    if (!validate_password(password)) {
-        return json_utils::error_response(
-            "Password must be at least 6 characters"
-        );
-    }
+    /*
+   if (!validate_password(password)) {
+       return json_utils::error_response(
+           "Password must be at least 6 characters"
+       );
+   } */
 
     // CHECK: add first login: username and password
     database.create_user(username, password);

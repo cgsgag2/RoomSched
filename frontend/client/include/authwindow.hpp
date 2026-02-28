@@ -1,7 +1,10 @@
 #ifndef AUTHWINDOW_HPP
 #define AUTHWINDOW_HPP
 
+#include <QObject>
+#include <QString>
 #include <QWidget>
+#include "api_client.hpp"
 
 QT_BEGIN_NAMESPACE
 
@@ -19,15 +22,16 @@ class AuthWindow : public QWidget {
 public:
     explicit AuthWindow(QWidget *parent = nullptr);
     ~AuthWindow();
-
-private slots:
-    bool CheckName(QString EnterName);
-    bool CheckEmail(QString EnterEmail);
-    bool CheckPhone();
-    void onLoginClicked();
+    AuthWindow(const AuthWindow &) = delete;
+    AuthWindow &operator=(const AuthWindow &) = delete;
 
 private:
+    static bool checkName(QString enterName);
+    static bool checkEmail(QString enterEmail);
+    bool checkPhone();
+    void onLoginClicked();
     Ui::AuthWindow *ui;
+    roomsched::client::ApiClient *api;
 };
 
 }  // namespace roomsched::authwindow
