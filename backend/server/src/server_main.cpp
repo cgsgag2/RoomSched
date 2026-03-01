@@ -11,6 +11,7 @@
 // Local libs
 #include "db_manager.hpp"
 #include "server_auth.hpp"
+#include "server_bookings.hpp"
 #include "server_buildings.hpp"
 
 int main() {
@@ -23,9 +24,11 @@ int main() {
 
     // Main (server) module
     crow::SimpleApp app;
+    app.loglevel(crow::LogLevel::Debug);
 
     roomsched::server::auth_handler auth;
     roomsched::server::buildings_handler buildings;
+    roomsched::server::bookings_handler bookings;
 
     // Test module
     CROW_ROUTE(app, "/")([]() { return "Hello Diana and Alex :))"; });
@@ -68,6 +71,26 @@ int main() {
     ([&buildings](int id) { return buildings.get_building(id); });
     CROW_ROUTE(app, "/buildings/<int>/rooms")
     ([&buildings](int id) { return buildings.get_building_rooms(id); });
+
+    CROW_ROUTE(app, "/bookings")
+        .methods("POST"_method)([&bookings, &app_db](const crow::request &req) {
+            return bookings.create_booking(req, app_db);
+        });
+
+    CROW_ROUTE(app, "/bookings/user/<int>")
+    ([&bookings, &app_db](int user_id) {
+        return bookings.get_user_bookings(user_id, app_db);
+    });
+
+    CROW_ROUTE(app, "/bookings/<int>")
+        .methods("DELETE"_method)([&bookings, &app_db](int booking_id) {
+            return bookings.cancel_booking(booking_id, app_db);
+        });
+    CROW_ROUTE(app, "/rooms/<int>/availability")
+        .methods("POST"_method
+        )([&bookings, &app_db](const crow::request &req, int room_id) {
+            return bookings.create_availability(req, app_db, room_id);
+        });
 
     std::cout << "=================================" << std::endl;
     std::cout << "SERVER STARTING :)" << std::endl;
