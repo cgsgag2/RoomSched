@@ -1,3 +1,7 @@
+/***
+ * Server module for booking (source).
+ ***/
+
 #include "server_bookings.hpp"
 #include <string>
 #include "db_manager.hpp"
@@ -7,7 +11,7 @@
 namespace roomsched::server {
 crow::response roomsched::server::bookings_handler::create_availability(
     const crow::request &req,
-    db::database_manager &db,
+    db::database_manager &database,
     int room_id
 ) {
     auto json = crow::json::load(req.body);
@@ -24,7 +28,7 @@ crow::response roomsched::server::bookings_handler::create_availability(
     std::string end = json["end_time"].s();
 
     // DB
-    //bool available = db.is_room_available(room_id, date, start, end);
+    // bool available = db.is_room_available(room_id, date, start, end);
     bool available = true;
 
     crow::json::wvalue data;
@@ -61,15 +65,15 @@ crow::response roomsched::server::bookings_handler::create_booking(
     std::string end = json["end_time"].s();
 
     // is room available
-    //if (!db.is_room_available(room_id, date, start, end)) {
+    // if (!db.is_room_available(room_id, date, start, end)) {
     //    return json_utils::error_response(
     //       "Room already booked for this time", 409
     //   );
     //}
 
-    //DB
-    //int booking_id = db.create_booking(room_id, user_id, date, start, end);
-    // return id
+    // DB
+    // int booking_id = db.create_booking(room_id, user_id, date, start, end);
+    //  return id
     int booking_id = 55;
 
     crow::json::wvalue data;
@@ -83,11 +87,11 @@ crow::response roomsched::server::bookings_handler::create_booking(
 
 crow::response roomsched::server::bookings_handler::cancel_booking(
     int booking_id,
-    db::database_manager &db
+    db::database_manager &database
 ) {
     // проверка на available не нужна, это другое
-    //DB
-    //bool success = db.cancel_booking(booking_id);
+    // DB
+    // bool success = db.cancel_booking(booking_id);
     bool success = true;
 
     if (!success) {
@@ -102,11 +106,11 @@ crow::response roomsched::server::bookings_handler::cancel_booking(
 
 crow::response roomsched::server::bookings_handler::get_user_bookings(
     int user_id,
-    db::database_manager &db
+    db::database_manager &database
 ) {
-    //DB
-    //std::vector<db::booking> bookings = db.get_user_bookings(user_id);
-    //заглушка
+    // DB
+    // std::vector<db::booking> bookings = db.get_user_bookings(user_id);
+    // заглушка
     struct TempBooking {
         int id;
         int room_id;
@@ -114,10 +118,10 @@ crow::response roomsched::server::bookings_handler::get_user_bookings(
         std::string start_time;
         std::string end_time;
     };
+
     std::vector<TempBooking> bookings = {
         {1, 101, "2026-03-15", "10:00", "12:00"},
-        {2, 102, "2026-03-16", "14:00", "16:00"}
-    };
+        {2, 102, "2026-03-16", "14:00", "16:00"}};
 
     crow::json::wvalue::list bookings_list;
     for (const auto &b : bookings) {
