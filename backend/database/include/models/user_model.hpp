@@ -1,9 +1,9 @@
 /***
- * Database users module (header).
+ * Database user model module (header).
  ***/
 
-#ifndef DB_USERS_HPP_
-#define DB_USERS_HPP_
+#ifndef USER_MODEL_HPP_
+#define USER_MODEL_HPP_
 
 #include <ostream>
 #include <string>
@@ -19,7 +19,6 @@ public:
     std::string last_login;
 };
 
-std::ostream &operator<<(std::ostream &os, const user &user);
 }  // namespace roomsched::db
 
-#endif  // DB_USERS_HPP_
+#endif  // USER_MODEL_HPP_

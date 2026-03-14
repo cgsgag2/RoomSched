@@ -1,6 +1,7 @@
 /***
  * DB main module.
  ***/
+#if 0
 
 #include <iostream>
 #include <pqxx/pqxx>
@@ -53,3 +54,5 @@ int main() {
 
     return 0;
 }
+
+#endif  // 0

@@ -70,7 +70,10 @@ crow::response roomsched::server::auth_handler::handle_register(
    } */
 
     // CHECK: add first login: username and password
-    database.create_user(username, password);
+    db::user u;
+    u.username = username;
+    u.password = password;
+    database.users().register_user(u);
 
     // TODO: check if user exists
 
@@ -99,7 +102,7 @@ bool roomsched::server::auth_handler::validate_password(
 crow::response roomsched::server::auth_handler::get_all_users(
     db::database_manager &database
 ) {
-    std::vector<db::user> all_users = database.get_all_users();
+    std::vector<db::user> all_users = database.users().get_all_users();
 
     // Note: crow::json::wvalue::list = std::vector<crow::json::wvalue>
     crow::json::wvalue::list users_format_crow{};

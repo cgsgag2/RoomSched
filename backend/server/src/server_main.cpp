@@ -1,7 +1,6 @@
 /***
  * Server main module (source).
  ***/
-
 #include <crow/app.h>
 #include <crow/http_request.h>
 #include <crow/http_response.h>
@@ -16,11 +15,58 @@
 
 int main() {
     // DB init module
-    roomsched::db::database_manager app_db;
-    if (!app_db.init()) {
-        std::cerr << "STOP PROGRAM." << std::endl;
-        return 0;
+    roomsched::db::db_config default_config;
+    roomsched::db::database_manager db_manager(default_config);
+
+    // This is part that CAN BE COMMENTED!!
+
+    // Small test for users
+    roomsched::db::user user1;
+    user1.username = "Sanya";
+    user1.password = "password123";
+    db_manager.users().register_user(user1);
+
+    // Small test for rooms
+    db_manager.rooms().create_default_rooms();
+    roomsched::db::room new_lecture;
+    new_lecture.room_number = "1000";
+    new_lecture.building = "Kanatny";
+    new_lecture.floor = 10;
+    new_lecture.total_area = 100;
+    new_lecture.description = "new lecture";
+    new_lecture.type = roomsched::db::room_type::LECTURE;
+    new_lecture.capacity = 10;
+    new_lecture.has_projector = false;
+    new_lecture.has_whiteboard = false;
+    db_manager.rooms().create_room(new_lecture);
+    std::cout << "-----------Test: get user by ID----------------" << std::endl;
+    roomsched::db::room test_get_room = db_manager.rooms().get_room_by_id(1);
+    std::cout << "id: " << test_get_room.id
+              << ", room_number: " << test_get_room.room_number
+              << ", building: " << test_get_room.building
+              << "\ntotal area: " << test_get_room.total_area
+              << ", description: " << test_get_room.description << std::endl;
+    std::cout << "has projector?: ";
+    if (test_get_room.has_projector) {
+        std::cout << *test_get_room.has_projector;
+    } else {
+        std::cout << "false";
     }
+    std::cout << ", capacity: ";
+    if (test_get_room.capacity) {
+        std::cout << *test_get_room.capacity;
+    } else {
+        std::cout << "None (not this type)";
+    }
+    std::cout << ", number of chairs: ";
+    if (test_get_room.number_of_chairs) {
+        std::cout << *test_get_room.number_of_chairs;
+    } else {
+        std::cout << "None (not this type)";
+    }
+    std::cout << std::endl;
+
+    // End of part that CAN BE COMMENTED!!
 
     // Main (server) module
     crow::SimpleApp app;
@@ -52,17 +98,17 @@ int main() {
 
     // Module that works with DB
     CROW_ROUTE(app, "/register")
-        .methods("POST"_method)([&auth, &app_db](const crow::request &req) {
-            return auth.handle_register(req, app_db);
+        .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
+            return auth.handle_register(req, db_manager);
         });
 
     CROW_ROUTE(app, "/login")
-        .methods("POST"_method)([&auth, &app_db](const crow::request &req) {
-            return auth.handle_login(req, app_db);
+        .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
+            return auth.handle_login(req, db_manager);
         });
 
     CROW_ROUTE(app, "/get_users")
-    ([&auth, &app_db]() { return auth.get_all_users(app_db); });
+    ([&auth, &db_manager]() { return auth.get_all_users(db_manager); });
 
     // Module that will not be used yet
     CROW_ROUTE(app, "/buildings")
@@ -73,23 +119,24 @@ int main() {
     ([&buildings](int id) { return buildings.get_building_rooms(id); });
 
     CROW_ROUTE(app, "/bookings")
-        .methods("POST"_method)([&bookings, &app_db](const crow::request &req) {
-            return bookings.create_booking(req, app_db);
+        .methods("POST"_method
+        )([&bookings, &db_manager](const crow::request &req) {
+            return bookings.create_booking(req, db_manager);
         });
 
     CROW_ROUTE(app, "/bookings/user/<int>")
-    ([&bookings, &app_db](int user_id) {
-        return bookings.get_user_bookings(user_id, app_db);
+    ([&bookings, &db_manager](int user_id) {
+        return bookings.get_user_bookings(user_id, db_manager);
     });
 
     CROW_ROUTE(app, "/bookings/<int>")
-        .methods("DELETE"_method)([&bookings, &app_db](int booking_id) {
-            return bookings.cancel_booking(booking_id, app_db);
+        .methods("DELETE"_method)([&bookings, &db_manager](int booking_id) {
+            return bookings.cancel_booking(booking_id, db_manager);
         });
     CROW_ROUTE(app, "/rooms/<int>/availability")
         .methods("POST"_method
-        )([&bookings, &app_db](const crow::request &req, int room_id) {
-            return bookings.create_availability(req, app_db, room_id);
+        )([&bookings, &db_manager](const crow::request &req, int room_id) {
+            return bookings.create_availability(req, db_manager, room_id);
         });
 
     std::cout << "=================================" << std::endl;
