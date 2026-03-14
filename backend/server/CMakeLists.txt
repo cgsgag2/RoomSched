@@ -10,7 +10,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(crow)
 find_package(Threads REQUIRED)
 
-file(GLOB SERVER_SOURCES "src/*.cpp")
+file(GLOB_RECURSE SERVER_SOURCES "src/*.cpp")
 add_executable(server ${SERVER_SOURCES})
 
 target_include_directories(server

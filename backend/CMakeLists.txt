@@ -4,5 +4,5 @@ project(RoomSched LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(backend/postgresql)
-add_subdirectory(backend/server)
+add_subdirectory(database)
+add_subdirectory(server)

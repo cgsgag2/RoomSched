@@ -4,7 +4,7 @@ find_package(PkgConfig REQUIRED)
 # Check that libpqxx is installed
 pkg_check_modules(PQXX REQUIRED libpqxx)
 
-file(GLOB DB_SOURCES "src/*.cpp")
+file(GLOB_RECURSE DB_SOURCES "src/*.cpp")
 
 add_library(db STATIC ${DB_SOURCES})
 

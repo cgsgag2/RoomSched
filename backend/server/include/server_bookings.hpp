@@ -4,6 +4,7 @@
 
 #ifndef ROOMSCHED_SERVER_BOOKINGS_HPP_
 #define ROOMSCHED_SERVER_BOOKINGS_HPP_
+
 #include <crow/http_response.h>
 #include <crow/json.h>
 #include <string>
