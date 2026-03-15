@@ -39,14 +39,13 @@ CREATE TABLE IF NOT EXISTS private_office (
 );
 
 CREATE TABLE IF NOT EXISTS room_availability (
-    id SERIAL PRIMARY KEY,
     room_id INT REFERENCES rooms_all(id) ON DELETE CASCADE,
     date DATE NOT NULL,
     is_available BOOLEAN DEFAULT TRUE,
     available_from TIME DEFAULT '09:00',
     available_to TIME DEFAULT '18:00',
     booking_reference VARCHAR(50),
-    UNIQUE (room_id, date)
+    UNIQUE (room_id, date, available_from, available_to)
 );
 
 CREATE TYPE booking_status AS ENUM (

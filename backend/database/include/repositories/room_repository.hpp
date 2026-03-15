@@ -27,7 +27,6 @@ public:
     int create_room(const room &new_room);
     room get_room_by_id(int id);
     std::vector<room> get_all_rooms();
-    // TODO: room availability ASAP!!!
 };
 }  // namespace roomsched::db
 
