@@ -1,42 +1,42 @@
-#include "registerwindow.hpp"
-#include "ui_registerwindow.h"
+#include "register_window.hpp"
+#include "ui_register_window.h"
 #include <QMessageBox>
 #include <QRegularExpression>
 
 namespace roomsched::registerwindow {
 
-RegisterWindow::RegisterWindow(QWidget *parent)
+register_window::register_window(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::RegisterWindow)
+    , ui(new Ui::register_window)
 {
     ui->setupUi(this);
     api = new roomsched::client::ApiClient(this);
 
     connect(ui->registerButton, &QPushButton::clicked,
-            this, &RegisterWindow::onRegisterButtonClicked);
+            this, &register_window::onRegisterButtonClicked);
 }
 
-RegisterWindow::~RegisterWindow()
+register_window::~register_window()
 {
     delete ui;
 }
-bool RegisterWindow::checkName(QString enterName) {
+bool register_window::check_name(QString enterName) {
     const QStringList parts =
         enterName.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
     return parts.size() >= 2;
 }
 
-bool RegisterWindow::checkEmail(QString enterEmail) {
+bool register_window::check_email(QString enterEmail) {
     QString doneEmail = enterEmail.trimmed();
     const QRegularExpression emailRegex(R"(^[^@\s]+@[^@\s]+\.[^@\s]+$)");
     return emailRegex.match(doneEmail).hasMatch();
 }
-bool RegisterWindow::checkPhone()
+bool register_window::check_phone()
 {
     return ui->phoneInput->hasAcceptableInput();
 }
 
-void RegisterWindow::onRegisterButtonClicked()
+void register_window::onRegisterButtonClicked()
 {
     QString username = ui->nameInput->text();
     QString email = ui->mailInput->text();
@@ -47,15 +47,15 @@ void RegisterWindow::onRegisterButtonClicked()
         QMessageBox::warning(this, "Ошибка", "Заполните все поля");
         return;
     }
-    if (!checkName(username)) {
+    if (!check_name(username)) {
         QMessageBox::warning(this, "Ошибка", "Введите имя и фамилию.");
         return;
     }
-    if (!checkEmail(email)) {
+    if (!check_email(email)) {
         QMessageBox::warning(this, "Ошибка", "Введите корректный email.");
         return;
     }
-    if (!checkPhone()) {
+    if (!check_phone()) {
         QMessageBox::warning(this, "Ошибка", "Введите полный номер телефона.");
         return;
     }

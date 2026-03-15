@@ -1,25 +1,25 @@
-#include "authwindow.hpp"
+#include "auth_window.hpp"
 #include <QDebug>
 #include <QMessageBox>
 #include <QRegularExpressionValidator>
-#include "roomlistwindow.hpp"
-#include "ui_authwindow.h"
-#include "registerwindow.hpp"
+#include "room_list_window.hpp"
+#include "ui_auth_window.h"
+#include "register_window.hpp"
 
 namespace roomsched::authwindow {
 
-AuthWindow::AuthWindow(QWidget *parent)
-    : QWidget(parent), ui(new Ui::AuthWindow) {
+auth_window::auth_window(QWidget *parent)
+    : QWidget(parent), ui(new Ui::auth_window) {
     ui->setupUi(this);
     api = new roomsched::client::ApiClient(this);
     connect(
         ui->loginButton, &QPushButton::clicked, this,
-        &AuthWindow::onLoginClicked
+        &auth_window::on_login_clicked
     );
     connect(
         ui->registerButton, &QPushButton::clicked, this,
         [this]() {
-        auto *regWindow = new roomsched::registerwindow::RegisterWindow();
+        auto *regWindow = new roomsched::registerwindow::register_window();
         regWindow->show();
         this->close();
     }
@@ -31,7 +31,7 @@ AuthWindow::AuthWindow(QWidget *parent)
     connect(
         api, &roomsched::client::ApiClient::loginSuccess, this,
         [this](QJsonObject) {
-            auto *rooms = new roomsched::roomlistwindow::RoomListWindow(
+            auto *rooms = new roomsched::roomlistwindow::room_list_window(
                 ui->mailInput->text(), ui->mailInput->text(),
                 ""
             );
@@ -41,26 +41,26 @@ AuthWindow::AuthWindow(QWidget *parent)
     );
 }
 
-AuthWindow::~AuthWindow() {
+auth_window::~auth_window() {
     delete ui;
 }
 
-bool AuthWindow::checkName(QString enterName) {
+bool auth_window::check_name(QString enterName) {
     const QStringList parts =
         enterName.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
     return parts.size() >= 2;
 }
 
-bool AuthWindow::checkEmail(QString enterEmail) {
+bool auth_window::check_email(QString enterEmail) {
     QString doneEmail = enterEmail.trimmed();
     const QRegularExpression emailRegex(R"(^[^@\s]+@[^@\s]+\.[^@\s]+$)");
     return emailRegex.match(doneEmail).hasMatch();
 }
 
-void AuthWindow::onLoginClicked() {
+void auth_window::on_login_clicked() {
     const QString email = ui->mailInput->text();
     const QString password = ui->passwordInput->text();
-    if (!checkEmail(email)) {
+    if (!check_email(email)) {
         QMessageBox::warning(nullptr, "Ошибка", "Введите корректный email.");
         return;
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>RegisterWindow</class>
-    <widget class="QWidget" name="RegisterWindow">
+    <class>register_window</class>
+    <widget class="QWidget" name="register_window">
         <property name="geometry">
             <rect>
                 <x>0</x>
@@ -199,7 +199,7 @@
                 <string>Введите пароль...</string>
             </property>
         </widget>
-        
+
         <widget class="QPushButton" name="registerButton">
             <property name="geometry">
                 <rect>

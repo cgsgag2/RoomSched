@@ -1,5 +1,5 @@
-#ifndef ROOMLISTWINDOW_HPP
-#define ROOMLISTWINDOW_HPP
+#ifndef ROOMLISTWINDOW_HPP_
+#define ROOMLISTWINDOW_HPP_
 
 #include <QWidget>
 #include "api_client.hpp"
@@ -7,28 +7,28 @@
 QT_BEGIN_NAMESPACE
 
 namespace Ui {
-class RoomListWindow;
+class room_list_window;
 }
 
 QT_END_NAMESPACE
 
 namespace roomsched::roomlistwindow {
 
-class RoomListWindow : public QWidget {
+class room_list_window : public QWidget {
     Q_OBJECT
 
 public:
-    explicit RoomListWindow(QWidget *parent = nullptr);
-    RoomListWindow(
+    explicit room_list_window(QWidget *parent = nullptr);
+    room_list_window(
         QString userName,
         QString userEmail,
         QString userPhone,
         QWidget *parent = nullptr
     );
-    ~RoomListWindow();
+    ~room_list_window();
 
 private:
-    Ui::RoomListWindow *ui;
+    Ui::room_list_window *ui;
     void setupRooms();
     void showRoomDetails(const QJsonObject &room);
     roomsched::client::ApiClient *api;
@@ -37,4 +37,4 @@ private:
 
 }  // namespace roomsched::roomlistwindow
 
-#endif  // ROOMLISTWINDOW_HPP
+#endif  // ROOMLISTWINDOW_HPP_

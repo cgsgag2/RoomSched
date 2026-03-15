@@ -1,29 +1,29 @@
-#include "roomlistwindow.hpp"
+#include "room_list_window.hpp"
 #include <QDialog>
 #include <QGridLayout>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include "ui_roomlistwindow.h"
+#include "ui_room_list_window.h"
 
 namespace roomsched::roomlistwindow {
 
 // по факту осталось только для тестов
 // это открытие без данных пользователя
-RoomListWindow::RoomListWindow(QWidget *parent)
-    : QWidget(parent), ui(new Ui::RoomListWindow) {
+room_list_window::room_list_window(QWidget *parent)
+    : QWidget(parent), ui(new Ui::room_list_window) {
     ui->setupUi(this);
     setupRooms();
 }
 
-RoomListWindow::RoomListWindow(
+room_list_window::room_list_window(
     QString userName,
     QString userEmail,
     QString userPhone,
     QWidget *parent
 )
-    : QWidget(parent), ui(new Ui::RoomListWindow) {
+    : QWidget(parent), ui(new Ui::room_list_window) {
     ui->setupUi(this);
     api = new roomsched::client::ApiClient(this);
     connect(
@@ -36,11 +36,11 @@ RoomListWindow::RoomListWindow(
     api->getRooms(1);
 }
 
-RoomListWindow::~RoomListWindow() {
+room_list_window::~room_list_window() {
     delete ui;
 }
 
-void RoomListWindow::setupRooms() {
+void room_list_window::setupRooms() {
     QGridLayout *layout =
         qobject_cast<QGridLayout *>(ui->roomsGridContainer->layout());
     if (!layout) {
@@ -79,7 +79,7 @@ void RoomListWindow::setupRooms() {
     }
 }
 
-void RoomListWindow::showRoomDetails(const QJsonObject &room) {
+void room_list_window::showRoomDetails(const QJsonObject &room) {
     QString name = room["name"].toString();
     int capacity = room["capacity"].toInt();
 
