@@ -100,8 +100,8 @@ std::vector<roomsched::db::room> roomsched::db::room_repository::get_all_rooms(
 
     try {
         const auto result = db.query(
-            "SELECT id, room_number, building, floor, total_area, description "
-            "FROM rooms_all ORDER BY id"
+            "SELECT id, room_number, building, floor, total_area, description, "
+            "type FROM rooms_all ORDER BY id"
         );
 
         for (const auto &row : result) {

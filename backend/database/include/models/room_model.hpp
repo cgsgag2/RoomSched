@@ -59,11 +59,11 @@ public:
 class room_availability {
 public:
     int room_id;
-    std::string date;
+    std::string date = "2026-03-15";  // TODO: Will be not using now
     bool is_available = true;
     std::string available_from = "09:00";
     std::string available_to = "18:00";
-    std::string booking_ref;
+    std::string booking_ref = "Always ready";
 };
 
 }  // namespace roomsched::db
