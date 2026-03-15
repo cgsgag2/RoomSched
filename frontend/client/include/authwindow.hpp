@@ -28,7 +28,6 @@ public:
 private:
     static bool checkName(QString enterName);
     static bool checkEmail(QString enterEmail);
-    bool checkPhone();
     void onLoginClicked();
     Ui::AuthWindow *ui;
     roomsched::client::ApiClient *api;

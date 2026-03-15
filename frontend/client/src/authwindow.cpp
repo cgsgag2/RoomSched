@@ -4,6 +4,7 @@
 #include <QRegularExpressionValidator>
 #include "roomlistwindow.hpp"
 #include "ui_authwindow.h"
+#include "registerwindow.hpp"
 
 namespace roomsched::authwindow {
 
@@ -16,6 +17,14 @@ AuthWindow::AuthWindow(QWidget *parent)
         &AuthWindow::onLoginClicked
     );
     connect(
+        ui->registerButton, &QPushButton::clicked, this,
+        [this]() {
+        auto *regWindow = new roomsched::registerwindow::RegisterWindow();
+        regWindow->show();
+        this->close();
+    }
+);
+    connect(
         api, &roomsched::client::ApiClient::loginFailed, this,
         [](QString err) { QMessageBox::warning(nullptr, "Ошибка", err); }
     );
@@ -23,8 +32,8 @@ AuthWindow::AuthWindow(QWidget *parent)
         api, &roomsched::client::ApiClient::loginSuccess, this,
         [this](QJsonObject) {
             auto *rooms = new roomsched::roomlistwindow::RoomListWindow(
-                ui->nameInput->text(), ui->mailInput->text(),
-                ui->phoneInput->text()
+                ui->mailInput->text(), ui->mailInput->text(),
+                ""
             );
             rooms->show();
             this->close();
@@ -48,31 +57,23 @@ bool AuthWindow::checkEmail(QString enterEmail) {
     return emailRegex.match(doneEmail).hasMatch();
 }
 
-bool AuthWindow::checkPhone() {
-    return ui->phoneInput->hasAcceptableInput();
-}
-
 void AuthWindow::onLoginClicked() {
-    const QString name = ui->nameInput->text();
     const QString email = ui->mailInput->text();
-    const QString phone = ui->phoneInput->text();
-    if (!checkName(name)) {
-        QMessageBox::warning(
-            nullptr, "Ошибка", "Введите хотя бы имя и фамилию."
-        );
-        return;
-    }
+    const QString password = ui->passwordInput->text();
     if (!checkEmail(email)) {
         QMessageBox::warning(nullptr, "Ошибка", "Введите корректный email.");
         return;
     }
-    if (!checkPhone()) {
-        QMessageBox::warning(
-            nullptr, "Ошибка", "Номер телефона заполнен не полностью."
-        );
+    if (password.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Введите пароль.");
         return;
     }
-    api->login(name, email);
+    //TODO add check of password
+    if (password.length() < 6) {
+        QMessageBox::warning(this, "Ошибка", "Пароль должен быть не менее 6 символов.");
+        return;
+    }
+    api->login(email, password);
 }
 
 }  // namespace roomsched::authwindow
