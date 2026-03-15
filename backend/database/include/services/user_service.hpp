@@ -5,27 +5,34 @@
 #ifndef USER_SERVICE_HPP_
 #define USER_SERVICE_HPP_
 
+#include <string>
+#include <optional>
+#include "../models/user_model.hpp"
 #include "../repositories/user_repository.hpp"
 
 // project namespace, database module namespace
 namespace roomsched::db {
 class user_service {
 private:
-    user_repository repo;
+    user_repository &repo;
 
 public:
-    user_service(database &db_);
+    user_service(user_repository &repo_);
 
-    // TODO: user module!!!
-    void register_user(const user &new_user);
+    bool register_user(const std::string &username,
+                       const std::string &email,
+                       const std::string &phone,
+                       const std::string &password);
 
-    user get_user_by_id(int id);
+    std::optional<user> login(const std::string &email,
+                              const std::string &password);
+
     std::vector<user> get_all_users();
-    /*
-    void print_all_users();
 
-    bool entry_user(const std::string &username, const std::string &password);
-    */
+private:
+    std::string hash_password(const std::string &password);
+    bool verify_password(const std::string &password,
+                         const std::string &hash);
 };
 }  // namespace roomsched::db
 
