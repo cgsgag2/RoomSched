@@ -8,6 +8,7 @@
 #include <crow/http_response.h>
 #include <crow/json.h>
 #include <string>
+#include <optional>
 #include "db_manager.hpp"
 
 // project namespace, server module namespace

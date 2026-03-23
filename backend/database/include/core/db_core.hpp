@@ -35,10 +35,11 @@ public:
 
         try {
             pqxx::work txn(*conn);  // transaction
-            pqxx::result result =
-                txn.exec_params(sql, std::forward<Args>(args)...);
-            txn.commit();
+            pqxx::params p;
+            (p.append(std::forward<Args>(args)), ...);
 
+            pqxx::result result = txn.exec(sql, p);
+            txn.commit();
             return result;
         } catch (const pqxx::sql_error &e) {
             std::cerr << "SQL error: " << e.what() << "\nQuery: " << e.query()
@@ -58,7 +59,10 @@ public:
 
         try {
             pqxx::work txn(*conn);  // transaction
-            txn.exec_params(sql, std::forward<Args>(args)...);
+            pqxx::params p;
+            (p.append(std::forward<Args>(args)), ...);
+
+            txn.exec(sql, p);
             txn.commit();
         } catch (const pqxx::sql_error &e) {
             std::cerr << "SQL error: " << e.what() << "\nQuery: " << e.query()

@@ -17,10 +17,13 @@ private:
 public:
     user_repository(database &db_);
 
-    // TODO: user module!!!
     bool create_user(const user &new_user);
 
+    bool user_exists_by_email(const std::string& email);
+    bool user_exists_by_phone(const std::string& phone);
+
     user get_user_by_id(int id);
+    std::optional<user> get_user_by_email(const std::string& email);
     std::vector<user> get_all_users();
     void print_all_users();
 
