@@ -64,6 +64,20 @@ bool user_repository::user_exists_by_phone(const std::string &phone) {
     }
 }
 
+bool user_repository::user_exists_by_username(const std::string &username) {
+    try {
+        auto result = db.query(
+            "SELECT id FROM users WHERE username = $1",
+            username
+        );
+        return !result.empty();
+
+    } catch (const std::exception &e) {
+        std::cerr << "[DB ERROR in user_exists_by_username]: " << e.what() << std::endl;
+        return false;
+    }
+}
+
 std::optional<user> user_repository::get_user_by_email(const std::string &email) {
     try {
         auto result = db.query(

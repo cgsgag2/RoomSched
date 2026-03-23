@@ -29,10 +29,13 @@ public:
 
     std::vector<user> get_all_users();
 
+    bool email_exists(const std::string &email);
+
 private:
     std::string hash_password(const std::string &password);
     bool verify_password(const std::string &password,
                          const std::string &hash);
+    bool is_password_strong(const std::string &password);
 };
 }  // namespace roomsched::db
 

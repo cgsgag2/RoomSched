@@ -21,6 +21,7 @@ public:
 
     bool user_exists_by_email(const std::string& email);
     bool user_exists_by_phone(const std::string& phone);
+    bool user_exists_by_username(const std::string& username);
 
     user get_user_by_id(int id);
     std::optional<user> get_user_by_email(const std::string& email);

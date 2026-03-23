@@ -24,6 +24,9 @@ public:
 
     crow::response get_all_users(db::database_manager &database);
 
+    crow::response
+    handle_check_email(const crow::request &req, db::database_manager &database);
+
 private:
     bool validate_email(const std::string &email);
     bool validate_password(const std::string &password);
