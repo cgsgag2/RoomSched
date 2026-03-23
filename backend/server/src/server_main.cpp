@@ -22,9 +22,17 @@ int main() {
 
     // Small test for users
     roomsched::db::user user1;
-    user1.username = "Sanya";
-    user1.password = "password123";
-    db_manager.users().register_user(user1);
+    user1.username = "testuser";
+    user1.email = "test@example.com";
+    user1.phone = "1234567890";
+    user1.password_hash = "password123"; // временно, если хэшируешь позже
+
+    db_manager.users().register_user(
+        user1.username,
+        user1.email,
+        user1.phone,
+        user1.password_hash
+    );
 
     // Small test for rooms
     db_manager.rooms().create_default_rooms();

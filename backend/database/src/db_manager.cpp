@@ -5,7 +5,7 @@
 #include "db_manager.hpp"
 
 roomsched::db::database_manager::database_manager(const db_config &config)
-    : db(config), userService(db), roomService(db) {
+    : db(config), userRepo(db), userService(userRepo), roomService(db) {
     db.connect();
 }
 

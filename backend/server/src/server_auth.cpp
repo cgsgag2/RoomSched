@@ -2,11 +2,11 @@
  * Server authentication module (source).
  ***/
 
-#include "server_auth.hpp"
+#include "../include/server_auth.hpp"
 #include <string>
 #include <regex>
 #include "db_manager.hpp"
-#include "server_json_utils.hpp"
+#include "../include/server_json_utils.hpp"
 
 namespace roomsched::server {
 
@@ -105,6 +105,6 @@ crow::response auth_handler::get_all_users(db::database_manager &database) {
     }
 
     return crow::response(200, resp);
-}я
+}
 
 }  // namespace roomsched::server

@@ -43,7 +43,7 @@ bool roomsched::db::database::connect() {
 void roomsched::db::database::disconnect() {
     if (conn && conn->is_open()) {
         try {
-            conn->disconnect();
+            conn->close();
             std::cout << "Disconnected from db '" << config.DB_NAME
                       << "' successfully" << std::endl;
         } catch (const std::exception &e) {

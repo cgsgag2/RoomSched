@@ -17,7 +17,7 @@ private:
     database db;
     user_service userService;
     room_service roomService;
-    /* TODO... */
+    user_repository userRepo;
 
 public:
     database_manager(const db_config &config);
