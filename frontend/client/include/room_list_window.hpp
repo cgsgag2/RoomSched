@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "api_client.hpp"
+#include <QJsonArray>
 
 QT_BEGIN_NAMESPACE
 
