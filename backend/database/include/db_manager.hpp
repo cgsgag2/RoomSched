@@ -18,12 +18,14 @@ private:
     user_service userService;
     room_service roomService;
     user_repository userRepo;
+    booking_service bookingService;
 
 public:
     database_manager(const db_config &config);
 
     user_service &users();
     room_service &rooms();
+    booking_service &bookings();
 };
 }  // namespace roomsched::db
 
