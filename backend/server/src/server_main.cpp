@@ -156,6 +156,12 @@ int main() {
         .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
             return auth.handle_login(req, db_manager);
         });
+    
+    CROW_ROUTE(app, "/check_email")
+        .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
+            return auth.handle_check_email(req, db_manager);
+        });
+
 
     CROW_ROUTE(app, "/get_users")
     ([&auth, &db_manager]() { return auth.get_all_users(db_manager); });
