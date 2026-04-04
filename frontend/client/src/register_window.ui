@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>register_window</class>
+    <widget class="QWidget" name="register_window">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>379</width>
+                <height>600</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Регистрация</string>
+        </property>
+        <property name="styleSheet">
+            <string notr="true">background-color: white;</string>
+        </property>
+
+        <widget class="QLabel" name="label">
+            <property name="geometry">
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>381</width>
+                    <height>101</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Times New Roman</family>
+                    <pointsize>25</pointsize>
+                    <bold>true</bold>
+                </font>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">
+                    background-color: #808080;
+                    color: black;
+                    padding: 10px;
+                    border-bottom-left-radius: 15px;
+                    border-bottom-right-radius: 15px;
+                </string>
+            </property>
+            <property name="text">
+                <string>RoomSched</string>
+            </property>
+            <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+        </widget>
+
+        <widget class="QLineEdit" name="nameInput">
+            <property name="geometry">
+                <rect>
+                    <x>60</x>
+                    <y>140</y>
+                    <width>261</width>
+                    <height>41</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Times New Roman</family>
+                    <pointsize>15</pointsize>
+                    <italic>true</italic>
+                </font>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">
+                    QLineEdit {
+                    border: 2px solid #000000;
+                    border-radius: 15px;
+                    padding: 5px;
+                    background: white;
+                    color: black;
+                    }
+                    QLineEdit:focus {
+                    border: 2px solid #2F4F4F;
+                    color: black;
+                    }
+                </string>
+            </property>
+            <property name="placeholderText">
+                <string>Введите логин</string>
+            </property>
+        </widget>
+
+        <widget class="QLineEdit" name="mailInput">
+            <property name="geometry">
+                <rect>
+                    <x>60</x>
+                    <y>200</y>
+                    <width>261</width>
+                    <height>41</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Times New Roman</family>
+                    <pointsize>15</pointsize>
+                    <italic>true</italic>
+                </font>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">
+                    QLineEdit {
+                    border: 2px solid #000000;
+                    border-radius: 15px;
+                    padding: 5px;
+                    background: white;
+                    color: black;
+                    }
+                    QLineEdit:focus {
+                    border: 2px solid #2F4F4F;
+                    color: black;
+                    }
+                </string>
+            </property>
+            <property name="placeholderText">
+                <string>Введите email...</string>
+            </property>
+        </widget>
+
+        <widget class="QLineEdit" name="phoneInput">
+            <property name="geometry">
+                <rect>
+                    <x>60</x>
+                    <y>260</y>
+                    <width>261</width>
+                    <height>41</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Times New Roman</family>
+                    <pointsize>15</pointsize>
+                    <italic>true</italic>
+                </font>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">
+                    QLineEdit {
+                    border: 2px solid #000000;
+                    border-radius: 15px;
+                    padding: 5px;
+                    background: white;
+                    color: black;
+                    }
+                    QLineEdit:focus {
+                    border: 2px solid #2F4F4F;
+                    color: black;
+                    }
+                </string>
+            </property>
+            <property name="inputMask">
+                <string>+7 (999) 999-99-99;_</string>
+            </property>
+            <property name="placeholderText">
+                <string>Введите телефон...</string>
+            </property>
+        </widget>
+
+        <widget class="QLineEdit" name="passwordInput">
+            <property name="geometry">
+                <rect>
+                    <x>60</x>
+                    <y>320</y>
+                    <width>261</width>
+                    <height>41</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Times New Roman</family>
+                    <pointsize>15</pointsize>
+                    <italic>true</italic>
+                </font>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">
+                    QLineEdit {
+                    border: 2px solid #000000;
+                    border-radius: 15px;
+                    padding: 5px;
+                    background: white;
+                    color: black;
+                    }
+                    QLineEdit:focus {
+                    border: 2px solid #2F4F4F;
+                    color: black;
+                    }
+                </string>
+            </property>
+            <property name="echoMode">
+                <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+                <string>Введите пароль...</string>
+            </property>
+        </widget>
+
+        <widget class="QPushButton" name="registerButton">
+            <property name="geometry">
+                <rect>
+                    <x>80</x>
+                    <y>400</y>
+                    <width>211</width>
+                    <height>61</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Times New Roman</family>
+                    <pointsize>13</pointsize>
+                    <bold>true</bold>
+                </font>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">
+                    QPushButton {
+                    border-radius: 15px;
+                    padding: 5px;
+                    background: #b0b0b0;
+                    color: black;
+                    }
+                    QPushButton:hover {
+                    background: #9a9a9a;
+                    }
+                </string>
+            </property>
+            <property name="text">
+                <string>Зарегистрироваться</string>
+            </property>
+        </widget>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>
