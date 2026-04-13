@@ -11,6 +11,7 @@ add_library(db STATIC ${DB_SOURCES})
 target_include_directories(db
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/common/bcrypt
         ${PQXX_INCLUDE_DIRS}
 )
 

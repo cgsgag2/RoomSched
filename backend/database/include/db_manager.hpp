@@ -17,7 +17,6 @@ private:
     database db;
     user_service userService;
     room_service roomService;
-    user_repository userRepo;
     booking_service bookingService;
 
 public:

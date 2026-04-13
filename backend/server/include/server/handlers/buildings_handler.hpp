@@ -1,9 +1,11 @@
 /***
- * Server module for buildings (header).
+ * Server handler buildings module (header).
  ***/
 
-#ifndef SERVER_BUILDINGS_HPP_
-#define SERVER_BUILDINGS_HPP_
+#ifndef BUILDINGS_HANDLER_HPP_
+#define BUILDINGS_HANDLER_HPP_
+
+#if 0
 
 #include <crow/http_response.h>
 #include <crow/json.h>
@@ -20,4 +22,6 @@ public:
 
 }  // namespace roomsched::server
 
-#endif  // SERVER_BUILDINGS_HPP_
+#endif  // 0
+
+#endif  // BUILDINGS_HANDLER_HPP_

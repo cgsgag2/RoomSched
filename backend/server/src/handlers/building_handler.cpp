@@ -1,6 +1,8 @@
 /***
- * Server module for buildings (source).
+ * Server handler buildings module (source).
  ***/
+
+#if 0
 
 #include "server_buildings.hpp"
 #include "server_json_utils.hpp"
@@ -68,3 +70,5 @@ crow::response roomsched::server::buildings_handler::get_building_rooms(
 
     return json_utils::success_response("Rooms revealed", data);
 }
+
+#endif  // 0

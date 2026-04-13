@@ -5,6 +5,7 @@
 #ifndef USER_REPOSITORY_HPP_
 #define USER_REPOSITORY_HPP_
 
+#include <optional>
 #include "../core/db_core.hpp"
 #include "../models/user_model.hpp"
 
@@ -19,16 +20,14 @@ public:
 
     bool create_user(const user &new_user);
 
-    bool user_exists_by_email(const std::string& email);
-    bool user_exists_by_phone(const std::string& phone);
-    bool user_exists_by_username(const std::string& username);
+    bool user_exists_by_email(const std::string &email);
+    bool user_exists_by_phone(const std::string &phone);
+    bool user_exists_by_fullname(const std::string &fullname);
 
     user get_user_by_id(int id);
-    std::optional<user> get_user_by_email(const std::string& email);
+    std::optional<user> get_user_by_email(const std::string &email);
     std::vector<user> get_all_users();
     void print_all_users();
-
-    bool entry_user(const std::string &username, const std::string &password);
 };
 }  // namespace roomsched::db
 

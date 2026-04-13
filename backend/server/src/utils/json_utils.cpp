@@ -1,8 +1,8 @@
 /***
- * Server json utilities module (source).
+ * Server utilities json module (source).
  ***/
 
-#include "server_json_utils.hpp"
+#include "server/utils/json_utils.hpp"
 
 crow::response roomsched::server::json_utils::error_response(
     const std::string &message,
@@ -18,7 +18,6 @@ bool roomsched::server::json_utils::validate_fields(
     const crow::json::rvalue &json,
     const std::vector<std::string> &fields
 ) {
-    // NOLINTNEXTLINE(readability-use-anyofallof)
     for (const auto &field : fields) {
         if (!json.has(field)) {
             return false;

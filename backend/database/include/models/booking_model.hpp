@@ -28,4 +28,4 @@ public:
 
 }  // namespace roomsched::db
 
-#endif  // USER_MODEL_HPP_
+#endif  // BOOKING_MODEL_HPP_

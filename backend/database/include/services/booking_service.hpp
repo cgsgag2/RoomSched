@@ -29,7 +29,6 @@ public:
     bool cancel_booking(int booking_id);
 
     std::vector<db::booking> get_user_bookings(int user_id);
-
     std::vector<db::booking> get_room_bookings(int room_id);
 };
 
