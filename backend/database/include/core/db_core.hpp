@@ -10,7 +10,7 @@
 #include <memory>
 #include <pqxx/pqxx>
 #include <utility>
-#include "../core/db_config.hpp"
+#include "db_config.hpp"
 
 // project namespace, database module namespace
 namespace roomsched::db {
@@ -35,11 +35,10 @@ public:
 
         try {
             pqxx::work txn(*conn);  // transaction
-            pqxx::params p;
-            (p.append(std::forward<Args>(args)), ...);
-
-            pqxx::result result = txn.exec(sql, p);
+            pqxx::result result =
+                txn.exec_params(sql, std::forward<Args>(args)...);
             txn.commit();
+
             return result;
         } catch (const pqxx::sql_error &e) {
             std::cerr << "SQL error: " << e.what() << "\nQuery: " << e.query()
@@ -59,10 +58,8 @@ public:
 
         try {
             pqxx::work txn(*conn);  // transaction
-            pqxx::params p;
-            (p.append(std::forward<Args>(args)), ...);
+            txn.exec_params(sql, std::forward<Args>(args)...);
 
-            txn.exec(sql, p);
             txn.commit();
         } catch (const pqxx::sql_error &e) {
             std::cerr << "SQL error: " << e.what() << "\nQuery: " << e.query()

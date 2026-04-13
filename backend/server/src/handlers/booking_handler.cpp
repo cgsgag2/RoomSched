@@ -1,8 +1,9 @@
 /***
- * Server module for booking (source).
+ * Server handler booking module (source).
  ***/
 
-#include "server_bookings.hpp"
+#if 0
+
 #include <string>
 #include "db_manager.hpp"
 #include "server_bookings.hpp"
@@ -142,3 +143,5 @@ crow::response roomsched::server::bookings_handler::get_user_bookings(
 }
 
 }  // namespace roomsched::server
+
+#endif  // 0

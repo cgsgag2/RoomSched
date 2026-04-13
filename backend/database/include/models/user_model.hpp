@@ -13,11 +13,11 @@ namespace roomsched::db {
 class user {
 public:
     int id;
-    std::string username;
     std::string email;
+    std::string password_hash;
+    std::string full_name;
     std::string phone;
     std::string role;
-    std::string password_hash;
     std::string created_at;
     std::string last_login;
 };

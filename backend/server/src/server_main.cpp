@@ -1,39 +1,27 @@
 /***
  * Server main module (source).
  ***/
-#include <crow/app.h>
-#include <crow/http_request.h>
-#include <crow/http_response.h>
-#include <crow/json.h>
-#include <crow/routing.h>
-#include <iostream>
-// Local libs
-#include "db_manager.hpp"
-#include "server_auth.hpp"
-#include "server_bookings.hpp"
-#include "server_buildings.hpp"
+
+#include "server/app.hpp"
 
 int main() {
-    // DB init module
-    roomsched::db::db_config default_config;
-    roomsched::db::database_manager db_manager(default_config);
-
-    // This is part that CAN BE COMMENTED!!
+    roomsched::server::app main_app;
 
     // Small test for users
-    roomsched::db::user user1;
-    user1.username = "testuser";
-    user1.email = "test@example.com";
-    user1.phone = "1234567890";
-    user1.password_hash = "password123"; // временно, если хэшируешь позже
+    // roomsched::db::user user1;
+    // user1.email = "test@example.com";
+    // user1.phone = "1234567890";
+    // user1.password_hash = "password123";
+    // user1.full_name = "testuser";
 
-    db_manager.users().register_user(
-        user1.username,
-        user1.email,
-        user1.phone,
-        user1.password_hash
-    );
+    // main_app.get_db().users().register_user(
+    //     user1.email, user1.password_hash, user1.full_name, user1.phone
+    // );
 
+    main_app.run(8080);
+
+#if 0
+    // This must be TEST MODULE
     // Small test for rooms
     db_manager.rooms().create_default_rooms();
     roomsched::db::room new_lecture;
@@ -117,87 +105,5 @@ int main() {
                   << ", description: " << r.description << std::endl;
     }
     // End of part that CAN BE COMMENTED!!
-
-    // Main (server) module
-    crow::SimpleApp app;
-    app.loglevel(crow::LogLevel::Debug);
-
-    roomsched::server::auth_handler auth;
-    roomsched::server::buildings_handler buildings;
-    roomsched::server::bookings_handler bookings;
-
-    // Test module
-    CROW_ROUTE(app, "/")([]() { return "Hello Diana and Alex :))"; });
-
-    CROW_ROUTE(app, "/health")
-    ([]() {
-        crow::json::wvalue result;
-        result["status"] = "OK";
-        result["message"] = "Server is running";
-        return result;
-    });
-
-    CROW_ROUTE(app, "/test")
-    ([]() {
-        crow::json::wvalue response;
-        response["name"] = "Varvara";
-        response["project"] = "RoomSched";
-        response["version"] = 0.1;
-        return response;
-    });
-
-    // Module that works with DB
-    CROW_ROUTE(app, "/register")
-        .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
-            return auth.handle_register(req, db_manager);
-        });
-
-    CROW_ROUTE(app, "/login")
-        .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
-            return auth.handle_login(req, db_manager);
-        });
-    
-    CROW_ROUTE(app, "/check_email")
-        .methods("POST"_method)([&auth, &db_manager](const crow::request &req) {
-            return auth.handle_check_email(req, db_manager);
-        });
-
-
-    CROW_ROUTE(app, "/get_users")
-    ([&auth, &db_manager]() { return auth.get_all_users(db_manager); });
-
-    // Module that will not be used yet
-    CROW_ROUTE(app, "/buildings")
-    ([&buildings]() { return buildings.get_all_buildings(); });
-    CROW_ROUTE(app, "/buildings/<int>")
-    ([&buildings](int id) { return buildings.get_building(id); });
-    CROW_ROUTE(app, "/buildings/<int>/rooms")
-    ([&buildings](int id) { return buildings.get_building_rooms(id); });
-
-    CROW_ROUTE(app, "/bookings")
-        .methods("POST"_method
-        )([&bookings, &db_manager](const crow::request &req) {
-            return bookings.create_booking(req, db_manager);
-        });
-
-    CROW_ROUTE(app, "/bookings/user/<int>")
-    ([&bookings, &db_manager](int user_id) {
-        return bookings.get_user_bookings(user_id, db_manager);
-    });
-
-    CROW_ROUTE(app, "/bookings/<int>")
-        .methods("DELETE"_method)([&bookings, &db_manager](int booking_id) {
-            return bookings.cancel_booking(booking_id, db_manager);
-        });
-    CROW_ROUTE(app, "/rooms/<int>/availability")
-        .methods("POST"_method
-        )([&bookings, &db_manager](const crow::request &req, int room_id) {
-            return bookings.create_availability(req, db_manager, room_id);
-        });
-
-    std::cout << "=================================" << std::endl;
-    std::cout << "SERVER STARTING :)" << std::endl;
-    std::cout << "=================================" << std::endl;
-
-    app.port(8080).multithreaded().run();
+#endif  // 0
 }

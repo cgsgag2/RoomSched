@@ -1,16 +1,16 @@
 /***
- * Server json utilities module (header).
+ * Server utilities json module (header).
  ***/
 
-#ifndef SERVER_JSON_UTILS_HPP_
-#define SERVER_JSON_UTILS_HPP_
+#ifndef JSON_UTILS_HPP_
+#define JSON_UTILS_HPP_
 
 #include <crow/http_response.h>
 #include <crow/json.h>
 #include <string>
 #include <vector>
 
-// project namespace, server module namespace
+// project namespace, server module namespace, json utils namespace
 namespace roomsched::server::json_utils {
 crow::response
 error_response(const std::string &message, int status_code = 400);
@@ -24,4 +24,4 @@ crow::response
 success_response(const std::string &message, crow::json::wvalue data = {});
 }  // namespace roomsched::server::json_utils
 
-#endif  // SERVER_JSON_UTILS_HPP_
+#endif  // JSON_UTILS_HPP_

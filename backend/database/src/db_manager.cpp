@@ -6,8 +6,7 @@
 
 roomsched::db::database_manager::database_manager(const db_config &config)
     : db(config),
-      userRepo(db),
-      userService(userRepo),
+      userService(db),
       roomService(db),
       bookingService(db, roomService) {
     db.connect();

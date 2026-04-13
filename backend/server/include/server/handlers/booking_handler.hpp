@@ -1,9 +1,11 @@
 /***
- * Server module for booking (header).
+ * Server handler booking module (header).
  ***/
 
-#ifndef ROOMSCHED_SERVER_BOOKINGS_HPP_
-#define ROOMSCHED_SERVER_BOOKINGS_HPP_
+#ifndef BOOKING_HANDLER_HPP_
+#define BOOKING_HANDLER_HPP_
+
+#if 0
 
 #include <crow/http_response.h>
 #include <crow/json.h>
@@ -31,4 +33,6 @@ public:
 };
 }  // namespace roomsched::server
 
-#endif  // ROOMSCHED_SERVER_BOOKINGS_HPP_
+#endif  // 0
+
+#endif  // BOOKING_HANDLER_HPP_

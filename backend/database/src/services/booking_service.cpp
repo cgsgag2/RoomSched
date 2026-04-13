@@ -23,10 +23,12 @@ roomsched::db::booking_service::create_booking(
     bool available = roomService.is_room_available(room_id, date, start, end);
 
     if (!available) {
+        std::cerr << "This room is not available at " << date
+                  << " at time from " << start << " to " << end << std::endl;
         return std::nullopt;
     }
 
-    db::booking b;
+    booking b;
 
     b.room_id = room_id;
     b.user_id = user_id;
