@@ -20,8 +20,9 @@ auth_window::auth_window(QWidget *parent)
         ui->registerButton, &QPushButton::clicked, this,
         [this]() {
         auto *regWindow = new roomsched::registerwindow::register_window();
+        connect(regWindow, &roomsched::registerwindow::register_window::backToLogin, this, &auth_window::show);
         regWindow->show();
-        this->close();
+        this->hide();
     }
 );
     connect(

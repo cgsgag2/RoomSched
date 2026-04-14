@@ -15,13 +15,17 @@ class ApiClient : public QObject {
 
 public:
     explicit ApiClient(QObject *parent = nullptr);
-    void login(const QString &username, const QString &email);
+    void registerUser(const QString &fullname, const QString &email, const QString &phone, const QString &password);
+    void login(const QString &email, const QString &password);
     void getRooms(int buildingId = 1);
+    void bookRoom(int roomId, const QString &date, const QString &start, const QString &end);
 
 signals:
     void loginSuccess(QJsonObject data);
     void loginFailed(QString error);
+    void registrationFinished(bool success, QString message);
     void roomsLoaded(QJsonArray rooms);
+    void bookingFinished(bool success, QString message);
 
 private:
     QNetworkAccessManager manager;

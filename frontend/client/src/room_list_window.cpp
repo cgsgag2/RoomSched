@@ -34,14 +34,15 @@ room_list_window::room_list_window(
     : QWidget(parent), ui(new Ui::room_list_window) {
     ui->setupUi(this);
     api = new roomsched::client::ApiClient(this);
-    connect(
-        api, &roomsched::client::ApiClient::roomsLoaded, this,
-        [this](QJsonArray arr) {
-            rooms = arr;
-            setupRooms();
+    connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
+        if (success) {
+            QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
+            api->getRooms(); 
+        } else {
+            QMessageBox::warning(this, "Ошибка бронирования", message);
         }
-    );
-    api->getRooms(1);
+    });
+    api->getRooms();
 }
 
 room_list_window::~room_list_window() {
@@ -54,36 +55,30 @@ void room_list_window::setupRooms() {
     if (!layout) {
         return;
     }
+    QLayoutItem *item;
+    while ((item = layout->takeAt(0)) != nullptr) {
+        delete item->widget();
+        delete item;
+    }
     layout->setSpacing(15);
-    layout->setContentsMargins(10, 10, 10, 10);
+    int columns = 4;
 
     for (int i = 0; i < rooms.size(); ++i) {
         QJsonObject room = rooms[i].toObject();
-        QString name = room["name"].toString();
-        int capacity = room["capacity"].toInt();
-        QPushButton *btn = new QPushButton(
-            QString("%1\nВместимость: %2").arg(name).arg(capacity)
-        );
-        btn->setMinimumSize(200, 120);
-        btn->setStyleSheet(
-            "QPushButton {"
-            "  background-color: white; "
-            "  color: black; "
-            "  border-radius: 20px; "
-            "  border: 1px solid #EEEEEE; "
-            "  font-weight: bold; "
-            "  font-size: 14px; "
-            "}"
-            "QPushButton:hover {"
-            "  background-color: #3A6161; "
-            "  color: white; "
-            "  border: none; "
-            "}"
-        );
-        connect(btn, &QPushButton::clicked, this, [this, room]() {
+        bool isAvailable = room["is_available"].toBool();
+        QString roomName = room["room_number"].toString();
+        QPushButton *btn = new QPushButton(roomName);
+        btn->setMinimumSize(100, 100);
+        if (!isAvailable) {
+            btn->setStyleSheet("background-color: #f44336; color: white;"); 
+            btn->setText(roomName + " (Занято)");
+        } else {
+            btn->setStyleSheet("background-color: #4CAF50; color: white;"); 
+        }
+        layout->addWidget(btn, i / columns, i % columns);
+        connect(btn, &QPushButton::clicked, [this, room]() {
             showRoomDetails(room);
         });
-        layout->addWidget(btn, i / 4, i % 4);
     }
 }
 
@@ -140,40 +135,16 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
         "QPushButton:hover { background-color: #447575; }"
     );
 
-    connect(bookBtn, &QPushButton::clicked, [this, dialog, name, room_id, dateEdit, startTime, endTime]() {
+    connect(bookBtn, &QPushButton::clicked, [this, dialog, room_id, dateEdit, startTime, endTime]() {
         QString date = dateEdit->date().toString("yyyy-MM-dd");
         QString start = startTime->time().toString("hh:mm");
         QString end = endTime->time().toString("hh:mm");
-
         if (start >= end) {
             QMessageBox::warning(dialog, "Ошибка", "Время начала должно быть меньше времени окончания");
             return;
         }
-
-        QJsonObject body{
-            {"room_id", room_id},
-            {"user_id", 1},
-            {"date", date},
-            {"start_time", start},
-            {"end_time", end}
-        };
-
-        QNetworkRequest req(QUrl("http://localhost:8080/bookings"));
-        req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        connect(manager, &QNetworkAccessManager::finished, this, [dialog, name, manager](QNetworkReply *reply) {
-            if (reply->error() == QNetworkReply::NoError) {
-                QMessageBox::information(dialog, "Успех", "Вы успешно забронировали " + name);
-                dialog->accept();
-            } else {
-                QMessageBox::warning(dialog, "Ошибка", "Не удалось забронировать комнату");
-            }
-            reply->deleteLater();
-            manager->deleteLater();
-        });
-
-        manager->post(req, QJsonDocument(body).toJson());
+        api->bookRoom(room_id, date, start, end);
+        dialog->accept();
     });
 
     layout->addWidget(bookBtn);

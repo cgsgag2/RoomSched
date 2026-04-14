@@ -19,6 +19,9 @@ public:
     register_window(const register_window &) = delete;
     register_window &operator=(const register_window &) = delete;
 
+signals:
+    void backToLogin();
+
 private:
     Ui::register_window *ui;
     roomsched::client::ApiClient *api;
