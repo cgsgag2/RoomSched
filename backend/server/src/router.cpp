@@ -24,38 +24,62 @@ void roomsched::server::setup_all_routes(
 
     CROW_ROUTE(app_ref, "/register")
         .methods("POST"_method)([&server](const crow::request &req) {
-            return server.get_auth().register_user(req);
+            return server.get_auth_handler().register_user(req);
         });
 
     CROW_ROUTE(app_ref, "/login")
         .methods("POST"_method)([&server](const crow::request &req) {
-            return server.get_auth().login(req);
+            return server.get_auth_handler().login(req);
         });
 
     CROW_ROUTE(app_ref, "/get_users").methods("GET"_method)([&server]() {
-        return server.get_auth().get_all_users();
+        return server.get_auth_handler().get_all_users();
     });
 
-    /* Booking module */
-    // CROW_ROUTE(app_ref, "/bookings")
-    //     .methods("POST"_method
-    //     )([&server](const crow::request &req) {
-    //         return bookings.create_booking(req, db_manager);
-    //     });
-    // CROW_ROUTE(app_ref, "/bookings/user/<int>")
-    // ([&bookings, &db_manager](int user_id) {
-    //     return bookings.get_user_bookings(user_id, db_manager);
-    // });
+    /* Rooms and room availability module */
+    CROW_ROUTE(app_ref, "/rooms").methods("GET"_method)([&server]() {
+        return server.get_room_handler().get_all_rooms();
+    });
 
-    // CROW_ROUTE(app_ref, "/bookings/<int>")
-    //     .methods("DELETE"_method)([&bookings, &db_manager](int booking_id) {
-    //         return bookings.cancel_booking(booking_id, db_manager);
-    //     });
-    // CROW_ROUTE(app_ref, "/rooms/<int>/availability")
-    //     .methods("POST"_method
-    //     )([&bookings, &db_manager](const crow::request &req, int room_id) {
-    //         return bookings.create_availability(req, db_manager, room_id);
-    //     });
+    CROW_ROUTE(app_ref, "/rooms/<int>")
+        .methods("GET"_method)([&server](int room_id) {
+            return server.get_room_handler().get_room_by_id(room_id);
+        });
+
+    // TODO: not tested yet, after MVP
+    CROW_ROUTE(app_ref, "/rooms/<int>/availability")
+        .methods("GET"_method
+        )([&server](const crow::request &req, int room_id) {
+            return server.get_room_handler().get_room_availability(
+                req, room_id
+            );
+        });
+
+    /* Booking module */
+    CROW_ROUTE(app_ref, "/book-room")
+        .methods("POST"_method)([&server](const crow::request &req) {
+            return server.get_booking_handler().create_booking(req);
+        });
+
+    CROW_ROUTE(app_ref, "/bookings").methods("GET"_method)([&server]() {
+        return server.get_booking_handler().get_all_bookings();
+    });
+
+    CROW_ROUTE(app_ref, "/bookings/user/<int>")
+        .methods("GET"_method)([&server](int user_id) {
+            return server.get_booking_handler().get_bookings_by_user(user_id);
+        });
+
+    CROW_ROUTE(app_ref, "/bookings/rooms/<int>")
+        .methods("GET"_method)([&server](int room_id) {
+            return server.get_booking_handler().get_bookings_by_room(room_id);
+        });
+
+    // Not MVP
+    CROW_ROUTE(app_ref, "/booking/<int>/cancel")
+        .methods("POST"_method)([&server](int booking_id) {
+            return server.get_booking_handler().cancel_booking(booking_id);
+        });
 
     /* Buildings module - for future */
 

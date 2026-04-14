@@ -9,9 +9,14 @@
 
 namespace roomsched::server {
 
-app::app() : db_manager(db::db_config{}), auth(db_manager) {
-    server_app.loglevel(crow::LogLevel::Debug);
+app::app()
+    : db_manager(db::db_config{}),
+      authHandler(db_manager),
+      roomHandler(db_manager),
+      bookingHandler(db_manager) {
+    // server_app.loglevel(crow::LogLevel::Debug);
 
+    db_manager.rooms().create_default_rooms();
     setup_routes();
 }
 
@@ -19,8 +24,16 @@ db::database_manager &app::get_db() {
     return db_manager;
 }
 
-auth_handler &app::get_auth() {
-    return auth;
+auth_handler &app::get_auth_handler() {
+    return authHandler;
+}
+
+room_handler &app::get_room_handler() {
+    return roomHandler;
+}
+
+bookings_handler &app::get_booking_handler() {
+    return bookingHandler;
 }
 
 void app::run(int port) {

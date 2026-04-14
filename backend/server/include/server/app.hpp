@@ -10,6 +10,7 @@
 #include "server/handlers/auth_handler.hpp"
 #include "server/handlers/booking_handler.hpp"
 #include "server/handlers/buildings_handler.hpp"
+#include "server/handlers/room_handler.hpp"
 
 // project namespace, server module namespace
 namespace roomsched::server {
@@ -18,8 +19,9 @@ private:
     db::database_manager db_manager;
     crow::SimpleApp server_app;
 
-    auth_handler auth;
-    // bookings_handler bookings;
+    auth_handler authHandler;
+    room_handler roomHandler;
+    bookings_handler bookingHandler;
     // buildings_handler buildings;
 
     void setup_routes();
@@ -28,8 +30,9 @@ public:
     app();
 
     db::database_manager &get_db();
-    auth_handler &get_auth();
-    // bookings_handler &get_bookings();
+    auth_handler &get_auth_handler();
+    room_handler &get_room_handler();
+    bookings_handler &get_booking_handler();
     // buildings_handler &get_buildings();
 
     void run(int port);

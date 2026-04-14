@@ -7,61 +7,10 @@
 int main() {
     roomsched::server::app main_app;
 
-    // Small test for users
-    // roomsched::db::user user1;
-    // user1.email = "test@example.com";
-    // user1.phone = "1234567890";
-    // user1.password_hash = "password123";
-    // user1.full_name = "testuser";
-
-    // main_app.get_db().users().register_user(
-    //     user1.email, user1.password_hash, user1.full_name, user1.phone
-    // );
-
     main_app.run(8080);
 
 #if 0
     // This must be TEST MODULE
-    // Small test for rooms
-    db_manager.rooms().create_default_rooms();
-    roomsched::db::room new_lecture;
-    new_lecture.room_number = "1000";
-    new_lecture.building = "Kanatny";
-    new_lecture.floor = 10;
-    new_lecture.total_area = 100;
-    new_lecture.description = "new lecture";
-    new_lecture.type = roomsched::db::room_type::LECTURE;
-    new_lecture.capacity = 10;
-    new_lecture.has_projector = false;
-    new_lecture.has_whiteboard = false;
-    db_manager.rooms().create_room(new_lecture);
-    std::cout << "-----------Test: get room by ID----------------" << std::endl;
-    roomsched::db::room test_get_room = db_manager.rooms().get_room_by_id(1);
-    std::cout << "id: " << test_get_room.id
-              << ", room_number: " << test_get_room.room_number
-              << ", building: " << test_get_room.building
-              << "\ntotal area: " << test_get_room.total_area
-              << ", description: " << test_get_room.description << std::endl;
-    std::cout << "has projector?: ";
-    if (test_get_room.has_projector) {
-        std::cout << *test_get_room.has_projector;
-    } else {
-        std::cout << "false";
-    }
-    std::cout << ", capacity: ";
-    if (test_get_room.capacity) {
-        std::cout << *test_get_room.capacity;
-    } else {
-        std::cout << "None (not this type)";
-    }
-    std::cout << ", number of chairs: ";
-    if (test_get_room.number_of_chairs) {
-        std::cout << *test_get_room.number_of_chairs;
-    } else {
-        std::cout << "None (not this type)";
-    }
-    std::cout << std::endl;
-
     // Small test for room availability
     roomsched::db::room_availability roomav1;
     roomav1.room_id = 1;
