@@ -5,10 +5,9 @@
 #ifndef BOOKING_HANDLER_HPP_
 #define BOOKING_HANDLER_HPP_
 
-#if 0
-
 #include <crow/http_response.h>
 #include <crow/json.h>
+#include <optional>
 #include <string>
 #include "db_manager.hpp"
 
@@ -16,23 +15,18 @@
 namespace roomsched::server {
 class bookings_handler {
 public:
-    crow::response
-    create_booking(const crow::request &req, db::database_manager &database);
+    explicit bookings_handler(db::database_manager &db_);
 
-    crow::response
-    cancel_booking(int booking_id, db::database_manager &database);
+    crow::response create_booking(const crow::request &req);
+    crow::response cancel_booking(int booking_id);
 
-    crow::response
-    get_user_bookings(int user_id, db::database_manager &database);
+    crow::response get_all_bookings();
+    crow::response get_bookings_by_user(int user_id);
+    crow::response get_bookings_by_room(int room_id);
 
-    crow::response create_availability(
-        const crow::request &req,
-        db::database_manager &database,
-        int room_id
-    );
+private:
+    db::database_manager &db;  // database manager
 };
 }  // namespace roomsched::server
-
-#endif  // 0
 
 #endif  // BOOKING_HANDLER_HPP_

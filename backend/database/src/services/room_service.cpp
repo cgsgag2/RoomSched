@@ -28,10 +28,32 @@ void roomsched::db::room_service::create_default_rooms() {
     lecture.has_whiteboard = true;
     room_repo.create_room(lecture);
 
+    lecture.room_number = "109";
+    lecture.building = "Kanatny tsekh";
+    lecture.floor = 1;
+    lecture.total_area = 25;
+    lecture.description = "for ADA_AI students";
+    lecture.type = room_type::LECTURE;
+    lecture.capacity = 100;
+    lecture.has_projector = true;
+    lecture.has_whiteboard = false;
+    room_repo.create_room(lecture);
+
+    lecture.room_number = "315";
+    lecture.building = "Kanatny tsekh";
+    lecture.floor = 3;
+    lecture.total_area = 100;
+    lecture.description = "for all students";
+    lecture.type = room_type::LECTURE;
+    lecture.capacity = 120;
+    lecture.has_projector = true;
+    lecture.has_whiteboard = true;
+    room_repo.create_room(lecture);
+
     room cowork;
     cowork.room_number = "212";
-    cowork.building = "Kanta";
-    cowork.floor = 3;
+    cowork.building = "Kanatny tsekh";
+    cowork.floor = 2;
     cowork.total_area = 40;
     cowork.description = "Coworking zone";
     cowork.type = room_type::COWORKING;
@@ -39,14 +61,42 @@ void roomsched::db::room_service::create_default_rooms() {
     cowork.has_wifi = true;
     room_repo.create_room(cowork);
 
+    cowork.room_number = "125";
+    cowork.building = "Kanatny tsekh";
+    cowork.floor = 1;
+    cowork.total_area = 70;
+    cowork.description = "Coworking zone";
+    cowork.type = room_type::COWORKING;
+    cowork.total_capacity = 25;
+    cowork.has_wifi = false;
+    room_repo.create_room(cowork);
+
     room office;
     office.room_number = "301";
-    office.building = "Beringa street 20";
-    office.floor = 10;
+    office.building = "Kanatny tsekh";
+    office.floor = 1;
     office.total_area = 20;
     office.description = "Private office for Yandex";
     office.type = room_type::PRIVATE_OFFICE;
     office.number_of_chairs = 3;
+    room_repo.create_room(office);
+
+    office.room_number = "11";
+    office.building = "Kanatny tsekh";
+    office.floor = 1;
+    office.total_area = 30;
+    office.description = "Private office for T-Bank";
+    office.type = room_type::PRIVATE_OFFICE;
+    office.number_of_chairs = 10;
+    room_repo.create_room(office);
+
+    office.room_number = "324";
+    office.building = "Kanatny tsekh";
+    office.floor = 3;
+    office.total_area = 20;
+    office.description = "Private office for Avito";
+    office.type = room_type::PRIVATE_OFFICE;
+    office.number_of_chairs = 5;
     room_repo.create_room(office);
 }
 

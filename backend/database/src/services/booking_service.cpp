@@ -20,11 +20,22 @@ roomsched::db::booking_service::create_booking(
     const std::string &start,
     const std::string &end
 ) {
-    bool available = roomService.is_room_available(room_id, date, start, end);
+    // TODO: add room availability later!
+    // bool available = roomService.is_room_available(room_id, date, start,
+    // end);
 
-    if (!available) {
-        std::cerr << "This room is not available at " << date
-                  << " at time from " << start << " to " << end << std::endl;
+    // if (!available) {
+    //     std::cerr << "This room is not available at " << date
+    //               << " at time from " << start << " to " << end << std::endl;
+    //     return std::nullopt;
+    // }
+    if (start >= end) {
+        std::cerr << "Invalid time range" << std::endl;
+        return std::nullopt;
+    }
+
+    if (booking_repo.is_room_already_booked(room_id, date, start, end)) {
+        std::cerr << "Room '" << room_id << "' is already booked" << std::endl;
         return std::nullopt;
     }
 
@@ -43,28 +54,31 @@ roomsched::db::booking_service::create_booking(
 }
 
 bool roomsched::db::booking_service::cancel_booking(int booking_id) {
-#if 0
-    auto booking = booking_repo.find_by_id(booking_id);
+    auto cur_book = booking_repo.get_booking_by_id(booking_id);
 
-    if (!booking) {
+    if (!cur_book) {
         return false;
     }
 
-    booking->status = db::booking_status::CANCELLED;
+    if (cur_book->status == booking_status::CANCELLED) {
+        return false;
+    }
 
-    booking_repo.update(*booking);
-#endif  // 0
+    booking_repo.update_status(booking_id, booking_status::CANCELLED);
     return true;
 }
 
 std::vector<roomsched::db::booking>
+roomsched::db::booking_service::get_all_bookings() {
+    return booking_repo.get_all_bookings();
+}
+
+std::vector<roomsched::db::booking>
 roomsched::db::booking_service::get_user_bookings(int user_id) {
-    // return booking_repo.find_by_user(user_id);
-    return {};
+    return booking_repo.get_bookings_by_user(user_id);
 }
 
 std::vector<roomsched::db::booking>
 roomsched::db::booking_service::get_room_bookings(int room_id) {
-    // return booking_repo.find_by_room(room_id);
-    return {};
+    return booking_repo.get_bookings_by_room(room_id);
 }

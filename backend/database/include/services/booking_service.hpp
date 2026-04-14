@@ -28,8 +28,9 @@ public:
 
     bool cancel_booking(int booking_id);
 
-    std::vector<db::booking> get_user_bookings(int user_id);
-    std::vector<db::booking> get_room_bookings(int room_id);
+    std::vector<booking> get_all_bookings();
+    std::vector<booking> get_user_bookings(int user_id);
+    std::vector<booking> get_room_bookings(int room_id);
 };
 
 }  // namespace roomsched::db
