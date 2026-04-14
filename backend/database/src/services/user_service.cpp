@@ -87,7 +87,7 @@ bool user_service::verify_password(
     const std::string &password,
     const std::string &hash
 ) {
-    return BCrypt::validatePassword(password, hash);
+    return BCrypt::validatePassword(password, hash);;
 }
 
 bool user_service::is_password_strong(const std::string &password) {

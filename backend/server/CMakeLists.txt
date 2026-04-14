@@ -23,4 +23,5 @@ target_link_libraries(server
         db
         Crow::Crow
         Threads::Threads
+        crypt
 )

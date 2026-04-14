@@ -12,8 +12,16 @@ register_window::register_window(QWidget *parent)
     ui->setupUi(this);
     api = new roomsched::client::ApiClient(this);
 
-    connect(ui->registerButton, &QPushButton::clicked,
-            this, &register_window::onRegisterButtonClicked);
+    connect(api, &roomsched::client::ApiClient::registrationFinished, this, [this](bool success, QString msg) {
+        if (success) {
+            QMessageBox::information(this, "Успех", "Вы успешно зарегистрированы!");
+            emit backToLogin(); 
+            this->close();
+        } else {
+            QMessageBox::warning(this, "Ошибка регистрации", msg);
+        }   
+    });
+    connect(ui->registerButton, &QPushButton::clicked, this, &register_window::onRegisterButtonClicked);
 }
 
 register_window::~register_window()
@@ -63,13 +71,11 @@ void register_window::onRegisterButtonClicked()
         QMessageBox::warning(this, "Ошибка", "Введите пароль.");
         return;
     }
-    if (password.length() < 6) {
+    if (password.length() < 8) {
         QMessageBox::warning(this, "Ошибка", "Пароль должен быть не менее 6 символов.");
         return;
     }
-
-    // TODO: подключить api->registerUser
-    QMessageBox::information(this, "Успех", "Регистрация (заглушка)");
+    api->registerUser(username, email, phone, password);
 }
 
 } // namespace roomsched::registerwindow
