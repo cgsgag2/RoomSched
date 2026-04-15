@@ -33,8 +33,11 @@ auth_window::auth_window(QWidget *parent)
         api, &roomsched::client::ApiClient::loginSuccess, this,
         [this](QJsonObject) {
             auto *rooms = new roomsched::roomlistwindow::room_list_window(
-                ui->mailInput->text(), ui->mailInput->text(),
-                ""
+                api, 
+                ui->mailInput->text(), 
+                ui->mailInput->text(),
+                "",
+                nullptr 
             );
             rooms->show();
             this->close();
@@ -69,9 +72,8 @@ void auth_window::on_login_clicked() {
         QMessageBox::warning(this, "Ошибка", "Введите пароль.");
         return;
     }
-    //TODO add check of password
-    if (password.length() < 6) {
-        QMessageBox::warning(this, "Ошибка", "Пароль должен быть не менее 6 символов.");
+    if (password.length() < 8) {
+        QMessageBox::warning(this, "Ошибка", "Пароль должен быть не менее 8 символов.");
         return;
     }
     api->login(email, password);

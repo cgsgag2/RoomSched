@@ -17,23 +17,21 @@
 
 namespace roomsched::roomlistwindow {
 
-// по факту осталось только для тестов
-// это открытие без данных пользователя
 room_list_window::room_list_window(QWidget *parent)
     : QWidget(parent), ui(new Ui::room_list_window) {
     ui->setupUi(this);
-    setupRooms();
 }
 
 room_list_window::room_list_window(
+    roomsched::client::ApiClient *existingApi,
     QString userName,
     QString userEmail,
     QString userPhone,
     QWidget *parent
 )
-    : QWidget(parent), ui(new Ui::room_list_window) {
+    : QWidget(parent), ui(new Ui::room_list_window), api(existingApi) {
     ui->setupUi(this);
-    api = new roomsched::client::ApiClient(this);
+    connect(api, &roomsched::client::ApiClient::roomsLoaded, this, &room_list_window::onRoomsLoaded);
     connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
         if (success) {
             QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
@@ -42,6 +40,7 @@ room_list_window::room_list_window(
             QMessageBox::warning(this, "Ошибка бронирования", message);
         }
     });
+    qDebug() << "DEBUG: Calling getRooms now...";
     api->getRooms();
 }
 
@@ -83,72 +82,108 @@ void room_list_window::setupRooms() {
 }
 
 void room_list_window::showRoomDetails(const QJsonObject &room) {
-    QString name = room["name"].toString();
-    int capacity = room["capacity"].toInt();
-    int room_id = room["id"].toInt();
-
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle(name);
-    dialog->setMinimumWidth(350);
-    dialog->setStyleSheet("background-color: white;");
+    dialog->setWindowTitle("Бронирование: " + room["room_number"].toString());
+    dialog->setMinimumWidth(400);
 
     QVBoxLayout *layout = new QVBoxLayout(dialog);
-    layout->setSpacing(15);
-    layout->setContentsMargins(20, 20, 20, 20);
 
-    QLabel *title = new QLabel(name, dialog);
-    title->setStyleSheet("font-size: 20px; font-weight: bold; color: #3A6161;");
-    layout->addWidget(title);
+    QLabel *titleLabel = new QLabel("Информация о помещении", dialog);
+    titleLabel->setStyleSheet("font-weight: bold; font-size: 16px; margin-bottom: 10px;");
+    layout->addWidget(titleLabel);
 
-    QLabel *capacityLabel = new QLabel(QString("Вместимость: %1").arg(capacity), dialog);
-    capacityLabel->setStyleSheet("font-size: 14px; color: #333;");
-    layout->addWidget(capacityLabel);
+    QString infoText = QString(
+        "<b>Здание:</b> %1<br>"
+        "<b>Этаж:</b> %2<br>"
+        "<b>Площадь:</b> %3 м²<br>"
+        "<b>Описание:</b> %4"
+    ).arg(room["building"].toString())
+     .arg(room["floor"].toInt())
+     .arg(room["total_area"].toDouble())
+     .arg(room["description"].toString());
 
-    QHBoxLayout *dateLayout = new QHBoxLayout();
-    QLabel *dateLabel = new QLabel("Дата:", dialog);
-    dateLabel->setStyleSheet("font-size: 14px; color: #333;");
+    QLabel *infoLabel = new QLabel(infoText, dialog);
+    infoLabel->setWordWrap(true);
+    layout->addWidget(infoLabel);
+
+    layout->addSpacing(20);
+
+    layout->addWidget(new QLabel("Выберите дату:", dialog));
     QDateEdit *dateEdit = new QDateEdit(QDate::currentDate(), dialog);
     dateEdit->setCalendarPopup(true);
-    dateEdit->setMinimumDate(QDate::currentDate());
-    dateLayout->addWidget(dateLabel);
-    dateLayout->addWidget(dateEdit);
-    layout->addLayout(dateLayout);
+    layout->addWidget(dateEdit);
 
     QHBoxLayout *timeLayout = new QHBoxLayout();
-    QLabel *timeLabel = new QLabel("Время:", dialog);
-    timeLabel->setStyleSheet("font-size: 14px; color: #333;");
     QTimeEdit *startTime = new QTimeEdit(QTime(10, 0), dialog);
-    QTimeEdit *endTime = new QTimeEdit(QTime(12, 0), dialog);
-    timeLayout->addWidget(timeLabel);
+    QTimeEdit *endTime = new QTimeEdit(QTime(11, 0), dialog);
+    
+    timeLayout->addWidget(new QLabel("С:"));
     timeLayout->addWidget(startTime);
-    timeLayout->addWidget(new QLabel("-", dialog));
+    timeLayout->addWidget(new QLabel("До:"));
     timeLayout->addWidget(endTime);
     layout->addLayout(timeLayout);
 
-    QPushButton *bookBtn = new QPushButton("Забронировать", dialog);
-    bookBtn->setCursor(Qt::PointingHandCursor);
-    bookBtn->setStyleSheet(
-        "QPushButton {"
-        "  background-color: #3A6161; color: white; border-radius: 10px; "
-        "  padding: 10px; font-weight: bold;"
-        "}"
+    layout->addSpacing(20);
+
+    QPushButton *confirmBtn = new QPushButton("Подтвердить бронирование", dialog);
+    confirmBtn->setCursor(Qt::PointingHandCursor);
+    confirmBtn->setStyleSheet(
+        "QPushButton { background-color: #3A6161; color: white; padding: 10px; border-radius: 5px; font-weight: bold; }"
         "QPushButton:hover { background-color: #447575; }"
     );
 
-    connect(bookBtn, &QPushButton::clicked, [this, dialog, room_id, dateEdit, startTime, endTime]() {
+    connect(confirmBtn, &QPushButton::clicked, [this, dialog, room, dateEdit, startTime, endTime]() {
         QString date = dateEdit->date().toString("yyyy-MM-dd");
-        QString start = startTime->time().toString("hh:mm");
-        QString end = endTime->time().toString("hh:mm");
-        if (start >= end) {
-            QMessageBox::warning(dialog, "Ошибка", "Время начала должно быть меньше времени окончания");
+        QString start = startTime->time().toString("HH:mm:ss");
+        QString end = endTime->time().toString("HH:mm:ss");
+
+        if (startTime->time() >= endTime->time()) {
+            QMessageBox::warning(dialog, "Ошибка", "Время начала должно быть меньше времени окончания.");
             return;
         }
-        api->bookRoom(room_id, date, start, end);
+
+        api->bookRoom(
+            room["id"].toInt(), 
+            date, 
+            start, 
+            end
+        );
+
         dialog->accept();
     });
 
-    layout->addWidget(bookBtn);
+    layout->addWidget(confirmBtn);
     dialog->exec();
+}
+
+void room_list_window::onRoomsLoaded(const QJsonArray &roomsArray) {
+    this->rooms = roomsArray;
+    QLayoutItem *item;
+    while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
+        if (item->widget()) delete item->widget();
+        delete item;
+    }
+
+    int row = 0, col = 0;
+    for (const QJsonValue &value : roomsArray) {
+        QJsonObject room = value.toObject();
+                QString label = QString("Комната %1\n%2")
+                        .arg(room["room_number"].toString())
+                        .arg(room["building"].toString());
+                        
+        QPushButton *btn = new QPushButton(label, this);
+        btn->setMinimumSize(120, 100);
+        
+        connect(btn, &QPushButton::clicked, [this, room]() {
+            showRoomDetails(room);
+        });
+        ui->gridLayout->addWidget(btn, row, col);
+        col++;
+        if (col > 3) {
+            col = 0;
+            row++;
+        }
+    }
 }
 
 }  // namespace roomsched::roomlistwindow

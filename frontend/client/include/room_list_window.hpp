@@ -21,12 +21,16 @@ class room_list_window : public QWidget {
 public:
     explicit room_list_window(QWidget *parent = nullptr);
     room_list_window(
+        roomsched::client::ApiClient *existingApi,
         QString userName,
         QString userEmail,
         QString userPhone,
         QWidget *parent = nullptr
     );
     ~room_list_window();
+
+private slots:
+    void onRoomsLoaded(const QJsonArray &roomsArray);
 
 private:
     Ui::room_list_window *ui;

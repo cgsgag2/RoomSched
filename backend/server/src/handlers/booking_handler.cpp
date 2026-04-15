@@ -30,21 +30,29 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
     std::string start = json["start_time"].s();
     std::string end = json["end_time"].s();
 
-    auto is_available =
-        db.bookings().create_booking(room_id, user_id, date, start, end);
+    try {
+        auto is_available =
+            db.bookings().create_booking(room_id, user_id, date, start, end);
 
-    if (!is_available) {
-        std::cerr << "[BOOKING]: failed to create booking on " << date
-                  << " from '" << start << "' to '" << end << "' " << std::endl;
-        return crow::response(409, "Some problems in creating new booking");
+        if (!is_available) {
+            std::cerr << "[BOOKING]: failed to create booking on " << date
+                    << " from '" << start << "' to '" << end << "' " << std::endl;
+            return crow::response(409, "Some problems in creating new booking");
+        }
+
+        crow::json::wvalue resp;
+        resp["status"] = "success";
+        resp["message"] = "Booking created!";
+
+        std::cout << "[BOOKING]: booking creation success: " << std::endl;
+        return crow::response(200, resp);
+    } catch (const std::exception& e) {
+        std::string err_msg = e.what();
+        if (err_msg == "ROOM_ALREADY_BOOKED") {
+            return crow::response(409, "Room is already booked for this time");
+        }
+        return crow::response(400, err_msg);
     }
-
-    crow::json::wvalue resp;
-    resp["status"] = "success";
-    resp["message"] = "Booking created!";
-
-    std::cout << "[BOOKING]: booking creation success: " << std::endl;
-    return crow::response(200, resp);
 }
 
 crow::response bookings_handler::cancel_booking(int booking_id) {

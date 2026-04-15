@@ -28,6 +28,7 @@ signals:
     void bookingFinished(bool success, QString message);
 
 private:
+    int m_currentUserId = -1;
     QNetworkAccessManager manager;
     void sendPost(
         const QString &url,
