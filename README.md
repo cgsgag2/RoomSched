@@ -1,4 +1,8 @@
 
+<p align="center">
+  <img src="[https://i.imgur.com/your-image.png](https://i.postimg.cc/VsGbcLPM/image-1776241538327.webp)" alt="" width="500"/>
+</p>
+
 # ![](https://i.postimg.cc/VsGbcLPM/image-1776241538327.webp) 
 RoomSched — умное бронирование рабочих помещений
 
@@ -28,6 +32,15 @@ RoomSched — это приложение для бронирования раб
 - Разделение на публичные и частные здания
 - Загрузка конфигурации здания из JSON (для владельцев)
 - Система фильтров и рекомендаций
+- Возможность просмотра списка всех свободных и занятых помещений в пределах выбранного здания
+
+### MVP
+- Регистрация и вход (email + пароль)
+- Просмотр списка зданий и комнат
+- Бронирование комнаты с выбором даты и времени
+- Проверка доступности комнаты на сервере
+
+  ![](https://i.postimg.cc/50xM6cTy/photo-2026-04-15-20-59-10-(2).jpg) ![](https://i.postimg.cc/SNXbXfTf/photo-2026-04-15-20-59-10.jpg)
 
 ---
 
@@ -117,6 +130,9 @@ curl -X POST http://localhost:8080/login \
   -H "Content-Type: application/json" \
   -d '{"username":"alex","password":"123456"}'
 
+# Список всех пользователей
+curl http://localhost:8080/get_users
+
 # Список зданий
 curl http://localhost:8080/buildings
 
@@ -128,14 +144,14 @@ curl http://localhost:8080/buildings/1/rooms
 
 ## Структура проекта
 
-```
+```cpp
 RoomSched/
 ├── backend/
-│   ├── postgresql/      # Работа с БД (репозитории, сервисы)
-│   └── server/          # Crow-сервер (API, обработчики)
+│   ├── common/         # Общие структуры и утилиты
+│   ├── database/       # Работа с БД (репозитории, сервисы)
+│   └── server/         # Crow-сервер (API, обработчики)
 ├── frontend/
 │   └── client/          # Qt-клиент (UI, ApiClient)
-├── common/              # Общие структуры и утилиты
 └── test_data/           # Тестовые данные
 ```
 
