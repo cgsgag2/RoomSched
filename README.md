@@ -69,7 +69,7 @@ flowchart LR
 - CMake 3.16+
 - Qt 6 (для клиента)
 
-### 🗄 Серверная часть
+### Серверная часть
 
 #### 1. Настройка базы данных
 ```bash
@@ -86,7 +86,7 @@ cmake --build build
 ./build/server/server
 ```
 
-### 🖥 Клиентская часть (Windows)
+### Клиентская часть (Windows)
 
 ```bash
 cd frontend/client
