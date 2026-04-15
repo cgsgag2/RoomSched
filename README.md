@@ -1,5 +1,6 @@
 
-# ![](https://i.postimg.cc/VsGbcLPM/image-1776241538327.webp) RoomSched — умное бронирование рабочих помещений
+# ![](https://i.postimg.cc/VsGbcLPM/image-1776241538327.webp) 
+RoomSched — умное бронирование рабочих помещений
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue)
