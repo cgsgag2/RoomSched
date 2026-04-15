@@ -40,7 +40,7 @@ RoomSched — это приложение для бронирования раб
 - Бронирование комнаты с выбором даты и времени
 - Проверка доступности комнаты на сервере
 
-  ![](https://i.postimg.cc/50xM6cTy/photo-2026-04-15-20-59-10-(2).jpg) ![](https://i.postimg.cc/SNXbXfTf/photo-2026-04-15-20-59-10.jpg)
+  ![](https://i.postimg.cc/jq44zp9T/photo-2026-04-15-20-59-10-(1).jpg) ![](https://i.postimg.cc/FsPb6jND/photo-2026-04-15-20-59-10-(2)-(1).jpg)
 
 ---
 
