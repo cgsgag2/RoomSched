@@ -36,8 +36,8 @@ public:
             auto decoded = jwt::decode(tokenStr);
             
             auto verifier = jwt::verify()
-                .allow_issuer(ISSUER)
-                .with_algorithm(jwt::algorithm::hs256{SECRET_KEY});
+                .with_issuer(ISSUER)
+                .allow_algorithm(jwt::algorithm::hs256{SECRET_KEY});
 
             verifier.verify(decoded);
 

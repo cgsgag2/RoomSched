@@ -15,7 +15,7 @@ void ApiClient::sendPost(
     const QString &url,
     const QJsonObject &body,
     std::function<void(QJsonObject)> onSuccess,
-    std::function<void(QString)> onError
+    std::function<void(QString)> onError,
     bool attachToken
 ) {
     QNetworkRequest req(BASE_URL + url);
@@ -57,7 +57,7 @@ void ApiClient::sendPost(
 void ApiClient::sendGet(
     const QString &url,
     std::function<void(QJsonObject)> onSuccess,
-    std::function<void(QString)> onError
+    std::function<void(QString)> onError,
     bool attachToken
 ) {
     QNetworkRequest req(BASE_URL + url);
