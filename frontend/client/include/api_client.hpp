@@ -41,6 +41,17 @@ private:
         std::function<void(QJsonObject)> onSuccess,
         std::function<void(QString)> onError
     );
+    static QString mapErrorCode(const QString &code);
+    static QString formatError(
+        const QJsonObject &obj,
+        int statusCode,
+        const QString &fallback
+    );
+    static QString formatError(
+        QNetworkReply *reply,
+        int statusCode,
+        const QByteArray &raw
+    );
 };
 
 }  // namespace roomsched::client
