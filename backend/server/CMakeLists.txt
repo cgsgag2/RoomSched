@@ -11,17 +11,25 @@ FetchContent_MakeAvailable(crow)
 find_package(Threads REQUIRED)
 
 file(GLOB_RECURSE SERVER_SOURCES "src/*.cpp")
-add_executable(server ${SERVER_SOURCES})
+list(FILTER SERVER_SOURCES EXCLUDE REGEX ".*main\\.cpp$")
+add_library(server_lib STATIC ${SERVER_SOURCES})
 
-target_include_directories(server
-    PRIVATE
+target_include_directories(server_lib 
+    PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+target_link_libraries(server_lib 
+    PUBLIC 
+        db 
+        Crow::Crow 
+        Threads::Threads 
+        crypt
+)
+
+add_executable(server src/server_main.cpp)
+
 target_link_libraries(server
     PRIVATE
-        db
-        Crow::Crow
-        Threads::Threads
-        crypt
+        server_lib
 )
