@@ -2,7 +2,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QNetworkRequest>
-#include <QDebug>
 
 namespace roomsched::client {
 
@@ -15,14 +14,10 @@ void ApiClient::sendPost(
     const QString &url,
     const QJsonObject &body,
     std::function<void(QJsonObject)> onSuccess,
-    std::function<void(QString)> onError,
-    bool attachToken
+    std::function<void(QString)> onError
 ) {
     QNetworkRequest req(BASE_URL + url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    if (attachToken && isAuthenticated()) {
-        req.setRawHeader("Authorization", ("Bearer " + m_token).toUtf8());
-    }
     auto reply = manager.post(req, QJsonDocument(body).toJson());
 
     connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
@@ -33,12 +28,6 @@ void ApiClient::sendPost(
             QJsonDocument doc = QJsonDocument::fromJson(raw);
             onSuccess(doc.object());
         } else {
-            if (statusCode == 401) {
-                logout();
-                onError("Сессия истекла. Пожалуйста, войдите снова.");
-                reply->deleteLater();
-                return;
-            }
             QJsonDocument doc = QJsonDocument::fromJson(raw);
             if (doc.isObject() && doc.object().contains("message")) {
                 onError(doc.object()["message"].toString());
@@ -57,25 +46,15 @@ void ApiClient::sendPost(
 void ApiClient::sendGet(
     const QString &url,
     std::function<void(QJsonObject)> onSuccess,
-    std::function<void(QString)> onError,
-    bool attachToken
+    std::function<void(QString)> onError
 ) {
     QNetworkRequest req(BASE_URL + url);
-    if (attachToken && isAuthenticated()) {
-        req.setRawHeader("Authorization", ("Bearer " + m_token).toUtf8());
-    }
     auto reply = manager.get(req);
 
     connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
         QByteArray raw = reply->readAll();
-        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         qDebug() << "GET" << reply->url().toString() << "Response:" << raw;
-        if (reply->error() == QNetworkReply::AuthenticationRequiredError || statusCode == 401) {
-            logout();
-            onError("Сессия истекла. Пожалуйста, авторизуйтесь заново.");
-            reply->deleteLater();
-            return;
-        }
+
         QJsonDocument doc = QJsonDocument::fromJson(raw);
         if (doc.isNull()) {
             onError("Сервер прислал пустой ответ или не JSON");
@@ -113,7 +92,7 @@ void ApiClient::registerUser(const QString &fullname, const QString &email, cons
         emit registrationFinished(true, "Регистрация успешна"); 
     }, [this](QString err) {
         emit registrationFinished(false, err);
-    }, false);
+    });
 }
 
 void ApiClient::login(const QString &email, const QString &password) {
@@ -123,21 +102,17 @@ void ApiClient::login(const QString &email, const QString &password) {
 
     sendPost("/login", body, 
         [this](QJsonObject response) {
+            // Сохраняем ID, который пришел от сервера
             if (response.contains("user")) {
                 m_currentUserId = response["user"].toObject()["id"].toInt();
             } else if (response.contains("id")) {
                 m_currentUserId = response["id"].toInt();
             }
-            if (response.contains("token")) {
-                m_token = response["token"].toString();
-                qDebug() << "JWT Token successfully saved:" << m_token;
-            }
             emit loginSuccess(response); 
         }, 
         [this](QString error) {
             emit loginFailed(error);
-        },
-        false
+        }
     ); 
 }
 

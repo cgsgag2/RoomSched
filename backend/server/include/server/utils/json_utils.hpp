@@ -12,6 +12,13 @@
 
 // project namespace, server module namespace, json utils namespace
 namespace roomsched::server::json_utils {
+crow::response error_response(
+    const std::string &message,
+    int status_code,
+    const std::string &code,
+    crow::json::wvalue details = {}
+);
+
 crow::response
 error_response(const std::string &message, int status_code = 400);
 

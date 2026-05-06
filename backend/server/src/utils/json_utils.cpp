@@ -6,12 +6,23 @@
 
 crow::response roomsched::server::json_utils::error_response(
     const std::string &message,
-    int status_code
+    int status_code,
+    const std::string &code,
+    crow::json::wvalue details
 ) {
     crow::json::wvalue res;
     res["status"] = "error";
     res["message"] = message;
+    res["code"] = code;
+    res["details"] = std::move(details);
     return {status_code, res};
+}
+
+crow::response roomsched::server::json_utils::error_response(
+    const std::string &message,
+    int status_code
+) {
+    return error_response(message, status_code, "BAD_REQUEST");
 }
 
 bool roomsched::server::json_utils::validate_fields(
