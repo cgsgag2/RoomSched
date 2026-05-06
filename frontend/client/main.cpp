@@ -1,5 +1,8 @@
-#include "client_main.hpp"
 #include <QApplication>
+#include <QFile>
+#include <QTextStream>
+#include <iostream>
+
 #include "auth_window.hpp"
 #include "room_list_window.hpp"
 
@@ -22,3 +25,7 @@ int run_client(int argc, char *argv[]) {
 }
 
 }  // namespace roomsched
+
+int main(int argc, char *argv[]) {
+    return roomsched::run_client(argc, argv);
+}

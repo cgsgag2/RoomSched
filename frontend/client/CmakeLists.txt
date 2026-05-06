@@ -10,11 +10,35 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.hpp")
+file(GLOB CLIENT_ROOT_SOURCES 
+    "*.cpp" 
+    "*.hpp"
+)
+file(GLOB_RECURSE CLIENT_SUB_SOURCES 
+    "api/*.cpp" 
+    "api/*.hpp" 
+    "ui/*.cpp" 
+    "ui/*.hpp" 
+    "ui/**/*.ui"
+)
 
-add_executable(RoomSchedClient ${SOURCES} ${HEADERS})
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-target_include_directories(RoomSchedClient PRIVATE include)
-include_directories(include)
+set(CLIENT_SOURCES ${CLIENT_ROOT_SOURCES} ${CLIENT_SUB_SOURCES})
+
+add_executable(RoomSchedClient ${CLIENT_SOURCES})
+
+file(GLOB_RECURSE UI_HEADERS_PATHS LIST_DIRECTORIES true "ui/*")
+
+set(UI_INCLUDE_DIRS "")
+foreach(ITEM ${UI_HEADERS_PATHS})
+    if(IS_DIRECTORY ${ITEM})
+        list(APPEND UI_INCLUDE_DIRS ${ITEM})
+    endif()
+endforeach()
+
+target_include_directories(RoomSchedClient PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/api
+    ${UI_INCLUDE_DIRS}
+)
+
 target_link_libraries(RoomSchedClient PRIVATE Qt6::Widgets Qt6::Network)
