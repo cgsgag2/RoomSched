@@ -3,6 +3,7 @@
  ***/
 
 #include "server/handlers/room_handler.hpp"
+#include "server/utils/error_codes.hpp"
 #include "server/utils/json_utils.hpp"
 
 namespace roomsched::server {
@@ -29,16 +30,23 @@ crow::response room_handler::get_all_rooms() {
 
 crow::response room_handler::get_room_by_id(int id) {
     auto current_room = db.rooms().get_room_by_id(id);
+    if (!current_room) {
+        return json_utils::error_response(
+            "Room not found",
+            404,
+            error_codes::kRoomNotFound
+        );
+    }
 
     crow::json::wvalue resp;
 
-    resp["id"] = current_room.id;
-    resp["room_number"] = current_room.room_number;
-    resp["building"] = current_room.building;
-    resp["floor"] = current_room.floor;
-    resp["total_area"] = current_room.total_area;
-    resp["description"] = current_room.description;
-    resp["type"] = db::convert_roomtype_to_string(current_room.type);
+    resp["id"] = current_room->id;
+    resp["room_number"] = current_room->room_number;
+    resp["building"] = current_room->building;
+    resp["floor"] = current_room->floor;
+    resp["total_area"] = current_room->total_area;
+    resp["description"] = current_room->description;
+    resp["type"] = db::convert_roomtype_to_string(current_room->type);
 
     return crow::response(200, resp);
 }
@@ -49,7 +57,11 @@ room_handler::get_room_availability(const crow::request &req, int room_id) {
     auto start = req.url_params.get("start_time");
     auto end = req.url_params.get("end_time");
     if (!date || !start || !end) {
-        return crow::response(400, "Missing fields in json data");
+        return json_utils::error_response(
+            "Missing fields in query params",
+            400,
+            error_codes::kMissingFields
+        );
     }
 
     db::room_availability avail;

@@ -11,6 +11,20 @@
 
 // project namespace, database module namespace
 namespace roomsched::db {
+enum class register_error {
+    none,
+    weak_password,
+    email_exists,
+    phone_exists,
+    fullname_exists,
+    db_error
+};
+
+struct register_result {
+    bool success;
+    register_error error;
+};
+
 class user_service {
 private:
     user_repository repo;
@@ -18,7 +32,7 @@ private:
 public:
     user_service(database &db_);
 
-    bool register_user(
+    register_result register_user(
         const std::string &email,
         const std::string &password,
         const std::string &full_name,

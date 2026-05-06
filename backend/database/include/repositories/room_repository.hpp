@@ -7,6 +7,7 @@
 
 #include "../core/db_core.hpp"
 #include "../models/room_model.hpp"
+#include <optional>
 
 // project namespace, database module namespace
 namespace roomsched::db {
@@ -25,7 +26,7 @@ public:
     room_repository(database &db_);
 
     int create_room(const room &new_room);
-    room get_room_by_id(int id);
+    std::optional<room> get_room_by_id(int id);
     std::vector<room> get_all_rooms();
 };
 }  // namespace roomsched::db
