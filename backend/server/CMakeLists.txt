@@ -6,7 +6,13 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
     GIT_TAG master
 )
-FetchContent_MakeAvailable(crow)
+FetchContent_Declare(
+    jwt-cpp
+    GIT_REPOSITORY https://github.com/Thalhammer/jwt-cpp.git
+    GIT_TAG v0.7.0
+)
+
+FetchContent_MakeAvailable(crow jwt-cpp)
 
 find_package(Threads REQUIRED)
 
@@ -25,6 +31,7 @@ target_link_libraries(server_lib
         Crow::Crow 
         Threads::Threads 
         crypt
+        jwt-cpp::jwt-cpp
 )
 
 add_executable(server src/server_main.cpp)

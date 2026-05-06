@@ -4,10 +4,10 @@
 
 #include <regex>
 #include <string>
-// Local includes
 #include "db_manager.hpp"
 #include "server/handlers/auth_handler.hpp"
 #include "server/utils/json_utils.hpp"
+#include "server/utils/jwt_helper.hpp"
 
 namespace roomsched::server {
 
@@ -71,8 +71,10 @@ crow::response auth_handler::login(const crow::request &req) {
         return crow::response(401, "Invalid email or password");
     }
 
+    std::string token = JwtHelper::createToken(u->id, u->email);
     crow::json::wvalue resp;
     resp["status"] = "success";
+    resp["token"] = token;
     resp["user"]["id"] = u->id;
     resp["user"]["full_name"] = u->full_name;
     resp["user"]["email"] = u->email;
