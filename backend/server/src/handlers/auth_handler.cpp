@@ -1,3 +1,7 @@
+/***
+ * Server handler authentication module (source).
+ ***/
+
 #include <regex>
 #include <string>
 #include "db_manager.hpp"
