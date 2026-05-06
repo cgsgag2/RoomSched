@@ -1,3 +1,7 @@
+/***
+ * Server handler booking module (source).
+ ***/
+
 #include "server/handlers/booking_handler.hpp"
 #include <string>
 #include "db_manager.hpp"
