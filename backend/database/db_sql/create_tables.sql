@@ -10,6 +10,20 @@ CREATE TABLE IF NOT EXISTS users (
     last_login TIMESTAMP
 );
 
+-- buildings data
+CREATE TABLE IF NOT EXISTS buildings (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    address VARCHAR(200)
+);
+
+INSERT INTO buildings(name, address) VALUES
+    ('Kanatny tsekh', ''),
+    ('Korpus 2', ''),
+    ('Korpus 3', ''),
+    ('Korpus 4', '')
+ON CONFLICT (name) DO NOTHING;
+
 -- book module data
 CREATE TABLE IF NOT EXISTS rooms_all (
     id SERIAL PRIMARY KEY,
