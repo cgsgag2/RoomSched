@@ -7,7 +7,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
-#include <QString>
 
 namespace roomsched::client {
 
@@ -20,16 +19,6 @@ public:
     void login(const QString &email, const QString &password);
     void getRooms(int buildingId = 1);
     void bookRoom(int roomId, const QString &date, const QString &start, const QString &end);
-    bool isAuthenticated() const { 
-        return !m_token.isEmpty(); 
-    }
-    void logout() { 
-        m_token.clear(); 
-        m_currentUserId = -1; 
-    }
-    QString getToken() const { 
-        return m_token; 
-    }
 
 signals:
     void loginSuccess(QJsonObject data);
@@ -40,20 +29,17 @@ signals:
 
 private:
     int m_currentUserId = -1;
-    QString m_token;
     QNetworkAccessManager manager;
     void sendPost(
         const QString &url,
         const QJsonObject &body,
         std::function<void(QJsonObject)> onSuccess,
-        std::function<void(QString)> onError,
-        bool attachToken = true
+        std::function<void(QString)> onError
     );
     void sendGet(
         const QString &url,
         std::function<void(QJsonObject)> onSuccess,
-        std::function<void(QString)> onError,
-        bool attachToken = true
+        std::function<void(QString)> onError
     );
     static QString mapErrorCode(const QString &code);
     static QString formatError(

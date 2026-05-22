@@ -22,7 +22,7 @@ private:
     auth_handler authHandler;
     room_handler roomHandler;
     bookings_handler bookingHandler;
-    // buildings_handler buildings;
+    buildings_handler buildingsHandler;
 
     void setup_routes();
 
@@ -33,7 +33,7 @@ public:
     auth_handler &get_auth_handler();
     room_handler &get_room_handler();
     bookings_handler &get_booking_handler();
-    // buildings_handler &get_buildings();
+    buildings_handler &get_buildings_handler();
 
     void run(int port);
 };

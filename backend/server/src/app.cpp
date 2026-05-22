@@ -13,9 +13,11 @@ app::app()
     : db_manager(db::db_config{}),
       authHandler(db_manager),
       roomHandler(db_manager),
-      bookingHandler(db_manager) {
+      bookingHandler(db_manager),
+      buildingsHandler(db_manager) {
     // server_app.loglevel(crow::LogLevel::Debug);
 
+    db_manager.buildings().create_default_buildings();
     db_manager.rooms().create_default_rooms();
     setup_routes();
 }
@@ -34,6 +36,10 @@ room_handler &app::get_room_handler() {
 
 bookings_handler &app::get_booking_handler() {
     return bookingHandler;
+}
+
+buildings_handler &app::get_buildings_handler() {
+    return buildingsHandler;
 }
 
 void app::run(int port) {
