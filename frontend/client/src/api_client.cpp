@@ -172,12 +172,13 @@ void ApiClient::sendPost(
 void ApiClient::sendGet(
     const QString &url,
     std::function<void(QJsonObject)> onSuccess,
-    std::function<void(QString)> onError
+    std::function<void(QString)> onError,
+    const QString &arrayKey
 ) {
     QNetworkRequest req(BASE_URL + url);
     auto reply = manager.get(req);
 
-    connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
+    connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError, arrayKey]() {
         QByteArray raw = reply->readAll();
         int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         qDebug() << "GET" << reply->url().toString() << "Response:" << raw;
@@ -197,7 +198,7 @@ void ApiClient::sendGet(
 
         QJsonObject finalObj;
         if (doc.isArray()) {
-            finalObj["rooms"] = doc.array();
+            finalObj[arrayKey] = doc.array();
             finalObj["status"] = "success";
         } else if (doc.isObject()) {
             finalObj = doc.object();
@@ -250,13 +251,24 @@ void ApiClient::login(const QString &email, const QString &password) {
 }
 
 void ApiClient::getRooms(int buildingId) {
+    Q_UNUSED(buildingId);
     sendGet("/rooms", [this](QJsonObject obj) {
         if (obj.contains("rooms") && obj["rooms"].isArray()) {
             emit roomsLoaded(obj["rooms"].toArray());
         }
     }, [this](QString err) {
         qDebug() << "Rooms loading error:" << err;
-    });
+    }, "rooms");
+}
+
+void ApiClient::getBuildings() {
+    sendGet("/buildings", [this](QJsonObject obj) {
+        if (obj.contains("buildings") && obj["buildings"].isArray()) {
+            emit buildingsLoaded(obj["buildings"].toArray());
+        }
+    }, [this](QString err) {
+        qDebug() << "Buildings loading error:" << err;
+    }, "buildings");
 }
 
 void ApiClient::bookRoom(int roomId, const QString &date, const QString &start, const QString &end) {
@@ -276,4 +288,3 @@ void ApiClient::bookRoom(int roomId, const QString &date, const QString &start, 
 }
 
 }  // namespace roomsched::client
-

@@ -19,14 +19,13 @@ int roomsched::db::building_service::ensure_building(
 }
 
 void roomsched::db::building_service::create_default_buildings() {
-    ensure_building("Kanatny tsekh", "");
-    ensure_building("Korpus 2", "");
-    ensure_building("Korpus 3", "");
-    ensure_building("Korpus 4", "");
+    ensure_building("Канатный цех", "");
+    ensure_building("Кантемировская", "");
+    ensure_building("Седова", "");
+    ensure_building("Грибоедова", "");
 }
 
 std::vector<roomsched::db::building>
 roomsched::db::building_service::get_all_buildings() {
     return repo.get_all_buildings();
 }
-

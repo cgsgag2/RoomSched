@@ -5,6 +5,7 @@
 #include "room_list_window.hpp"
 #include "ui_auth_window.h"
 #include "register_window.hpp"
+#include "main_menu_window.hpp"
 
 namespace roomsched::authwindow {
 
@@ -32,14 +33,12 @@ auth_window::auth_window(QWidget *parent)
     connect(
         api, &roomsched::client::ApiClient::loginSuccess, this,
         [this](QJsonObject) {
-            auto *rooms = new roomsched::roomlistwindow::room_list_window(
-                api, 
-                ui->mailInput->text(), 
+            auto *menu = new roomsched::mainmenu::main_menu_window(
+                api,
                 ui->mailInput->text(),
-                "",
-                nullptr 
+                nullptr
             );
-            rooms->show();
+            menu->show();
             this->close();
         }
     );

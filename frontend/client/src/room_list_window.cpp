@@ -13,6 +13,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QUrl>
+#include <QComboBox>
 #include "ui_room_list_window.h"
 
 namespace roomsched::roomlistwindow {
@@ -27,20 +28,29 @@ room_list_window::room_list_window(
     QString userName,
     QString userEmail,
     QString userPhone,
-    QWidget *parent
+    QWidget *parent,
+    const QString &initialBuilding
 )
-    : QWidget(parent), ui(new Ui::room_list_window), api(existingApi) {
+    : QWidget(parent),
+      ui(new Ui::room_list_window),
+      api(existingApi),
+      initialBuildingName(initialBuilding) {
     ui->setupUi(this);
     connect(api, &roomsched::client::ApiClient::roomsLoaded, this, &room_list_window::onRoomsLoaded);
+    connect(api, &roomsched::client::ApiClient::buildingsLoaded, this, &room_list_window::onBuildingsLoaded);
     connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
         if (success) {
             QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
-            api->getRooms(); 
+            api->getRooms();
         } else {
             QMessageBox::warning(this, "Ошибка бронирования", message);
         }
     });
-    qDebug() << "DEBUG: Calling getRooms now...";
+    connect(ui->buildingCombo, &QComboBox::currentIndexChanged, this, [this](int) {
+        applyBuildingFilter();
+    });
+    qDebug() << "DEBUG: Calling getBuildings now...";
+    api->getBuildings();
     api->getRooms();
 }
 
@@ -157,7 +167,49 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
 }
 
 void room_list_window::onRoomsLoaded(const QJsonArray &roomsArray) {
-    this->rooms = roomsArray;
+    allRooms = roomsArray;
+    applyBuildingFilter();
+}
+
+void room_list_window::onBuildingsLoaded(const QJsonArray &buildingsArray) {
+    ui->buildingCombo->clear();
+    ui->buildingCombo->addItem("Все корпуса", -1);
+
+    for (const auto &value : buildingsArray) {
+        QJsonObject building = value.toObject();
+        ui->buildingCombo->addItem(
+            building["name"].toString(),
+            building["id"].toInt()
+        );
+    }
+
+    if (!initialBuildingName.isEmpty()) {
+        int idx = ui->buildingCombo->findText(initialBuildingName);
+        if (idx >= 0) {
+            ui->buildingCombo->setCurrentIndex(idx);
+        }
+    }
+}
+
+void room_list_window::applyBuildingFilter() {
+    int buildingId = ui->buildingCombo->currentData().toInt();
+    QJsonArray filtered;
+    if (buildingId <= 0) {
+        filtered = allRooms;
+    } else {
+        for (const auto &value : allRooms) {
+            QJsonObject room = value.toObject();
+            if (room["building"].toString() == ui->buildingCombo->currentText()) {
+                filtered.append(room);
+            }
+        }
+    }
+
+    rooms = filtered;
+    renderRooms(rooms);
+}
+
+void room_list_window::renderRooms(const QJsonArray &roomsArray) {
     QLayoutItem *item;
     while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
         if (item->widget()) delete item->widget();
@@ -167,13 +219,13 @@ void room_list_window::onRoomsLoaded(const QJsonArray &roomsArray) {
     int row = 0, col = 0;
     for (const QJsonValue &value : roomsArray) {
         QJsonObject room = value.toObject();
-                QString label = QString("Комната %1\n%2")
-                        .arg(room["room_number"].toString())
-                        .arg(room["building"].toString());
-                        
+        QString label = QString("Комната %1\n%2")
+                            .arg(room["room_number"].toString())
+                            .arg(room["building"].toString());
+
         QPushButton *btn = new QPushButton(label, this);
         btn->setMinimumSize(120, 100);
-        
+
         connect(btn, &QPushButton::clicked, [this, room]() {
             showRoomDetails(room);
         });
