@@ -11,29 +11,29 @@ namespace roomsched::db {
 user_service::user_service(database &db_) : repo(db_) {
 }
 
-bool user_service::register_user(
+register_result user_service::register_user(
     const std::string &email,
     const std::string &password,
     const std::string &full_name,
     const std::string &phone
 ) {
     if (!is_password_strong(password)) {
-        return false;
+        return {false, register_error::weak_password};
     }
 
     if (repo.user_exists_by_email(email)) {
         std::cerr << "[SERVICE]: email already exists\n";
-        return false;
+        return {false, register_error::email_exists};
     }
 
     if (repo.user_exists_by_phone(phone)) {
         std::cerr << "[SERVICE]: phone already exists\n";
-        return false;
+        return {false, register_error::phone_exists};
     }
 
     if (repo.user_exists_by_fullname(full_name)) {
         std::cerr << "[SERVICE]: full_name already exists\n";
-        return false;
+        return {false, register_error::fullname_exists};
     }
 
     std::string hash = hash_password(password);
@@ -47,11 +47,12 @@ bool user_service::register_user(
     bool created = repo.create_user(new_user);
     if (created) {
         std::cout << "[SERVICE]: user registered: " << email << std::endl;
-    } else {
-        std::cerr << "[SERVICE]: failed to create user in DB: " << email
-                  << std::endl;
+        return {true, register_error::none};
     }
-    return created;
+
+    std::cerr << "[SERVICE]: failed to create user in DB: " << email
+              << std::endl;
+    return {false, register_error::db_error};
 }
 
 std::optional<user>

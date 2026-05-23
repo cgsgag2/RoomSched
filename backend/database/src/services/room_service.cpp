@@ -100,7 +100,9 @@ void roomsched::db::room_service::create_default_rooms() {
     room_repo.create_room(office);
 }
 
-roomsched::db::room roomsched::db::room_service::get_room_by_id(int id) {
+std::optional<roomsched::db::room> roomsched::db::room_service::get_room_by_id(
+    int id
+) {
     return room_repo.get_room_by_id(id);
 }
 
