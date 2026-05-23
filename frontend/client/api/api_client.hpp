@@ -66,6 +66,28 @@ private:
         int statusCode,
         const QByteArray &raw
     );
+    static QString mapErrorCode(const QString &code);
+    static QString formatError(
+        const QJsonObject &obj,
+        int statusCode,
+        const QString &fallback
+    );
+    static QString formatError(
+        QNetworkReply *reply,
+        int statusCode,
+        const QByteArray &raw
+    );
+    static QString mapErrorCode(const QString &code);
+    static QString formatError(
+        const QJsonObject &obj,
+        int statusCode,
+        const QString &fallback
+    );
+    static QString formatError(
+        QNetworkReply *reply,
+        int statusCode,
+        const QByteArray &raw
+    );
 };
 
 }  // namespace roomsched::client
