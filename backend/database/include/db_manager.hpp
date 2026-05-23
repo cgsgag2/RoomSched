@@ -7,6 +7,7 @@
 
 #include "core/db_core.hpp"
 #include "services/booking_service.hpp"
+#include "services/building_service.hpp"
 #include "services/room_service.hpp"
 #include "services/user_service.hpp"
 
@@ -16,6 +17,7 @@ class database_manager {
 private:
     database db;
     user_service userService;
+    building_service buildingService;
     room_service roomService;
     booking_service bookingService;
 
@@ -23,6 +25,7 @@ public:
     database_manager(const db_config &config);
 
     user_service &users();
+    building_service &buildings();
     room_service &rooms();
     booking_service &bookings();
 };

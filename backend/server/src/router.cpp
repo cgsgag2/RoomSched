@@ -81,12 +81,8 @@ void roomsched::server::setup_all_routes(
             return server.get_booking_handler().cancel_booking(booking_id);
         });
 
-    /* Buildings module - for future */
-
-    // CROW_ROUTE(app, "/buildings")
-    // ([&buildings]() { return buildings.get_all_buildings(); });
-    // CROW_ROUTE(app, "/buildings/<int>")
-    // ([&buildings](int id) { return buildings.get_building(id); });
-    // CROW_ROUTE(app, "/buildings/<int>/rooms")
-    // ([&buildings](int id) { return buildings.get_building_rooms(id); });
+    /* Buildings module */
+    CROW_ROUTE(app_ref, "/buildings").methods("GET"_method)([&server]() {
+        return server.get_buildings_handler().get_all_buildings();
+    });
 }
