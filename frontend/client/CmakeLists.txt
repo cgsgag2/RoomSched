@@ -20,6 +20,9 @@ file(GLOB_RECURSE CLIENT_SUB_SOURCES
     "ui/*.cpp" 
     "ui/*.hpp" 
     "ui/**/*.ui"
+    "src/*.cpp"
+    "src/*.hpp"
+    "include/*.hpp"
 )
 
 set(CLIENT_SOURCES ${CLIENT_ROOT_SOURCES} ${CLIENT_SUB_SOURCES})
@@ -38,6 +41,8 @@ endforeach()
 target_include_directories(RoomSchedClient PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/api
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${UI_INCLUDE_DIRS}
 )
 

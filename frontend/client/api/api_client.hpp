@@ -41,41 +41,7 @@ private:
     void sendGet(
         const QString &url,
         std::function<void(QJsonObject)> onSuccess,
-        std::function<void(QString)> onError,
-        const QString &arrayKey
-    );
-    static QString mapErrorCode(const QString &code);
-    static QString formatError(
-        const QJsonObject &obj,
-        int statusCode,
-        const QString &fallback
-    );
-    static QString formatError(
-        QNetworkReply *reply,
-        int statusCode,
-        const QByteArray &raw
-    );
-    static QString mapErrorCode(const QString &code);
-    static QString formatError(
-        const QJsonObject &obj,
-        int statusCode,
-        const QString &fallback
-    );
-    static QString formatError(
-        QNetworkReply *reply,
-        int statusCode,
-        const QByteArray &raw
-    );
-    static QString mapErrorCode(const QString &code);
-    static QString formatError(
-        const QJsonObject &obj,
-        int statusCode,
-        const QString &fallback
-    );
-    static QString formatError(
-        QNetworkReply *reply,
-        int statusCode,
-        const QByteArray &raw
+        std::function<void(QString)> onError
     );
     static QString mapErrorCode(const QString &code);
     static QString formatError(

@@ -259,6 +259,33 @@ void ApiClient::getRooms(int buildingId) {
     });
 }
 
+void ApiClient::getBuildings() {
+    QNetworkRequest req(BASE_URL + "/buildings");
+    auto reply = manager.get(req);
+
+    connect(reply, &QNetworkReply::finished, [this, reply]() {
+        QByteArray raw = reply->readAll();
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qDebug() << "Buildings loading error:" << formatError(reply, statusCode, raw);
+            reply->deleteLater();
+            return;
+        }
+
+        QJsonDocument doc = QJsonDocument::fromJson(raw);
+        if (doc.isArray()) {
+            emit buildingsLoaded(doc.array());
+        } else if (doc.isObject() && doc.object().contains("buildings")) {
+            emit buildingsLoaded(doc.object().value("buildings").toArray());
+        } else {
+            qDebug() << "Buildings loading error: unexpected response";
+        }
+
+        reply->deleteLater();
+    });
+}
+
 void ApiClient::bookRoom(int roomId, const QString &date, const QString &start, const QString &end) {
     QJsonObject body;
     body["room_id"] = roomId;
@@ -276,4 +303,3 @@ void ApiClient::bookRoom(int roomId, const QString &date, const QString &start, 
 }
 
 }  // namespace roomsched::client
-
