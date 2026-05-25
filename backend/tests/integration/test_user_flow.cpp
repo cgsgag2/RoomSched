@@ -34,10 +34,12 @@ TEST_F(backend_db_test, UserFlow_Register_Login_GetAll) {
         service.login("varya_mail@gmail.com", "password_varya_5638");
     ASSERT_TRUE(new_user2.has_value());
 
-    EXPECT_FALSE(service.register_user(
+    auto dup_fullname = service.register_user(
         "new_varya_mail@gmail.com", "password_varya_5638", "Varvara Lakhnova",
         "79213333333"
-    ));
+    );
+    EXPECT_FALSE(dup_fullname.success);
+    EXPECT_EQ(dup_fullname.error, register_error::fullname_exists);
 
     auto all_users = service.get_all_users();
     ASSERT_EQ(all_users.size(), 3);
