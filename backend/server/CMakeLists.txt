@@ -1,4 +1,3 @@
-FetchContent_MakeAvailable(crow jwt-cpp)
 cmake_minimum_required(VERSION 3.16)
 
 include(FetchContent)
@@ -8,10 +7,6 @@ FetchContent_Declare(
     GIT_TAG master
 )
 FetchContent_Declare(
-    jwt-cpp
-    GIT_REPOSITORY https://github.com/Thalhammer/jwt-cpp.git
-    GIT_TAG v0.7.0
-)
     jwt-cpp
     GIT_REPOSITORY https://github.com/Thalhammer/jwt-cpp.git
     GIT_TAG v0.7.0
