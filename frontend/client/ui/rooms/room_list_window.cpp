@@ -14,6 +14,7 @@
 #include <QJsonObject>
 #include <QUrl>
 #include <QComboBox>
+#include <QDebug>
 #include "ui_room_list_window.h"
 
 namespace roomsched::roomlistwindow {
@@ -31,17 +32,18 @@ room_list_window::room_list_window(
     QWidget *parent,
     const QString &initialBuilding
 )
-    : QWidget(parent),
-      ui(new Ui::room_list_window),
-      api(existingApi),
-      initialBuildingName(initialBuilding) {
+    : QWidget(parent), ui(new Ui::room_list_window), 
+    api(existingApi), initialBuildingName(initialBuilding) {
     ui->setupUi(this);
+    resizeTimer = new QTimer(this);
+    resizeTimer->setSingleShot(true);
+    connect(resizeTimer, &QTimer::timeout, this, &room_list_window::updateGrid);
     connect(api, &roomsched::client::ApiClient::roomsLoaded, this, &room_list_window::onRoomsLoaded);
     connect(api, &roomsched::client::ApiClient::buildingsLoaded, this, &room_list_window::onBuildingsLoaded);
     connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
         if (success) {
             QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
-            api->getRooms();
+            api->getRooms(); 
         } else {
             QMessageBox::warning(this, "Ошибка бронирования", message);
         }
@@ -49,7 +51,6 @@ room_list_window::room_list_window(
     connect(ui->buildingCombo, &QComboBox::currentIndexChanged, this, [this](int) {
         applyBuildingFilter();
     });
-    qDebug() << "DEBUG: Calling getBuildings now...";
     api->getBuildings();
     api->getRooms();
 }
@@ -58,91 +59,50 @@ room_list_window::~room_list_window() {
     delete ui;
 }
 
-void room_list_window::setupRooms() {
-    QGridLayout *layout =
-        qobject_cast<QGridLayout *>(ui->roomsGridContainer->layout());
-    if (!layout) {
-        return;
-    }
-    QLayoutItem *item;
-    while ((item = layout->takeAt(0)) != nullptr) {
-        delete item->widget();
-        delete item;
-    }
-    layout->setSpacing(15);
-    int columns = 4;
-
-    for (int i = 0; i < rooms.size(); ++i) {
-        QJsonObject room = rooms[i].toObject();
-        bool isAvailable = room["is_available"].toBool();
-        QString roomName = room["room_number"].toString();
-        QPushButton *btn = new QPushButton(roomName);
-        btn->setMinimumSize(100, 100);
-        if (!isAvailable) {
-            btn->setStyleSheet("background-color: #f44336; color: white;"); 
-            btn->setText(roomName + " (Занято)");
-        } else {
-            btn->setStyleSheet("background-color: #4CAF50; color: white;"); 
-        }
-        layout->addWidget(btn, i / columns, i % columns);
-        connect(btn, &QPushButton::clicked, [this, room]() {
-            showRoomDetails(room);
-        });
-    }
-}
-
 void room_list_window::showRoomDetails(const QJsonObject &room) {
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("Бронирование: " + room["room_number"].toString());
-    dialog->setMinimumWidth(400);
+    dialog->setWindowTitle("Бронирование аудитории: " + room["room_number"].toString());
+    dialog->setMinimumSize(360, 420);
 
-    QVBoxLayout *layout = new QVBoxLayout(dialog);
+    QVBoxLayout *mainLayout = new QVBoxLayout(dialog);
+    mainLayout->setSpacing(15);
+    mainLayout->setContentsMargins(20, 20, 20, 20);
 
-    QLabel *titleLabel = new QLabel("Информация о помещении", dialog);
-    titleLabel->setStyleSheet("font-weight: bold; font-size: 16px; margin-bottom: 10px;");
-    layout->addWidget(titleLabel);
+    QLabel *titleLabel = new QLabel(QString("Аудитория №%1").arg(room["room_number"].toString()), dialog);
+    titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #423358;");
+    mainLayout->addWidget(titleLabel);
 
-    QString infoText = QString(
-        "<b>Здание:</b> %1<br>"
-        "<b>Этаж:</b> %2<br>"
-        "<b>Площадь:</b> %3 м²<br>"
-        "<b>Описание:</b> %4"
-    ).arg(room["building"].toString())
-     .arg(room["floor"].toInt())
-     .arg(room["total_area"].toDouble())
-     .arg(room["description"].toString());
+    QLabel *infoLabel = new QLabel(QString("Корпус: %1\nВместимость: %2 человек")
+                                   .arg(room["building"].toString())
+                                   .arg(room["capacity"].toInt()), dialog);
+    mainLayout->addWidget(infoLabel);
 
-    QLabel *infoLabel = new QLabel(infoText, dialog);
-    infoLabel->setWordWrap(true);
-    layout->addWidget(infoLabel);
-
-    layout->addSpacing(20);
-
-    layout->addWidget(new QLabel("Выберите дату:", dialog));
+    mainLayout->addWidget(new QLabel("Выберите дату:", dialog));
     QDateEdit *dateEdit = new QDateEdit(QDate::currentDate(), dialog);
     dateEdit->setCalendarPopup(true);
-    layout->addWidget(dateEdit);
+    mainLayout->addWidget(dateEdit);
 
     QHBoxLayout *timeLayout = new QHBoxLayout();
-    QTimeEdit *startTime = new QTimeEdit(QTime(10, 0), dialog);
-    QTimeEdit *endTime = new QTimeEdit(QTime(11, 0), dialog);
     
-    timeLayout->addWidget(new QLabel("С:"));
-    timeLayout->addWidget(startTime);
-    timeLayout->addWidget(new QLabel("До:"));
-    timeLayout->addWidget(endTime);
-    layout->addLayout(timeLayout);
+    QVBoxLayout *startLayout = new QVBoxLayout();
+    startLayout->addWidget(new QLabel("Начало:", dialog));
+    QTimeEdit *startTime = new QTimeEdit(QTime::currentTime(), dialog);
+    startLayout->addWidget(startTime);
+    
+    QVBoxLayout *endLayout = new QVBoxLayout();
+    endLayout->addWidget(new QLabel("Окончание:", dialog));
+    QTimeEdit *endTime = new QTimeEdit(QTime::currentTime().addSecs(3600), dialog);
+    endLayout->addWidget(endTime);
 
-    layout->addSpacing(20);
+    timeLayout->addLayout(startLayout);
+    timeLayout->addLayout(endLayout);
+    mainLayout->addLayout(timeLayout);
 
-    QPushButton *confirmBtn = new QPushButton("Подтвердить бронирование", dialog);
-    confirmBtn->setCursor(Qt::PointingHandCursor);
-    confirmBtn->setStyleSheet(
-        "QPushButton { background-color: #3A6161; color: white; padding: 10px; border-radius: 5px; font-weight: bold; }"
-        "QPushButton:hover { background-color: #447575; }"
-    );
+    QPushButton *confirmBtn = new QPushButton("Забронировать", dialog);
+    confirmBtn->setObjectName("loginButton"); 
+    mainLayout->addWidget(confirmBtn);
 
-    connect(confirmBtn, &QPushButton::clicked, [this, dialog, room, dateEdit, startTime, endTime]() {
+    connect(confirmBtn, &QPushButton::clicked, [this, room, dateEdit, startTime, endTime, dialog]() {
         QString date = dateEdit->date().toString("yyyy-MM-dd");
         QString start = startTime->time().toString("HH:mm:ss");
         QString end = endTime->time().toString("HH:mm:ss");
@@ -152,17 +112,10 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
             return;
         }
 
-        api->bookRoom(
-            room["id"].toInt(), 
-            date, 
-            start, 
-            end
-        );
-
+        api->bookRoom(room["id"].toInt(), date, start, end);
         dialog->accept();
     });
 
-    layout->addWidget(confirmBtn);
     dialog->exec();
 }
 
@@ -204,34 +157,54 @@ void room_list_window::applyBuildingFilter() {
             }
         }
     }
-
-    rooms = filtered;
+    this->rooms = filtered;
     renderRooms(rooms);
 }
 
 void room_list_window::renderRooms(const QJsonArray &roomsArray) {
-    QLayoutItem *item;
-    while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
-        if (item->widget()) delete item->widget();
-        delete item;
-    }
-
-    int row = 0, col = 0;
+    qDeleteAll(buttons);
+    buttons.clear();
     for (const QJsonValue &value : roomsArray) {
         QJsonObject room = value.toObject();
-        QString label = QString("Комната %1\n%2")
+        QString label = QString("Аудитория %1\n%2")
                             .arg(room["room_number"].toString())
                             .arg(room["building"].toString());
-
+                        
         QPushButton *btn = new QPushButton(label, this);
-        btn->setMinimumSize(120, 100);
-
+        btn->setProperty("class", "RoomButton"); 
+        btn->setMinimumSize(220, 140);  
+        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        
         connect(btn, &QPushButton::clicked, [this, room]() {
             showRoomDetails(room);
         });
+        buttons.append(btn);
+    }
+    updateGrid();
+}
+
+void room_list_window::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    if (!rooms.isEmpty()) {
+        resizeTimer->start(50);
+    }
+}
+
+void room_list_window::updateGrid() {
+    QLayoutItem *item;
+    while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
+        delete item;
+    }
+
+    int windowWidth = ui->scrollArea->width(); 
+    int buttonWidth = 220;
+    int spacing = 15;
+    int max_columns = qMax(1, windowWidth / (buttonWidth + spacing));
+    int row = 0, col = 0;
+    for (QPushButton *btn : buttons) {
         ui->gridLayout->addWidget(btn, row, col);
         col++;
-        if (col > 3) {
+        if (col >= max_columns) {
             col = 0;
             row++;
         }
