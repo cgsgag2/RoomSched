@@ -11,6 +11,11 @@ register_window::register_window(QWidget *parent)
 {
     ui->setupUi(this);
     api = new roomsched::client::ApiClient(this);
+    ui->errorLabel->hide();
+    connect(ui->nameInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
+    connect(ui->mailInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
+    connect(ui->phoneInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
+    connect(ui->passwordInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
 
     connect(api, &roomsched::client::ApiClient::registrationFinished, this, [this](bool success, QString msg) {
         if (success) {
@@ -18,10 +23,15 @@ register_window::register_window(QWidget *parent)
             emit backToLogin(); 
             this->close();
         } else {
-            QMessageBox::warning(this, "Ошибка регистрации", msg);
+            ui->errorLabel->setText(msg);
+            ui->errorLabel->show();
         }   
     });
-    connect(ui->registerButton, &QPushButton::clicked, this, &register_window::onRegisterButtonClicked);
+    connect(ui->registerSubmitButton, &QPushButton::clicked, this, &register_window::onRegisterButtonClicked);
+    connect(ui->backButton, &QPushButton::clicked, this, [this]() {
+        emit backToLogin();
+        this->close();
+    });
 }
 
 register_window::~register_window()
@@ -39,8 +49,8 @@ bool register_window::check_email(QString enterEmail) {
     const QRegularExpression emailRegex(R"(^[^@\s]+@[^@\s]+\.[^@\s]+$)");
     return emailRegex.match(doneEmail).hasMatch();
 }
-bool register_window::check_phone()
-{
+
+bool register_window::check_phone(){
     return ui->phoneInput->hasAcceptableInput();
 }
 
@@ -51,28 +61,29 @@ void register_window::onRegisterButtonClicked()
     QString phone = ui->phoneInput->text();
     QString password = ui->passwordInput->text();
 
-    if (username.isEmpty() || email.isEmpty() || phone.isEmpty()) {
-        QMessageBox::warning(this, "Ошибка", "Заполните все поля");
+    if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+        ui->errorLabel->setText("Заполните все поля.");
+        ui->errorLabel->show();
         return;
     }
     if (!check_name(username)) {
-        QMessageBox::warning(this, "Ошибка", "Введите имя и фамилию.");
+        ui->errorLabel->setText("Введите имя и фамилию через пробел.");
+        ui->errorLabel->show();
         return;
     }
     if (!check_email(email)) {
-        QMessageBox::warning(this, "Ошибка", "Введите корректный email.");
+        ui->errorLabel->setText("Введите корректный адрес email.");
+        ui->errorLabel->show();
         return;
     }
     if (!check_phone()) {
-        QMessageBox::warning(this, "Ошибка", "Введите полный номер телефона.");
-        return;
-    }
-    if (password.isEmpty()) {
-        QMessageBox::warning(this, "Ошибка", "Введите пароль.");
+        ui->errorLabel->setText("Введите номер телефона.");
+        ui->errorLabel->show();
         return;
     }
     if (password.length() < 8) {
-        QMessageBox::warning(this, "Ошибка", "Пароль должен быть не менее 6 символов.");
+        ui->errorLabel->setText("Пароль должен быть не короче 8 символов.");
+        ui->errorLabel->show();
         return;
     }
     api->registerUser(username, email, phone, password);

@@ -6,7 +6,7 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>379</width>
+                <width>380</width>
                 <height>600</height>
             </rect>
         </property>
@@ -14,226 +14,209 @@
             <string>Регистрация</string>
         </property>
         <property name="styleSheet">
-            <string notr="true">background-color: white;</string>
+            <string>
+                QWidget {
+                    background-color: #c9bfd4; /* Основной фон */
+                    color: #2d213d;            /* Основной текст */
+                    font-family: "Inter", "Roboto", "Ubuntu", sans-serif;
+                    font-size: 13px;
+                }
+
+                /* Шапка окон */
+                QLabel#label {
+                    background-color: #423358; /* шапка */
+                    color: #ffffff;            /* текст */
+                    font-size: 22px;
+                    font-weight: 600;
+                    padding: 15px;
+                    border-bottom-left-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                }
+
+                /* Текст ошибок */
+                QLabel#errorLabel {
+                    color: #800020; 
+                    font-size: 13px;
+                    font-weight: 600;
+                }
+
+                /* Поля ввода */
+                QLineEdit {
+                    background-color: #c9bfd4; /* В обычном состоянии цвет фона */
+                    color: #2d213d;            /* текст */
+                    border: 1.5px solid #927caa; /* рамка */
+                    border-radius: 8px;
+                    padding: 8px 12px;
+                    letter-spacing: 0.3px;
+                }
+
+                /* при наведении мыши */
+                QLineEdit:hover {
+                    border: 1.5px solid #423358;
+                }
+
+                /* Поля ввода в момент фокуса */
+                QLineEdit:focus {
+                    background-color: #dcd4e4;   
+                    border: 2px solid #423358; 
+                }
+
+                /* Кнопки действий */
+                QPushButton#registerSubmitButton {
+                    background-color: #423358; 
+                    color: #ffffff;            
+                    border: none;
+                    border-radius: 8px;
+                    padding: 10px 20px;
+                    font-weight: 600;
+                    letter-spacing: 0.5px;
+                }
+
+                QPushButton#registerSubmitButton:hover {
+                    background-color: #564473; 
+                }
+
+                QPushButton#registerSubmitButton:pressed {
+                    background-color: #2d213d;
+                }
+
+                /* Текстовые кнопки-ссылки */
+                QPushButton#backButton {
+                    background-color: transparent;
+                    color: #423358;
+                    text-decoration: underline;
+                    border: none;
+                    font-weight: 600;
+                }
+
+                QPushButton#backButton:hover {
+                    color: #564473;
+                }
+            </string>
         </property>
-
-        <widget class="QLabel" name="label">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>381</width>
-                    <height>101</height>
-                </rect>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <property name="spacing">
+                <number>0</number>
             </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>25</pointsize>
-                    <bold>true</bold>
-                </font>
+            <property name="leftMargin">
+                <number>0</number>
             </property>
-            <property name="styleSheet">
-                <string notr="true">
-                    background-color: #808080;
-                    color: black;
-                    padding: 10px;
-                    border-bottom-left-radius: 15px;
-                    border-bottom-right-radius: 15px;
-                </string>
+            <property name="topMargin">
+                <number>0</number>
             </property>
-            <property name="text">
-                <string>RoomSched</string>
+            <property name="rightMargin">
+                <number>0</number>
             </property>
-            <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+            <property name="bottomMargin">
+                <number>0</number>
             </property>
-        </widget>
-
-        <widget class="QLineEdit" name="nameInput">
-            <property name="geometry">
-                <rect>
-                    <x>60</x>
-                    <y>140</y>
-                    <width>261</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>15</pointsize>
-                    <italic>true</italic>
-                </font>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">
-                    QLineEdit {
-                    border: 2px solid #000000;
-                    border-radius: 15px;
-                    padding: 5px;
-                    background: white;
-                    color: black;
-                    }
-                    QLineEdit:focus {
-                    border: 2px solid #2F4F4F;
-                    color: black;
-                    }
-                </string>
-            </property>
-            <property name="placeholderText">
-                <string>Введите логин</string>
-            </property>
-        </widget>
-
-        <widget class="QLineEdit" name="mailInput">
-            <property name="geometry">
-                <rect>
-                    <x>60</x>
-                    <y>200</y>
-                    <width>261</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>15</pointsize>
-                    <italic>true</italic>
-                </font>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">
-                    QLineEdit {
-                    border: 2px solid #000000;
-                    border-radius: 15px;
-                    padding: 5px;
-                    background: white;
-                    color: black;
-                    }
-                    QLineEdit:focus {
-                    border: 2px solid #2F4F4F;
-                    color: black;
-                    }
-                </string>
-            </property>
-            <property name="placeholderText">
-                <string>Введите email...</string>
-            </property>
-        </widget>
-
-        <widget class="QLineEdit" name="phoneInput">
-            <property name="geometry">
-                <rect>
-                    <x>60</x>
-                    <y>260</y>
-                    <width>261</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>15</pointsize>
-                    <italic>true</italic>
-                </font>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">
-                    QLineEdit {
-                    border: 2px solid #000000;
-                    border-radius: 15px;
-                    padding: 5px;
-                    background: white;
-                    color: black;
-                    }
-                    QLineEdit:focus {
-                    border: 2px solid #2F4F4F;
-                    color: black;
-                    }
-                </string>
-            </property>
-            <property name="inputMask">
-                <string>+7 (999) 999-99-99;_</string>
-            </property>
-            <property name="placeholderText">
-                <string>Введите телефон...</string>
-            </property>
-        </widget>
-
-        <widget class="QLineEdit" name="passwordInput">
-            <property name="geometry">
-                <rect>
-                    <x>60</x>
-                    <y>320</y>
-                    <width>261</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>15</pointsize>
-                    <italic>true</italic>
-                </font>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">
-                    QLineEdit {
-                    border: 2px solid #000000;
-                    border-radius: 15px;
-                    padding: 5px;
-                    background: white;
-                    color: black;
-                    }
-                    QLineEdit:focus {
-                    border: 2px solid #2F4F4F;
-                    color: black;
-                    }
-                </string>
-            </property>
-            <property name="echoMode">
-                <enum>QLineEdit::Password</enum>
-            </property>
-            <property name="placeholderText">
-                <string>Введите пароль...</string>
-            </property>
-        </widget>
-
-        <widget class="QPushButton" name="registerButton">
-            <property name="geometry">
-                <rect>
-                    <x>80</x>
-                    <y>400</y>
-                    <width>211</width>
-                    <height>61</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>13</pointsize>
-                    <bold>true</bold>
-                </font>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">
-                    QPushButton {
-                    border-radius: 15px;
-                    padding: 5px;
-                    background: #b0b0b0;
-                    color: black;
-                    }
-                    QPushButton:hover {
-                    background: #9a9a9a;
-                    }
-                </string>
-            </property>
-            <property name="text">
-                <string>Зарегистрироваться</string>
-            </property>
-        </widget>
+            <item>
+                <widget class="QLabel" name="label">
+                    <property name="text">
+                        <string>Регистрация</string>
+                    </property>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="topSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>25</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QVBoxLayout" name="formLayout">
+                    <property name="spacing">
+                        <number>15</number>
+                    </property>
+                    <property name="leftMargin">
+                        <number>40</number>
+                    </property>
+                    <property name="rightMargin">
+                        <number>40</number>
+                    </property>
+                    <item>
+                        <widget class="QLineEdit" name="nameInput">
+                            <property name="placeholderText">
+                                <string>Имя и Фамилия</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QLineEdit" name="mailInput">
+                            <property name="placeholderText">
+                                <string>Электронная почта</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QLineEdit" name="phoneInput">
+                            <property name="placeholderText">
+                                <string>Номер телефона</string>
+                            </property>
+                            <property name="inputMask">
+                                <string>+7 (999) 999-99-99;_</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QLineEdit" name="passwordInput">
+                            <property name="echoMode">
+                                <enum>QLineEdit::Password</enum>
+                            </property>
+                            <property name="placeholderText">
+                                <string>Пароль</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QLabel" name="errorLabel">
+                            <property name="text">
+                                <string>Текст ошибки</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="registerSubmitButton">
+                            <property name="text">
+                                <string>Зарегистрироваться</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="backButton">
+                            <property name="text">
+                                <string>Назад</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="bottomSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+        </layout>
     </widget>
-    <resources/>
-    <connections/>
 </ui>
