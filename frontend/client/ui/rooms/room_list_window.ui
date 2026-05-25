@@ -6,99 +6,193 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1015</width>
-                <height>720</height>
+                <width>1000</width>
+                <height>700</height>
             </rect>
         </property>
-        <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-            </sizepolicy>
-        </property>
         <property name="windowTitle">
-            <string>Form</string>
+            <string>Доступные аудитории</string>
         </property>
         <property name="styleSheet">
-            <string notr="true">background-color: white;</string>
+            <string>
+                QWidget {
+                    background-color: #c9bfd4; /* Основной фон */
+                    color: #2d213d;            /* Основной текст */
+                    font-family: "Inter", "Roboto", "Ubuntu", sans-serif;
+                    font-size: 13px;
+                }
+
+                /* Шапка окон */
+                QLabel#label {
+                    background-color: #423358; /* шапка */
+                    color: #ffffff;            /* текст */
+                    font-size: 22px;
+                    font-weight: 600;
+                    padding: 15px;
+                    border-bottom-left-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                }
+
+                QScrollArea {
+                    border: none;
+                    background-color: transparent;
+                }
+
+                QWidget#scrollAreaWidgetContents {
+                    background-color: transparent;
+                }
+        
+                /* плитки комнат */
+                QPushButton.RoomButton {
+                    background-color: #dcd4e4; 
+                    border: 1.5px solid #927caa;
+                    border-radius: 12px;
+                    color: #2d213d;
+                    font-weight: 600;
+                    font-size: 14px;
+                    text-align: center;
+                }
+
+                QPushButton.RoomButton:hover {
+                    background-color: #423358; 
+                    color: #ffffff;            
+                    border: 1.5px solid #423358;
+                }
+
+                QPushButton.RoomButton:pressed {
+                    background-color: #2d213d;
+                }
+
+                /*список корпусов */
+                QComboBox#buildingCombo {
+                    background-color: #dcd4e4;
+                    border: 1.5px solid #927caa;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    color: #2d213d;
+                    font-weight: 500;
+                }
+
+                QComboBox#buildingCombo:hover {
+                    border: 1.5px solid #423358;
+                }
+
+                QComboBox#buildingCombo::drop-down {
+                    subcontrol-origin: padding;
+                    subcontrol-position: top right;
+                    width: 25px;
+                    border-left-width: 0px;
+                }
+            </string>
         </property>
-        <widget class="QLabel" name="label">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>1021</width>
-                    <height>71</height>
-                </rect>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <property name="spacing">
+                <number>10</number>
             </property>
-            <property name="font">
-                <font>
-                    <family>Times New Roman</family>
-                    <pointsize>25</pointsize>
-                    <bold>true</bold>
-                </font>
+            <property name="leftMargin">
+                <number>0</number>
             </property>
-            <property name="styleSheet">
-                <string notr="true">background-color: #808080;
-                    color: black;
-                    padding: 10px;
-                    border-top-left-radius: 0px;
-                    border-top-right-radius: 0px;
-                    border-bottom-left-radius: 15px;
-                    border-bottom-right-radius: 15px;
-                </string>
+            <property name="topMargin">
+                <number>0</number>
             </property>
-            <property name="text">
-                <string>Наше здание</string>
+            <property name="rightMargin">
+                <number>0</number>
             </property>
-            <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+            <property name="bottomMargin">
+                <number>15</number>
             </property>
-        </widget>
-        <widget class="QScrollArea" name="scrollArea">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>70</y>
-                    <width>1021</width>
-                    <height>651</height>
-                </rect>
-            </property>
-            <property name="verticalScrollBarPolicy">
-                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-            </property>
-            <property name="widgetResizable">
-                <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-                <property name="geometry">
-                    <rect>
-                        <x>0</x>
-                        <y>0</y>
-                        <width>1019</width>
-                        <height>649</height>
-                    </rect>
-                </property>
-                <property name="minimumSize">
-                    <size>
-                        <width>969</width>
-                        <height>0</height>
-                    </size>
-                </property>
-                <widget class="QWidget" name="roomsGridContainer" native="true">
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>1011</width>
-                            <height>641</height>
-                        </rect>
+            <item>
+                <widget class="QLabel" name="label">
+                    <property name="text">
+                        <string>Доступные аудитории для бронирования</string>
                     </property>
-                    <layout class="QGridLayout" name="gridLayout"/>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
                 </widget>
-            </widget>
-        </widget>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="filterLayout">
+                    <property name="leftMargin">
+                        <number>20</number>
+                    </property>
+                    <property name="rightMargin">
+                        <number>20</number>
+                    </property>
+                    <item>
+                        <widget class="QLabel" name="buildingLabel">
+                            <property name="text">
+                                <string>Корпус:</string>
+                            </property>
+                            <property name="styleSheet">
+                                <string>font-weight: 600; color: #423358; font-size: 14px;</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QComboBox" name="buildingCombo">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>250</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>400</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <spacer name="horizontalSpacer">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <widget class="QScrollArea" name="scrollArea">
+                    <property name="widgetResizable">
+                        <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents">
+                        <layout class="QVBoxLayout" name="scrollAreaLayout">
+                            <item>
+                                <widget class="QWidget" name="roomsGridContainer" native="true">
+                                    <layout class="QGridLayout" name="gridLayout">
+                                        <property name="spacing">
+                                            <number>15</number>
+                                        </property>
+                                    </layout>
+                                </widget>
+                            </item>
+                            <item>
+                                <spacer name="verticalSpacer">
+                                    <property name="orientation">
+                                        <enum>Qt::Vertical</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>20</width>
+                                            <height>40</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                        </layout>
+                    </widget>
+                </widget>
+            </item>
+        </layout>
     </widget>
-    <resources/>
-    <connections/>
 </ui>

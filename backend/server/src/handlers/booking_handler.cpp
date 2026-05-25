@@ -5,8 +5,8 @@
 #include "server/handlers/booking_handler.hpp"
 #include <string>
 #include "db_manager.hpp"
+#include "server/utils/error_codes.hpp"
 #include "server/utils/json_utils.hpp"
-#include "server/utils/jwt_helper.hpp"
 
 namespace roomsched::server {
 
@@ -14,55 +14,78 @@ bookings_handler::bookings_handler(db::database_manager &db_) : db(db_) {
 }
 
 crow::response bookings_handler::create_booking(const crow::request &req) {
-    auto auth_data = getAuthData(req);
-    if (!auth_data) {
-        std::cerr << "[BOOKING]: unauthorized booking attempt" << std::endl;
-        return crow::response(401, "Unauthorized: Invalid or missing token");
-    }
-
     auto json = crow::json::load(req.body);
     if (!json) {
-        return crow::response(400, "Invalid JSON");
+        return json_utils::error_response(
+            "Invalid JSON",
+            400,
+            error_codes::kInvalidJson
+        );
     }
 
-    if (!json.has("room_id") || !json.has("booking_date") || 
-        !json.has("start_time") || !json.has("end_time")) {
-        return crow::response(400, "Missing fields in json data");
+    if (!json_utils::validate_fields(
+            json,
+            {"room_id", "user_id", "booking_date", "start_time", "end_time"}
+        )) {
+        return json_utils::error_response(
+            "Missing fields in json data",
+            400,
+            error_codes::kMissingFields
+        );
     }
 
     int room_id = json["room_id"].i();
-    int user_id = auth_data->userId;
+    int user_id = json["user_id"].i();
     std::string date = json["booking_date"].s();
     std::string start = json["start_time"].s();
     std::string end = json["end_time"].s();
 
     try {
-        auto is_available =
+        auto created =
             db.bookings().create_booking(room_id, user_id, date, start, end);
 
-        if (!is_available) {
-            std::cerr << "[BOOKING]: failed to create booking on " << date
-                    << " from '" << start << "' to '" << end << "' " << std::endl;
-            return crow::response(409, "Some problems in creating new booking");
+        if (!created) {
+            std::cerr << "[BOOKING]: invalid time range on " << date
+                      << " from '" << start << "' to '" << end << "' "
+                      << std::endl;
+            return json_utils::error_response(
+                "Invalid time range",
+                422,
+                error_codes::kInvalidTimeRange
+            );
         }
 
         crow::json::wvalue resp;
         resp["status"] = "success";
         resp["message"] = "Booking created!";
+
+        std::cout << "[BOOKING]: booking creation success: " << std::endl;
         return crow::response(200, resp);
     } catch (const std::exception& e) {
         std::string err_msg = e.what();
         if (err_msg == "ROOM_ALREADY_BOOKED") {
-            return crow::response(409, "Room is already booked for this time");
+            return json_utils::error_response(
+                "Room is already booked for this time",
+                409,
+                error_codes::kBookingConflict
+            );
         }
-        return crow::response(400, err_msg);
+        return json_utils::error_response(
+            "Unexpected booking error",
+            500,
+            error_codes::kInternalError
+        );
     }
 }
 
 crow::response bookings_handler::cancel_booking(int booking_id) {
     bool success = db.bookings().cancel_booking(booking_id);
     if (!success) {
-        return crow::response(404, "Booking not found");
+        return json_utils::error_response(
+            "Booking not found",
+            404,
+            error_codes::kBookingNotFound
+        );
     }
 
     return crow::response(200, "Booking cancelled");

@@ -22,7 +22,7 @@ public:
     void create_room(const room &new_room);
     void create_default_rooms();
 
-    room get_room_by_id(int id);
+    std::optional<room> get_room_by_id(int id);
     std::vector<room> get_all_rooms();
 
     // Availability room service

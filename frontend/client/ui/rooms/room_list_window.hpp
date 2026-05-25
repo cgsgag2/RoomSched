@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "api_client.hpp"
 #include <QJsonArray>
+#include <QPushButton>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 
@@ -25,19 +27,30 @@ public:
         QString userName,
         QString userEmail,
         QString userPhone,
-        QWidget *parent = nullptr
+        QWidget *parent = nullptr,
+        const QString &initialBuilding = {}
     );
     ~room_list_window();
 
 private slots:
     void onRoomsLoaded(const QJsonArray &roomsArray);
+    void onBuildingsLoaded(const QJsonArray &buildingsArray);
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     Ui::room_list_window *ui;
-    void setupRooms();
+    void updateGrid();
     void showRoomDetails(const QJsonObject &room);
+    void applyBuildingFilter();
+    void renderRooms(const QJsonArray &roomsArray);
     roomsched::client::ApiClient *api;
     QJsonArray rooms;
+    QJsonArray allRooms;
+    QList<QPushButton*> buttons;
+    QTimer *resizeTimer;
+    QString initialBuildingName;
 };
 
 }  // namespace roomsched::roomlistwindow

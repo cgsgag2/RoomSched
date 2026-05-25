@@ -42,7 +42,8 @@ int roomsched::db::room_repository::create_room(const room &new_room) {
     return -1;
 }
 
-roomsched::db::room roomsched::db::room_repository::get_room_by_id(int id) {
+std::optional<roomsched::db::room>
+roomsched::db::room_repository::get_room_by_id(int id) {
     room current_room;
 
     try {
@@ -57,6 +58,9 @@ roomsched::db::room roomsched::db::room_repository::get_room_by_id(int id) {
             "WHERE r.id = $1 ",
             id
         );
+        if (result_room.empty()) {
+            return std::nullopt;
+        }
         const auto row = result_room[0];
 
         current_room.id = id;
@@ -83,6 +87,7 @@ roomsched::db::room roomsched::db::room_repository::get_room_by_id(int id) {
             throw std::runtime_error("Unknown room type");
         }
 
+        return current_room;
     } catch (const pqxx::sql_error &e) {
         std::cerr << "[SQL ERROR in get_room_by_id]: " << e.what() << std::endl
                   << "Query: " << e.query() << std::endl;
@@ -91,7 +96,7 @@ roomsched::db::room roomsched::db::room_repository::get_room_by_id(int id) {
                   << std::endl;
     }
 
-    return current_room;
+    return std::nullopt;
 }
 
 std::vector<roomsched::db::room> roomsched::db::room_repository::get_all_rooms(
