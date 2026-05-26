@@ -40,7 +40,8 @@ TEST_F(backend_db_test, RoomRepo_GetRoomById_Found) {
     repo.create_room(r);
     auto result = repo.get_room_by_id(1);
 
-    EXPECT_EQ(result.room_number, "254C");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result->room_number, "254C");
 }
 
 TEST_F(backend_db_test, RoomRepo_GetAll_Success) {
@@ -66,7 +67,7 @@ TEST_F(backend_db_test, RoomRepo_GetAll_Success) {
     r1.description = "New testing building 2";
     r1.type = room_type::LECTURE;
 
-    repo.create_room(r);
+    repo.create_room(r1);
 
     auto all = repo.get_all_rooms();
 

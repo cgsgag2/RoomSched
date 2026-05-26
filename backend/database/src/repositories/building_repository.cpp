@@ -6,7 +6,8 @@
 #include <exception>
 #include <iostream>
 
-roomsched::db::building_repository::building_repository(database &db_) : db(db_) {
+roomsched::db::building_repository::building_repository(database &db_)
+    : db(db_) {
 }
 
 int roomsched::db::building_repository::create_building(
@@ -16,8 +17,7 @@ int roomsched::db::building_repository::create_building(
     try {
         const auto result = db.query(
             "INSERT INTO buildings(name, address) VALUES($1, $2) RETURNING id",
-            name,
-            address
+            name, address
         );
         return result[0]["id"].as<int>();
     } catch (const pqxx::sql_error &e) {
@@ -31,12 +31,12 @@ int roomsched::db::building_repository::create_building(
 }
 
 std::optional<roomsched::db::building>
-roomsched::db::building_repository::get_building_by_name(
-    const std::string &name
+roomsched::db::building_repository::get_building_by_name(const std::string &name
 ) {
     try {
-        const auto result =
-            db.query("SELECT id, name, address FROM buildings WHERE name = $1", name);
+        const auto result = db.query(
+            "SELECT id, name, address FROM buildings WHERE name = $1", name
+        );
         if (result.empty()) {
             return std::nullopt;
         }
@@ -65,13 +65,16 @@ roomsched::db::building_repository::get_all_buildings() {
             db.query("SELECT id, name, address FROM buildings ORDER BY id");
         for (const auto &row : result) {
             building current;
+
             current.id = row["id"].as<int>();
             current.name = row["name"].as<std::string>();
             current.address = row["address"].as<std::string>("");
+
             buildings.push_back(current);
         }
     } catch (const pqxx::sql_error &e) {
-        std::cerr << "[SQL ERROR in get_all_buildings]: " << e.what() << std::endl
+        std::cerr << "[SQL ERROR in get_all_buildings]: " << e.what()
+                  << std::endl
                   << "Query: " << e.query() << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "[DB EXCEPTION in get_all_buildings]: " << e.what()
@@ -79,4 +82,3 @@ roomsched::db::building_repository::get_all_buildings() {
     }
     return buildings;
 }
-

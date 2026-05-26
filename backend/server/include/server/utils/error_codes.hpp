@@ -24,4 +24,3 @@ constexpr const char *kInternalError = "INTERNAL_ERROR";
 }  // namespace roomsched::server::error_codes
 
 #endif  // ERROR_CODES_HPP_
-

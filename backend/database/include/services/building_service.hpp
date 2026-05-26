@@ -23,4 +23,3 @@ public:
 }  // namespace roomsched::db
 
 #endif  // BUILDING_SERVICE_HPP_
-

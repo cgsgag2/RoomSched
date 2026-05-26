@@ -15,7 +15,7 @@ TEST_F(backend_db_test, RoomBookingFlow_CreateConflictCancel) {
     room_service rooms(*global_db);
     booking_service bookings(*global_db, rooms);
 
-    users.register_user("flow@gmail.com", "pwd123", "Flow User", "123");
+    users.register_user("flow@gmail.com", "pwd123shgdf!", "Flow User", "123");
 
     room r;
     r.room_number = "254C";
@@ -28,18 +28,19 @@ TEST_F(backend_db_test, RoomBookingFlow_CreateConflictCancel) {
     r.has_wifi = false;
     rooms.create_room(r);
 
-    auto user = users.login("flow@gmail.com", "pwd123");
+    auto user = users.login("flow@gmail.com", "pwd123shgdf!");
     auto room = rooms.get_room_by_id(1);
 
     ASSERT_TRUE(user.has_value());
+    ASSERT_TRUE(room.has_value());
 
     auto res = bookings.create_booking(
-        user->id, room.id, "2025-01-01", "10:00:00", "11:00:00"
+        user->id, room->id, "2025-01-01", "10:00:00", "11:00:00"
     );
     EXPECT_TRUE(res.has_value());
 
     auto not_correct = bookings.create_booking(
-        user->id, room.id, "2025-01-01", "10:00:00", "11:00:00"
+        user->id, room->id, "2025-01-01", "10:00:00", "11:00:00"
     );
     EXPECT_FALSE(not_correct.has_value());
 }
