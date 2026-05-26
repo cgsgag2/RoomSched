@@ -6,7 +6,7 @@
 #include <memory>
 #include <pqxx/pqxx>
 #include <string>
-// Local files
+// Local includes
 #include "core/db_core.hpp"
 
 roomsched::db::database::database(const db_config &config_) : config(config_) {

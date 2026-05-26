@@ -5,10 +5,10 @@
 #ifndef BUILDING_REPOSITORY_HPP_
 #define BUILDING_REPOSITORY_HPP_
 
-#include "../core/db_core.hpp"
-#include "../models/building_model.hpp"
 #include <optional>
 #include <vector>
+#include "../core/db_core.hpp"
+#include "../models/building_model.hpp"
 
 // project namespace, database module namespace
 namespace roomsched::db {
@@ -26,4 +26,3 @@ public:
 }  // namespace roomsched::db
 
 #endif  // BUILDING_REPOSITORY_HPP_
-

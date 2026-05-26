@@ -196,32 +196,3 @@ void roomsched::db::room_repository::create_private_office(
                   << std::endl;
     }
 }
-
-// roomsched::db::room_type
-// roomsched::db::room_repository::convert_string_to_roomtype(
-//     const std::string &str
-// ) {
-//     if (str == "LECTURE" || str == "lecture") {
-//         return room_type::LECTURE;
-//     } else if (str == "COWORKING" || str == "coworking") {
-//         return room_type::COWORKING;
-//     } else if (str == "PRIVATE_OFFICE" || str == "private_office") {
-//         return room_type::PRIVATE_OFFICE;
-//     } else {
-//         throw std::runtime_error("Unknown room type!");
-//     }
-// }
-
-// std::string roomsched::db::room_repository::convert_roomtype_to_string(
-//     room_type type
-// ) {
-//     if (type == room_type::LECTURE) {
-//         return "lecture";
-//     } else if (type == room_type::COWORKING) {
-//         return "coworking";
-//     } else if (type == room_type::PRIVATE_OFFICE) {
-//         return "private_office";
-//     } else {
-//         throw std::runtime_error("Unknown room type!");
-//     }
-// }

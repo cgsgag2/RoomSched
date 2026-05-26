@@ -23,4 +23,3 @@ crow::response buildings_handler::get_all_buildings() {
 }
 
 }  // namespace roomsched::server
-

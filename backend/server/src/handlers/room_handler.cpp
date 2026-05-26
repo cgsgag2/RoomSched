@@ -32,9 +32,7 @@ crow::response room_handler::get_room_by_id(int id) {
     auto current_room = db.rooms().get_room_by_id(id);
     if (!current_room) {
         return json_utils::error_response(
-            "Room not found",
-            404,
-            error_codes::kRoomNotFound
+            "Room not found", 404, error_codes::kRoomNotFound
         );
     }
 
@@ -58,9 +56,7 @@ room_handler::get_room_availability(const crow::request &req, int room_id) {
     auto end = req.url_params.get("end_time");
     if (!date || !start || !end) {
         return json_utils::error_response(
-            "Missing fields in query params",
-            400,
-            error_codes::kMissingFields
+            "Missing fields in query params", 400, error_codes::kMissingFields
         );
     }
 
