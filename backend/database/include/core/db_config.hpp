@@ -5,6 +5,7 @@
 #ifndef DB_CONFIG_HPP_
 #define DB_CONFIG_HPP_
 
+#include <cstdlib>
 #include <string>
 #include <utility>
 
@@ -12,24 +13,23 @@
 namespace roomsched::db {
 class db_config {
 public:
-    const std::string DB_NAME = "roomsched";
-    const std::string DB_USER = "rsched_user";
-    const std::string DB_PASSWORD = "RschedUser87204576";
-    const std::string DB_HOST = "localhost";
+    const std::string DB_NAME;
+    const std::string DB_USER;
+    const std::string DB_PASSWORD;
+    const std::string DB_HOST;
 
-    db_config() = default;
+    db_config();
 
     db_config(
         std::string name,
         std::string user,
         std::string pwd,
         std::string host
-    )
-        : DB_NAME(std::move(name)),
-          DB_USER(std::move(user)),
-          DB_PASSWORD(std::move(pwd)),
-          DB_HOST(std::move(host)) {
-    }
+    );
+
+private:
+    static std::string
+    get_env(const std::string &key, const std::string &default_value);
 };
 }  // namespace roomsched::db
 

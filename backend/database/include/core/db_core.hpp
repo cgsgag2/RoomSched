@@ -70,6 +70,9 @@ public:
             throw;
         }
     }
+
+    void execute_raw(const std::string &sql);
+    void execute_sql_file(const std::string &path);
 };
 }  // namespace roomsched::db
 

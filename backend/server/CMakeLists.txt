@@ -4,7 +4,7 @@ include(FetchContent)
 FetchContent_Declare(
     crow
     GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
-    GIT_TAG master
+    GIT_TAG v1.0+5
 )
 FetchContent_Declare(
     jwt-cpp

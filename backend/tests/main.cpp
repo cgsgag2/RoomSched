@@ -15,7 +15,7 @@ public:
     void SetUp() override {
         roomsched::db::db_config config(
             "roomsched_test", "rsched_user_test", "password_tests_roomsched",
-            "localhost"
+            "postgres"
         );
 
         global_db = std::make_unique<roomsched::db::database>(config);
@@ -23,6 +23,14 @@ public:
             throw std::runtime_error("Failed to connect to test DB");
         }
         std::cout << "[TEST ENV] Test database connected" << std::endl;
+
+        // Reset DB
+        global_db->execute("DROP SCHEMA public CASCADE");
+        global_db->execute("CREATE SCHEMA public");
+        global_db->execute("GRANT ALL ON SCHEMA public TO rsched_user_test");
+        global_db->execute_sql_file("database/db_sql/02_create_tables.sql");
+
+        std::cout << "[TEST ENV] Test schema initialized" << std::endl;
     }
 
     void TearDown() override {
