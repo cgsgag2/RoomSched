@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: roomsched
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/db_sql:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d roomsched" ]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_NAME: roomsched
+      DB_USER: rsched_user
+      DB_PASSWORD: RschedUser87204576
+      DB_HOST: postgres
+      DB_PORT: 5432
+
+volumes:
+  postgres_data:

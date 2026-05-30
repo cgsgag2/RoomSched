@@ -11,14 +11,11 @@
 class backend_db_test : public ::testing::Test {
 protected:
     void SetUp() override {
-        global_db->execute("TRUNCATE users RESTART IDENTITY CASCADE");
-        global_db->execute("TRUNCATE rooms_all RESTART IDENTITY CASCADE");
-        global_db->execute("TRUNCATE lecture_room RESTART IDENTITY CASCADE");
-        global_db->execute("TRUNCATE coworking_space RESTART IDENTITY CASCADE");
-        global_db->execute("TRUNCATE private_office RESTART IDENTITY CASCADE");
-        global_db->execute("TRUNCATE room_availability RESTART IDENTITY CASCADE"
+        global_db->execute(
+            "TRUNCATE users, rooms_all, lecture_room, coworking_space, "
+            "private_office, room_availability, room_booking RESTART IDENTITY "
+            "CASCADE"
         );
-        global_db->execute("TRUNCATE room_booking RESTART IDENTITY CASCADE");
     }
 };
 

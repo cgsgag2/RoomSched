@@ -82,3 +82,6 @@ CREATE TABLE IF NOT EXISTS room_booking (
     created_at TIMESTAMP DEFAULT NOW(),
     status booking_status DEFAULT 'confirmed'
 );
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO rsched_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO rsched_user;

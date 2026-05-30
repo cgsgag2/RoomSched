@@ -2,9 +2,11 @@
  * Database core module (source).
  ***/
 
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <pqxx/pqxx>
+#include <sstream>
 #include <string>
 // Local includes
 #include "core/db_core.hpp"
@@ -58,4 +60,36 @@ void roomsched::db::database::disconnect() {
 
 bool roomsched::db::database::is_connected_db() const {
     return is_connected;
+}
+
+void roomsched::db::database::execute_raw(const std::string &sql) {
+    if (!is_connected || !conn) {
+        throw std::runtime_error("Database not connected");
+    }
+
+    try {
+        pqxx::work txn(*conn);  // transaction
+        txn.exec(sql);
+
+        txn.commit();
+    } catch (const pqxx::sql_error &e) {
+        std::cerr << "SQL error: " << e.what() << "\nQuery: " << e.query()
+                  << std::endl;
+        throw;
+    } catch (const std::exception &e) {
+        std::cerr << "Database exception: " << e.what() << std::endl;
+        throw;
+    }
+}
+
+void roomsched::db::database::execute_sql_file(const std::string &path) {
+    std::ifstream file(path);
+
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open SQL file: " + path);
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+
+    execute_raw(buffer.str());
 }
