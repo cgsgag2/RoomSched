@@ -17,7 +17,7 @@ class room_handler {
 public:
     explicit room_handler(db::database_manager &db_);
 
-    crow::response get_all_rooms();
+    crow::response get_all_rooms(const crow::request &req);
     crow::response get_room_by_id(int id);
 
     crow::response get_room_availability(const crow::request &req, int room_id);

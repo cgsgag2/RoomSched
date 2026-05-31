@@ -2,6 +2,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QNetworkRequest>
+#include <QUrlQuery>
 
 namespace roomsched::client {
 
@@ -174,16 +175,31 @@ void ApiClient::sendGet(
     std::function<void(QJsonObject)> onSuccess,
     std::function<void(QString)> onError
 ) {
-    QNetworkRequest req(BASE_URL + url);
+    QUrl finalUrl(url);
+    if (!finalUrl.isValid() || finalUrl.isRelative()) {
+        finalUrl = QUrl(BASE_URL + url);
+    }
+    qDebug() << "GET request" << finalUrl.toString();
+    QNetworkRequest req(finalUrl);
     auto reply = manager.get(req);
 
     connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
         QByteArray raw = reply->readAll();
+        QByteArray trimmed = raw.trimmed();
         int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         qDebug() << "GET" << reply->url().toString() << "Response:" << raw;
 
         if (reply->error() != QNetworkReply::NoError) {
             onError(formatError(reply, statusCode, raw));
+            reply->deleteLater();
+            return;
+        }
+
+        if (trimmed == "null") {
+            QJsonObject finalObj;
+            finalObj["rooms"] = QJsonArray();
+            finalObj["status"] = "success";
+            onSuccess(finalObj);
             reply->deleteLater();
             return;
         }
@@ -249,8 +265,52 @@ void ApiClient::login(const QString &email, const QString &password) {
     );
 }
 
-void ApiClient::getRooms(int buildingId) {
-    sendGet("/rooms", [this](QJsonObject obj) {
+void ApiClient::getRooms(const RoomFilters &filters) {
+    QUrlQuery query;
+    if (filters.building && !filters.building->isEmpty()) {
+        query.addQueryItem("building", *filters.building);
+    }
+    if (filters.type && !filters.type->isEmpty()) {
+        query.addQueryItem("type", *filters.type);
+    }
+    if (filters.capacityMin) {
+        query.addQueryItem("capacity_min", QString::number(*filters.capacityMin));
+    }
+    if (filters.capacityMax) {
+        query.addQueryItem("capacity_max", QString::number(*filters.capacityMax));
+    }
+    if (filters.hasProjector) {
+        query.addQueryItem("has_projector", *filters.hasProjector ? "1" : "0");
+    }
+    if (filters.hasWhiteboard) {
+        query.addQueryItem("has_whiteboard", *filters.hasWhiteboard ? "1" : "0");
+    }
+    if (filters.hasWifi) {
+        query.addQueryItem("has_wifi", *filters.hasWifi ? "1" : "0");
+    }
+    if (filters.hasPrinters) {
+        query.addQueryItem("has_printers", *filters.hasPrinters ? "1" : "0");
+    }
+    if (filters.hasPhone) {
+        query.addQueryItem("has_phone", *filters.hasPhone ? "1" : "0");
+    }
+    if (filters.date) {
+        query.addQueryItem("date", filters.date->toString("yyyy-MM-dd"));
+    }
+    if (filters.startTime) {
+        query.addQueryItem("start_time", filters.startTime->toString("HH:mm:ss"));
+    }
+    if (filters.endTime) {
+        query.addQueryItem("end_time", filters.endTime->toString("HH:mm:ss"));
+    }
+
+    QString path = "/rooms";
+    const QString queryString = query.toString(QUrl::FullyEncoded);
+    if (!queryString.isEmpty()) {
+        path += "?" + queryString;
+    }
+
+    sendGet(path, [this](QJsonObject obj) {
         if (obj.contains("rooms") && obj["rooms"].isArray()) {
             emit roomsLoaded(obj["rooms"].toArray());
         }

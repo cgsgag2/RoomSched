@@ -7,9 +7,26 @@
 
 #include "../repositories/room_availab_repository.hpp"
 #include "../repositories/room_repository.hpp"
+#include <optional>
+#include <string>
 
 // project namespace, database module namespace
 namespace roomsched::db {
+struct room_filter {
+    std::optional<std::string> building;
+    std::optional<room_type> type;
+    std::optional<int> capacity_min;
+    std::optional<int> capacity_max;
+    std::optional<bool> has_projector;
+    std::optional<bool> has_whiteboard;
+    std::optional<bool> has_wifi;
+    std::optional<bool> has_printers;
+    std::optional<bool> has_phone;
+    std::optional<std::string> date;
+    std::optional<std::string> start_time;
+    std::optional<std::string> end_time;
+};
+
 class room_service {
 private:
     room_repository room_repo;
@@ -45,6 +62,8 @@ public:
         const std::string &start,
         const std::string &end
     );
+
+    std::vector<room> find_rooms(const room_filter &filter);
 };
 }  // namespace roomsched::db
 

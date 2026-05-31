@@ -17,55 +17,68 @@ void roomsched::db::room_service::create_room(const room &new_room) {
 
 void roomsched::db::room_service::create_default_rooms() {
     room lecture;
+    room cowork;
+    room seminar;
     lecture.room_number = "213";
     lecture.building = "Канатный цех";
     lecture.floor = 2;
     lecture.total_area = 50;
     lecture.description = "for AMI students";
     lecture.type = room_type::LECTURE;
-    lecture.capacity = 80;
+    lecture.capacity = 100;
     lecture.has_projector = true;
     lecture.has_whiteboard = true;
     room_repo.create_room(lecture);
 
-    lecture.room_number = "109";
+    lecture.room_number = "212";
     lecture.building = "Канатный цех";
-    lecture.floor = 1;
-    lecture.total_area = 25;
-    lecture.description = "for ADA_AI students";
+    lecture.floor = 2;
+    lecture.total_area = 50;
+    lecture.description = "for ADA&AI students";
     lecture.type = room_type::LECTURE;
     lecture.capacity = 100;
     lecture.has_projector = true;
-    lecture.has_whiteboard = false;
+    lecture.has_whiteboard = true;
     room_repo.create_room(lecture);
 
     lecture.room_number = "315";
     lecture.building = "Канатный цех";
     lecture.floor = 3;
-    lecture.total_area = 100;
-    lecture.description = "for all students";
+    lecture.total_area = 1;
+    lecture.description = "for design students";
     lecture.type = room_type::LECTURE;
-    lecture.capacity = 120;
-    lecture.has_projector = true;
-    lecture.has_whiteboard = true;
+    lecture.capacity = 1;
+    lecture.has_projector = false;
+    lecture.has_whiteboard = false;
     room_repo.create_room(lecture);
 
-    room cowork;
-    cowork.room_number = "212";
+    seminar.room_number = "214";
+    seminar.building = "Канатный цех";
+    seminar.floor = 2;
+    seminar.total_area = 35;
+    seminar.description = "Seminar room for project work";
+    seminar.type = room_type::SEMINAR;
+    seminar.capacity = 28;
+    seminar.has_projector = true;
+    seminar.has_whiteboard = true;
+    room_repo.create_room(seminar);
+
+    seminar.room_number = "316";
+    seminar.building = "Канатный цех";
+    seminar.floor = 3;
+    seminar.total_area = 32;
+    seminar.description = "Seminar room for discussions";
+    seminar.type = room_type::SEMINAR;
+    seminar.capacity = 24;
+    seminar.has_projector = false;
+    seminar.has_whiteboard = true;
+    room_repo.create_room(seminar);
+
+    cowork.room_number = "211";
     cowork.building = "Канатный цех";
     cowork.floor = 2;
-    cowork.total_area = 40;
-    cowork.description = "Coworking zone";
-    cowork.type = room_type::COWORKING;
-    cowork.total_capacity = 25;
-    cowork.has_wifi = true;
-    room_repo.create_room(cowork);
-
-    cowork.room_number = "125";
-    cowork.building = "Канатный цех";
-    cowork.floor = 1;
     cowork.total_area = 70;
-    cowork.description = "Coworking zone";
+    cowork.description = "Coworking zone only for Shift";
     cowork.type = room_type::COWORKING;
     cowork.total_capacity = 25;
     cowork.has_wifi = false;
@@ -74,14 +87,14 @@ void roomsched::db::room_service::create_default_rooms() {
     room office;
     office.room_number = "301";
     office.building = "Канатный цех";
-    office.floor = 1;
+    office.floor = 3;
     office.total_area = 20;
     office.description = "Private office for Yandex";
     office.type = room_type::PRIVATE_OFFICE;
     office.number_of_chairs = 3;
     room_repo.create_room(office);
 
-    office.room_number = "11";
+    office.room_number = "302";
     office.building = "Канатный цех";
     office.floor = 1;
     office.total_area = 30;
@@ -94,7 +107,7 @@ void roomsched::db::room_service::create_default_rooms() {
     office.building = "Канатный цех";
     office.floor = 3;
     office.total_area = 20;
-    office.description = "Private office for Avito";
+    office.description = "Private office for Alfa-bank";
     office.type = room_type::PRIVATE_OFFICE;
     office.number_of_chairs = 5;
     room_repo.create_room(office);
@@ -110,6 +123,17 @@ void roomsched::db::room_service::create_default_rooms() {
     lecture.has_projector = true;
     lecture.has_whiteboard = true;
     room_repo.create_room(lecture);
+
+    seminar.room_number = "202";
+    seminar.building = "Кантемировская";
+    seminar.floor = 2;
+    seminar.total_area = 30;
+    seminar.description = "Seminar room in Кантемировская";
+    seminar.type = room_type::SEMINAR;
+    seminar.capacity = 20;
+    seminar.has_projector = true;
+    seminar.has_whiteboard = true;
+    room_repo.create_room(seminar);
 
     cowork.room_number = "210";
     cowork.building = "Кантемировская";
@@ -153,6 +177,17 @@ void roomsched::db::room_service::create_default_rooms() {
     lecture.has_projector = false;
     lecture.has_whiteboard = true;
     room_repo.create_room(lecture);
+
+    seminar.room_number = "402";
+    seminar.building = "Грибоедова";
+    seminar.floor = 4;
+    seminar.total_area = 28;
+    seminar.description = "Seminar room in Грибоедова";
+    seminar.type = room_type::SEMINAR;
+    seminar.capacity = 18;
+    seminar.has_projector = false;
+    seminar.has_whiteboard = true;
+    room_repo.create_room(seminar);
 
     cowork.room_number = "420";
     cowork.building = "Грибоедова";
@@ -223,4 +258,71 @@ roomsched::db::room_service::find_available_rooms(
     }
 
     return all_avail_rooms;
+}
+
+std::vector<roomsched::db::room> roomsched::db::room_service::find_rooms(
+    const room_filter &filter
+) {
+    std::vector<room> all_rooms = room_repo.get_all_rooms_detailed();
+    std::vector<room> filtered_rooms;
+
+    for (const auto &r : all_rooms) {
+        if (filter.building && r.building != *filter.building) {
+            continue;
+        }
+        if (filter.type && r.type != *filter.type) {
+            continue;
+        }
+        if (filter.has_projector &&
+            r.has_projector.value_or(false) != *filter.has_projector) {
+            continue;
+        }
+        if (filter.has_whiteboard &&
+            r.has_whiteboard.value_or(false) != *filter.has_whiteboard) {
+            continue;
+        }
+        if (filter.has_wifi && r.has_wifi.value_or(false) != *filter.has_wifi) {
+            continue;
+        }
+        if (filter.has_printers &&
+            r.has_printers.value_or(false) != *filter.has_printers) {
+            continue;
+        }
+        if (filter.has_phone &&
+            r.has_phone.value_or(false) != *filter.has_phone) {
+            continue;
+        }
+
+        std::optional<int> capacity_value;
+        if (r.is_lecture_room() || r.is_seminar_room()) {
+            capacity_value = r.capacity;
+        } else if (r.is_coworking_room()) {
+            capacity_value = r.total_capacity;
+        } else if (r.is_office_room()) {
+            capacity_value = r.number_of_chairs;
+        }
+
+        if (filter.capacity_min) {
+            if (!capacity_value || *capacity_value < *filter.capacity_min) {
+                continue;
+            }
+        }
+        if (filter.capacity_max) {
+            if (!capacity_value || *capacity_value > *filter.capacity_max) {
+                continue;
+            }
+        }
+
+        if (filter.date && filter.start_time && filter.end_time) {
+            if (!is_room_available(
+                    r.id, *filter.date, *filter.start_time, *filter.end_time
+                )) {
+                continue;
+            }
+        }
+
+        filtered_rooms.push_back(r);
+    }
+
+    return filtered_rooms;
 }

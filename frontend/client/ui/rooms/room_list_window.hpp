@@ -6,6 +6,8 @@
 #include <QJsonArray>
 #include <QPushButton>
 #include <QTimer>
+#include <QSpinBox>
+#include <QCheckBox>
 
 QT_BEGIN_NAMESPACE
 
@@ -43,14 +45,15 @@ private:
     Ui::room_list_window *ui;
     void updateGrid();
     void showRoomDetails(const QJsonObject &room);
-    void applyBuildingFilter();
+    void applyFilters();
     void renderRooms(const QJsonArray &roomsArray);
     roomsched::client::ApiClient *api;
+    roomsched::client::RoomFilters currentFilters;
     QJsonArray rooms;
-    QJsonArray allRooms;
     QList<QPushButton*> buttons;
     QTimer *resizeTimer;
     QString initialBuildingName;
+    bool availabilityFilterEnabled = false;
 };
 
 }  // namespace roomsched::roomlistwindow

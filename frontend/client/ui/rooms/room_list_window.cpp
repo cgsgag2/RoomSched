@@ -43,16 +43,38 @@ room_list_window::room_list_window(
     connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
         if (success) {
             QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
-            api->getRooms(); 
+            applyFilters();
         } else {
             QMessageBox::warning(this, "Ошибка бронирования", message);
         }
     });
     connect(ui->buildingCombo, &QComboBox::currentIndexChanged, this, [this](int) {
-        applyBuildingFilter();
+        applyFilters();
+    });
+    if (ui->typeCombo->count() == 0) {
+        ui->typeCombo->addItem("Все типы", "");
+        ui->typeCombo->addItem("Лекционная", "lecture");
+        ui->typeCombo->addItem("Семинар", "seminar");
+        ui->typeCombo->addItem("Коворкинг", "coworking");
+        ui->typeCombo->addItem("Офис", "private_office");
+    }
+    ui->dateFilter->setDate(QDate::currentDate());
+    ui->startTimeFilter->setTime(QTime::currentTime());
+    ui->endTimeFilter->setTime(QTime::currentTime().addSecs(3600));
+    connect(ui->dateFilter, &QDateEdit::dateChanged, this, [this]() {
+        availabilityFilterEnabled = true;
+    });
+    connect(ui->startTimeFilter, &QTimeEdit::timeChanged, this, [this]() {
+        availabilityFilterEnabled = true;
+    });
+    connect(ui->endTimeFilter, &QTimeEdit::timeChanged, this, [this]() {
+        availabilityFilterEnabled = true;
+    });
+    connect(ui->applyFiltersButton, &QPushButton::clicked, this, [this]() {
+        applyFilters();
     });
     api->getBuildings();
-    api->getRooms();
+    applyFilters();
 }
 
 room_list_window::~room_list_window() {
@@ -120,19 +142,19 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
 }
 
 void room_list_window::onRoomsLoaded(const QJsonArray &roomsArray) {
-    allRooms = roomsArray;
-    applyBuildingFilter();
+    rooms = roomsArray;
+    renderRooms(rooms);
 }
 
 void room_list_window::onBuildingsLoaded(const QJsonArray &buildingsArray) {
     ui->buildingCombo->clear();
-    ui->buildingCombo->addItem("Все корпуса", -1);
+    ui->buildingCombo->addItem("Все корпуса", "");
 
     for (const auto &value : buildingsArray) {
         QJsonObject building = value.toObject();
         ui->buildingCombo->addItem(
             building["name"].toString(),
-            building["id"].toInt()
+            building["name"].toString()
         );
     }
 
@@ -142,23 +164,54 @@ void room_list_window::onBuildingsLoaded(const QJsonArray &buildingsArray) {
             ui->buildingCombo->setCurrentIndex(idx);
         }
     }
+    applyFilters();
 }
 
-void room_list_window::applyBuildingFilter() {
-    int buildingId = ui->buildingCombo->currentData().toInt();
-    QJsonArray filtered;
-    if (buildingId <= 0) {
-        filtered = allRooms;
-    } else {
-        for (const auto &value : allRooms) {
-            QJsonObject room = value.toObject();
-            if (room["building"].toString() == ui->buildingCombo->currentText()) {
-                filtered.append(room);
-            }
-        }
+void room_list_window::applyFilters() {
+    roomsched::client::RoomFilters filters;
+    const QString building = ui->buildingCombo->currentData().toString();
+    if (!building.isEmpty()) {
+        filters.building = building;
     }
-    this->rooms = filtered;
-    renderRooms(rooms);
+
+    const QString type = ui->typeCombo->currentData().toString();
+    if (!type.isEmpty()) {
+        filters.type = type;
+    }
+
+    if (ui->capacityMinSpin->value() > 0) {
+        filters.capacityMin = ui->capacityMinSpin->value();
+    }
+    if (ui->capacityMaxSpin->value() > 0) {
+        filters.capacityMax = ui->capacityMaxSpin->value();
+    }
+
+    if (ui->projectorCheck->isChecked()) {
+        filters.hasProjector = true;
+    }
+    if (ui->whiteboardCheck->isChecked()) {
+        filters.hasWhiteboard = true;
+    }
+    if (ui->wifiCheck->isChecked()) {
+        filters.hasWifi = true;
+    }
+    if (ui->printersCheck->isChecked()) {
+        filters.hasPrinters = true;
+    }
+    if (ui->phoneCheck->isChecked()) {
+        filters.hasPhone = true;
+    }
+
+    if (ui->dateFilter->date().isValid() && availabilityFilterEnabled) {
+        filters.date = ui->dateFilter->date();
+    }
+    if (availabilityFilterEnabled) {
+        filters.startTime = ui->startTimeFilter->time();
+        filters.endTime = ui->endTimeFilter->time();
+    }
+
+    currentFilters = filters;
+    api->getRooms(currentFilters);
 }
 
 void room_list_window::renderRooms(const QJsonArray &roomsArray) {

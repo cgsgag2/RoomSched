@@ -37,8 +37,8 @@ void roomsched::server::setup_all_routes(
     });
 
     /* Rooms and room availability module */
-    CROW_ROUTE(app_ref, "/rooms").methods("GET"_method)([&server]() {
-        return server.get_room_handler().get_all_rooms();
+    CROW_ROUTE(app_ref, "/rooms").methods("GET"_method)([&server](const crow::request &req) {
+        return server.get_room_handler().get_all_rooms(req);
     });
 
     CROW_ROUTE(app_ref, "/rooms/<int>")
