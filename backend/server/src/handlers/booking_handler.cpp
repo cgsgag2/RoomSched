@@ -7,10 +7,54 @@
 #include "db_manager.hpp"
 #include "server/utils/error_codes.hpp"
 #include "server/utils/json_utils.hpp"
+#include <ctime>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
+
+bool is_past_time(const std::string& date_str, const std::string& time_str) {
+    std::string full_datetime = date_str + " " + time_str; // "YYYY-MM-DD HH:MM"
+    std::tm tm_struct = {};
+    std::istringstream ss(full_datetime);
+    ss >> std::get_time(&tm_struct, "%Y-%m-%d %H:%M");
+    if (ss.fail()) {
+        return false;
+    }
+    std::time_t booking_time_t = std::mktime(&tm_struct);
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_t = std::chrono::system_clock::to_time_t(now);
+    return booking_time_t < (now_t - 60);
+}
 
 namespace roomsched::server {
 
 bookings_handler::bookings_handler(db::database_manager &db_) : db(db_) {
+}
+
+void bookings_handler::start_cleanup() {
+    cleanup_thread_ = std::thread(&bookings_handler::run_cleanup_worker, this);
+}
+
+bookings_handler::~bookings_handler() {
+    stop_worker_ = true;
+    if (cleanup_thread_.joinable()) {
+        cleanup_thread_.join();
+    }
+}
+
+void bookings_handler::run_cleanup_worker() {
+    while (!stop_worker_) {
+        for (int i = 0; i < 300 && !stop_worker_; ++i) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+        if (stop_worker_) break;
+        try {
+            std::lock_guard<std::mutex> lock(db_mutex_);
+            db.bookings().delete_past_bookings(); 
+        } catch (const std::exception& e) {
+            std::cerr << "[CLEANUP WORKER ERROR]: " << e.what() << std::endl;
+        }
+    }
 }
 
 crow::response bookings_handler::create_booking(const crow::request &req) {
@@ -40,10 +84,21 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
     std::string start = json["start_time"].s();
     std::string end = json["end_time"].s();
 
-    try {
-        auto created =
-            db.bookings().create_booking(room_id, user_id, date, start, end);
+    if (is_past_time(date, start)) {
+        return json_utils::error_response(
+            "Cannot create booking for past time",
+            400,
+            error_codes::kInvalidTimeRange
+        );
+    }
 
+    try {
+        std::optional<roomsched::db::booking> created;
+        {
+            std::lock_guard<std::mutex> lock(db_mutex_);
+            created = db.bookings().create_booking(room_id, user_id, date, start, end);
+        }
+        
         if (!created) {
             std::cerr << "[BOOKING]: invalid time range on " << date
                       << " from '" << start << "' to '" << end << "' "

@@ -105,13 +105,10 @@ cmake --build build
 
 ```bash
 cd frontend/client
-rmdir /s /q build
-mkdir build
-cd build
-cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
-"C:\Qt\6.10.2\msvc2022_64\bin\windeployqt.exe" RoomSchedClient.exe
-RoomSchedClient.exe
+cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -S . -B build 
+cmake --build build
+./build/RoomSchedClient
+
 ```
 
 > Замените путь к Qt на ваш актуальный.

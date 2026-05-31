@@ -83,3 +83,7 @@ std::vector<roomsched::db::booking>
 roomsched::db::booking_service::get_room_bookings(int room_id) {
     return booking_repo.get_bookings_by_room(room_id);
 }
+
+void roomsched::db::booking_service::delete_past_bookings() {
+    booking_repo.delete_past_bookings();
+}

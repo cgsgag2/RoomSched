@@ -234,4 +234,18 @@ bool booking_repository::is_room_already_booked(
     }
 }
 
+void booking_repository::delete_past_bookings() {
+    try {
+        db.execute(
+            "DELETE FROM room_booking "
+            "WHERE (booking_date || ' ' || end_time)::timestamp < NOW()"
+        );
+    } catch (const pqxx::sql_error &e) {
+        std::cerr << "[SQL ERROR in delete_past_bookings]: " << e.what() << std::endl
+                  << "Query: " << e.query() << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "[DB EXCEPTION in delete_past_bookings]: " << e.what() << std::endl;
+    }
+}
+
 }  // namespace roomsched::db
