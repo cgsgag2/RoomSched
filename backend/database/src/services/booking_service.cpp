@@ -41,15 +41,14 @@ roomsched::db::booking_service::create_booking(
     }
 
     booking b;
-
     b.room_id = room_id;
     b.user_id = user_id;
     b.date = date;
     b.start_time = start;
     b.end_time = end;
     b.status = db::booking_status::CONFIRMED;
-
-    booking_repo.create_booking(b);
+    int new_id = booking_repo.create_booking(b);
+    b.id = new_id;
 
     return b;
 }

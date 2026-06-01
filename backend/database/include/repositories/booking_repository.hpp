@@ -18,7 +18,7 @@ private:
 public:
     booking_repository(database &db_);
 
-    void create_booking(const booking &new_booking);
+    int create_booking(const booking &new_booking);
     void delete_booking(int id);
 
     std::optional<booking> get_booking_by_id(int id);

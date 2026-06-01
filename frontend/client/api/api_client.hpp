@@ -20,6 +20,9 @@ public:
     void getRooms(int buildingId = 1);
     void getBuildings();
     void bookRoom(int roomId, const QString &date, const QString &start, const QString &end);
+    void getUserBookings(int userId);
+    void cancelBooking(int bookingId);
+    void logout();
 
 signals:
     void loginSuccess(QJsonObject data);
@@ -28,9 +31,12 @@ signals:
     void roomsLoaded(QJsonArray rooms);
     void buildingsLoaded(QJsonArray buildings);
     void bookingFinished(bool success, QString message);
+    void bookingsLoaded(const QJsonArray &bookings);
+    void bookingCancelled(bool success, const QString &message);
 
 private:
     int m_currentUserId = -1;
+    QString m_token;
     QNetworkAccessManager manager;
     void sendPost(
         const QString &url,

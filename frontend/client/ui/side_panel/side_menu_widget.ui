@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>side_menu_widget</class>
+ <widget class="QWidget" name="side_menu_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>250</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+        /* Основной фон выезжающей панели */
+        QWidget#side_menu_widget {
+          background-color: #6c528d;
+          border-top-right-radius: 12px;
+          border-bottom-right-radius: 12px;
+        }
+
+        /* Тёмный скругленный прямоугольник для слова &quot;Меню&quot; */
+        QLabel#menuTitle {
+          background-color: #423358;
+          color: #ffffff;
+          font-family: &quot;Inter&quot;, sans-serif;
+          font-size: 18px;
+          font-weight: 600;
+          padding: 12px;
+          border-radius: 8px;
+        }
+
+        /* Общий стиль для кнопок навигации (рамка со скруглением) */
+        QPushButton.navButton {
+          background-color: transparent;
+          color: #ffffff;
+          border: 2px solid #423358;
+          border-radius: 8px;
+          font-family: &quot;Inter&quot;, sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          text-align: left;
+          padding: 10px 14px;
+        }
+
+        /* Мягкое высветление фона прямоугольника при наведении */
+        QPushButton.navButton:hover {
+          background-color: rgba(255, 255, 255, 0.12);
+          border-color: #553e72;
+        }
+
+        QPushButton.navButton:pressed {
+          background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Кнопка &quot;Выйти&quot; в самом низу (красноватый акцент) */
+        QPushButton#btnLogout {
+          background-color: transparent;
+          color: #a24343;
+          border: 2px solid #800020;
+          border-radius: 8px;
+          font-family: &quot;Inter&quot;, sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          text-align: center;
+          padding: 10px 14px;
+        }
+
+        QPushButton#btnLogout:hover {
+          background-color: rgba(255, 139, 139, 0.15);
+          border-color: #ff6b6b;
+          color: #ff6b6b;
+        }
+      </string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="menuTitle">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Меню</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnHome">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🏠 Основная страница</string>
+     </property>
+     <property name="className" stdset="0">
+      <string>navButton</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnRooms">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🏢 Аудитории</string>
+     </property>
+     <property name="className" stdset="0">
+      <string>navButton</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnBookings">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>📋 Мои бронирования</string>
+     </property>
+     <property name="className" stdset="0">
+      <string>navButton</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnLogout">
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🚪 Выйти из аккаунта</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

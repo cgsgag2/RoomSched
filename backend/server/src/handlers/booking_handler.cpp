@@ -23,7 +23,7 @@ bool is_past_time(const std::string& date_str, const std::string& time_str) {
     std::time_t booking_time_t = std::mktime(&tm_struct);
     auto now = std::chrono::system_clock::now();
     std::time_t now_t = std::chrono::system_clock::to_time_t(now);
-    return booking_time_t < (now_t - 60);
+    return booking_time_t < (now_t + 60);
 }
 
 namespace roomsched::server {
@@ -134,7 +134,21 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
 }
 
 crow::response bookings_handler::cancel_booking(int booking_id) {
-    bool success = db.bookings().cancel_booking(booking_id);
+    std::cout << "[DEBUG] Попытка отмены. Получен ID: " << booking_id << std::endl;
+    std::lock_guard<std::mutex> lock(db_mutex_);
+    
+    // ВАЖНО: Добавьте вывод всех ID, которые сейчас реально есть в базе
+    // (Это поможет увидеть, есть ли там вообще ваш booking_id)
+    auto all_books = db.bookings_service().get_all_bookings();
+    std::cout << "[DEBUG] Доступные ID в БД: ";
+    for (const auto& b : all_books) std::cout << b.id << " ";
+    std::cout << std::endl;
+ /*   bool success = false;
+    {
+        std::lock_guard<std::mutex> lock(db_mutex_);
+        success = db.bookings_service().cancel_booking(booking_id);
+    } */
+    bool success = db.bookings_service().cancel_booking(booking_id);
     if (!success) {
         return json_utils::error_response(
             "Booking not found",
@@ -143,7 +157,11 @@ crow::response bookings_handler::cancel_booking(int booking_id) {
         );
     }
 
-    return crow::response(200, "Booking cancelled");
+    crow::json::wvalue response_json;
+    response_json["status"] = "success";
+    response_json["message"] = "Booking cancelled";
+    
+    return crow::response(200, response_json);
 }
 
 crow::response bookings_handler::get_all_bookings() {
@@ -167,7 +185,11 @@ crow::response bookings_handler::get_all_bookings() {
 }
 
 crow::response bookings_handler::get_bookings_by_user(int user_id) {
-    auto bookings = db.bookings().get_user_bookings(user_id);
+    std::vector<roomsched::db::booking> bookings;
+        {
+        std::lock_guard<std::mutex> lock(db_mutex_);
+        bookings = db.bookings().get_user_bookings(user_id);
+    };
 
     crow::json::wvalue resp;
 

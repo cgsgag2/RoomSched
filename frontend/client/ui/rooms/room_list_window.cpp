@@ -193,6 +193,9 @@ void room_list_window::resizeEvent(QResizeEvent *event) {
 void room_list_window::updateGrid() {
     QLayoutItem *item;
     while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            item->widget()->hide(); 
+        }
         delete item;
     }
 
@@ -202,6 +205,7 @@ void room_list_window::updateGrid() {
     int max_columns = qMax(1, windowWidth / (buttonWidth + spacing));
     int row = 0, col = 0;
     for (QPushButton *btn : buttons) {
+        if (!btn) continue;
         ui->gridLayout->addWidget(btn, row, col);
         col++;
         if (col >= max_columns) {
