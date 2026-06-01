@@ -9,7 +9,8 @@ roomsched::db::database_manager::database_manager(const db_config &config)
       userService(db),
       buildingService(db),
       roomService(db),
-      bookingService(db, roomService) {
+      bookingService(db, roomService),
+      telegramService() {
     db.connect();
 }
 
@@ -27,4 +28,8 @@ roomsched::db::room_service &roomsched::db::database_manager::rooms() {
 
 roomsched::db::booking_service &roomsched::db::database_manager::bookings() {
     return bookingService;
+}
+
+roomsched::db::telegram_service &roomsched::db::database_manager::telegram() {
+    return telegramService;
 }

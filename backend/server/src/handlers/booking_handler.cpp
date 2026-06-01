@@ -17,9 +17,7 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
     auto json = crow::json::load(req.body);
     if (!json) {
         return json_utils::error_response(
-            "Invalid JSON",
-            400,
-            error_codes::kInvalidJson
+            "Invalid JSON", 400, error_codes::kInvalidJson
         );
     }
 
@@ -28,9 +26,7 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
             {"room_id", "user_id", "booking_date", "start_time", "end_time"}
         )) {
         return json_utils::error_response(
-            "Missing fields in json data",
-            400,
-            error_codes::kMissingFields
+            "Missing fields in json data", 400, error_codes::kMissingFields
         );
     }
 
@@ -49,9 +45,20 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
                       << " from '" << start << "' to '" << end << "' "
                       << std::endl;
             return json_utils::error_response(
-                "Invalid time range",
-                422,
-                error_codes::kInvalidTimeRange
+                "Invalid time range", 422, error_codes::kInvalidTimeRange
+            );
+        }
+
+        bool success = db.telegram().send_message(
+            1392046019, "Room with '" + std::to_string(room_id) +
+                            "' id booked successfully!"
+        );
+        if (!success) {
+            std::cerr
+                << "[BOOKING] [TELEGRAM ERROR]: Message for telegram FAILED!"
+                << std::endl;
+            return json_utils::error_response(
+                "Message for telegram failed", 500, error_codes::kTelegramError
             );
         }
 
@@ -61,19 +68,16 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
 
         std::cout << "[BOOKING]: booking creation success: " << std::endl;
         return crow::response(200, resp);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::string err_msg = e.what();
         if (err_msg == "ROOM_ALREADY_BOOKED") {
             return json_utils::error_response(
-                "Room is already booked for this time",
-                409,
+                "Room is already booked for this time", 409,
                 error_codes::kBookingConflict
             );
         }
         return json_utils::error_response(
-            "Unexpected booking error",
-            500,
-            error_codes::kInternalError
+            "Unexpected booking error", 500, error_codes::kInternalError
         );
     }
 }
@@ -82,9 +86,7 @@ crow::response bookings_handler::cancel_booking(int booking_id) {
     bool success = db.bookings().cancel_booking(booking_id);
     if (!success) {
         return json_utils::error_response(
-            "Booking not found",
-            404,
-            error_codes::kBookingNotFound
+            "Booking not found", 404, error_codes::kBookingNotFound
         );
     }
 

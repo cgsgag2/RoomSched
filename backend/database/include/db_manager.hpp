@@ -9,6 +9,7 @@
 #include "services/booking_service.hpp"
 #include "services/building_service.hpp"
 #include "services/room_service.hpp"
+#include "services/telegram_service.hpp"
 #include "services/user_service.hpp"
 
 // project namespace, database module namespace
@@ -20,6 +21,7 @@ private:
     building_service buildingService;
     room_service roomService;
     booking_service bookingService;
+    telegram_service telegramService;
 
 public:
     database_manager(const db_config &config);
@@ -28,6 +30,7 @@ public:
     building_service &buildings();
     room_service &rooms();
     booking_service &bookings();
+    telegram_service &telegram();
 };
 }  // namespace roomsched::db
 

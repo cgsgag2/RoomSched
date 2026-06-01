@@ -85,4 +85,16 @@ void roomsched::server::setup_all_routes(
     CROW_ROUTE(app_ref, "/buildings").methods("GET"_method)([&server]() {
         return server.get_buildings_handler().get_all_buildings();
     });
+
+    /* Telegram notifications module */
+    CROW_ROUTE(app_ref, "/telegram-test").methods("POST"_method)([&server]() {
+        bool success = server.get_db().telegram().send_message(
+            1392046019, "First telegram message!"
+        );
+
+        return crow::response(
+            success ? 200 : 500, success ? "Message for telegram successed!"
+                                         : "Message for telegram FAILED!"
+        );
+    });
 }

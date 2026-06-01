@@ -4,6 +4,14 @@ find_package(PkgConfig REQUIRED)
 # Check that libpqxx is installed
 pkg_check_modules(PQXX REQUIRED libpqxx)
 
+include(FetchContent)
+FetchContent_Declare(
+    cpr
+    GIT_REPOSITORY https://github.com/libcpr/cpr.git
+    GIT_TAG 1.11.0
+)
+FetchContent_MakeAvailable(cpr)
+
 file(GLOB_RECURSE DB_SOURCES "src/*.cpp")
 
 add_library(db STATIC ${DB_SOURCES})
@@ -18,4 +26,5 @@ target_include_directories(db
 target_link_libraries(db
     PUBLIC
         ${PQXX_LIBRARIES}
+        cpr::cpr
 )

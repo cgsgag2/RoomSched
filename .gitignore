@@ -62,3 +62,6 @@ _deps/
 .DS_Store
 Thumbs.dbtest_server
 backend/server/src/test_server
+
+### Environment files ###
+.env

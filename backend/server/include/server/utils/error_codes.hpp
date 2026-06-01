@@ -21,6 +21,7 @@ constexpr const char *kBookingNotFound = "BOOKING_NOT_FOUND";
 constexpr const char *kRoomNotFound = "ROOM_NOT_FOUND";
 constexpr const char *kDatabaseError = "DATABASE_ERROR";
 constexpr const char *kInternalError = "INTERNAL_ERROR";
+constexpr const char *kTelegramError = "TELEGRAM_ERROR";
 }  // namespace roomsched::server::error_codes
 
 #endif  // ERROR_CODES_HPP_

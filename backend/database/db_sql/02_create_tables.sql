@@ -8,7 +8,15 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP DEFAULT NOW(),
     last_login TIMESTAMP
+    -- telegram_chat_id BIGINT
 );
+
+-- telegram data
+-- CREATE TABLE IF NOT EXISTS telegram_links (
+--     code VARCHAR(16) PRIMARY KEY,
+--     user_id INTEGER NOT NULL,
+--     created_at TIMESTAMP NOT NULL DEFAULT NOW()
+-- );
 
 -- buildings data
 CREATE TABLE IF NOT EXISTS buildings (

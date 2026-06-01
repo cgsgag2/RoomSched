@@ -37,6 +37,7 @@ services:
       DB_PASSWORD: RschedUser87204576
       DB_HOST: postgres
       DB_PORT: 5432
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
 
 volumes:
   postgres_data:
