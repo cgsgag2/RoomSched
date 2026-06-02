@@ -66,7 +66,10 @@ main_parent_window::~main_parent_window() {}
 void main_parent_window::setupWindowHeader(QWidget *window, const QString &titleText) {
     QLabel *titleLabel = window->findChild<QLabel*>("titleLabel");
     if (!titleLabel) return;
-    if (titleLabel->layout()) delete titleLabel->layout();
+    if (titleLabel->layout()) {
+        qDeleteAll(titleLabel->children());
+        delete titleLabel->layout();
+    }
     titleLabel->setText(""); 
     titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     titleLabel->setFixedHeight(80);

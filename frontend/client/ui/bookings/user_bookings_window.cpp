@@ -56,7 +56,7 @@ void user_bookings_window::onBookingsLoaded(const QJsonArray &bookingsArray) {
             "   border-radius: 8px;"
             "}"
         );
-
+        rowWidget->setMinimumHeight(50);
         QHBoxLayout *rowLayout = new QHBoxLayout(rowWidget);
         rowLayout->setContentsMargins(15, 10, 15, 10);
 
@@ -67,19 +67,20 @@ void user_bookings_window::onBookingsLoaded(const QJsonArray &bookingsArray) {
         rowLayout->addStretch();
 
         QPushButton *closeBtn = new QPushButton("✕", rowWidget);
-        closeBtn->setFixedSize(24, 24);
+        closeBtn->setFixedSize(32, 32);
         closeBtn->setCursor(Qt::PointingHandCursor);
         closeBtn->setStyleSheet(
             "QPushButton {"
             "   background-color: transparent;"
             "   color: #ff6b6b;"
-            "   border: none;"
+            "   border: 1px solid #b34343;"
             "   font-size: 14px;"
             "   font-weight: bold;"
             "   border-radius: 4px;"
             "}"
             "QPushButton:hover {"
             "   background-color: rgba(255, 107, 107, 0.15);"
+            "   border: 1px solid #7a2e2e;"
             "   color: #e55353;"
             "}"
         );
