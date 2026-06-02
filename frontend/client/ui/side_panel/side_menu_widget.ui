@@ -20,31 +20,36 @@
         }
 
         /* Тёмный скругленный прямоугольник для слова &quot;Меню&quot; */
-        QLabel#menuTitle {
+        QPushButton#btnMenuClose {
           background-color: #423358;
           color: #ffffff;
-          font-family: &quot;Inter&quot;, sans-serif;
+          font-family: "Inter", sans-serif;
           font-size: 18px;
           font-weight: 600;
           padding: 12px;
           border-radius: 8px;
+          text-align: center;
+        }
+        QPushButton#btnMenuClose:hover { 
+          background-color: #553e72; 
         }
 
         /* Общий стиль для кнопок навигации (рамка со скруглением) */
-        QPushButton.navButton {
+        QPushButton#btnHome, QPushButton#btnRooms, QPushButton#btnBookings {
           background-color: transparent;
           color: #ffffff;
-          border: 2px solid #423358;
+          border: 2px solid #68518c;
           border-radius: 8px;
-          font-family: &quot;Inter&quot;, sans-serif;
+          font-family: "Inter", sans-serif;
           font-size: 14px;
           font-weight: 500;
           text-align: left;
           padding: 10px 14px;
+          min-height: 20px; /* Уменьшаем высоту */
+          max-height: 45px;
         }
 
-        /* Мягкое высветление фона прямоугольника при наведении */
-        QPushButton.navButton:hover {
+        QPushButton#btnHome:hover, QPushButton#btnRooms:hover, QPushButton#btnBookings:hover {
           background-color: rgba(255, 255, 255, 0.12);
           border-color: #553e72;
         }
@@ -56,8 +61,8 @@
         /* Кнопка &quot;Выйти&quot; в самом низу (красноватый акцент) */
         QPushButton#btnLogout {
           background-color: transparent;
-          color: #a24343;
-          border: 2px solid #800020;
+          color: #bf7f7f;
+          border: 2px solid #4d0819;
           border-radius: 8px;
           font-family: &quot;Inter&quot;, sans-serif;
           font-size: 14px;
@@ -68,8 +73,8 @@
 
         QPushButton#btnLogout:hover {
           background-color: rgba(255, 139, 139, 0.15);
-          border-color: #ff6b6b;
-          color: #ff6b6b;
+          border-color: #d16a6a;
+          color: #f8abab;
         }
       </string>
   </property>
@@ -90,27 +95,19 @@
     <number>10</number>
    </property>
    <item>
-    <widget class="QLabel" name="menuTitle">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Меню</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
+    <widget class="QPushButton" name="btnMenuClose">
+      <property name="text">
+        <string>Меню</string> 
+      </property>
+      <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+      </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="btnHome">
     <property name="sizePolicy">
      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
      </sizepolicy>
     </property>
      <property name="cursor">
@@ -119,17 +116,12 @@
      <property name="text">
       <string>🏠 Основная страница</string>
      </property>
-     <property name="className" stdset="0">
-      <string>navButton</string>
-     </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="btnRooms">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="cursor">
@@ -138,17 +130,12 @@
      <property name="text">
       <string>🏢 Аудитории</string>
      </property>
-     <property name="className" stdset="0">
-      <string>navButton</string>
-     </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="btnBookings">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="cursor">
@@ -156,9 +143,6 @@
      </property>
      <property name="text">
       <string>📋 Мои бронирования</string>
-     </property>
-     <property name="className" stdset="0">
-      <string>navButton</string>
      </property>
     </widget>
    </item>

@@ -7,6 +7,7 @@ side_menu_widget::side_menu_widget(QWidget *parent)
     : QWidget(parent), ui(new Ui::side_menu_widget) {
     ui->setupUi(this);
     this->setAttribute(Qt::WA_StyledBackground, true);
+    connect(ui->btnMenuClose, &QPushButton::clicked, this, &side_menu_widget::hide);
     connect(ui->btnHome, &QPushButton::clicked, this, &side_menu_widget::navigateToHome);
     connect(ui->btnRooms, &QPushButton::clicked, this, &side_menu_widget::navigateToRooms);
     connect(ui->btnBookings, &QPushButton::clicked, this, &side_menu_widget::navigateToBookings);
