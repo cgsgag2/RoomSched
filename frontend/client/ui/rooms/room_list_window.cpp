@@ -61,7 +61,7 @@ room_list_window::~room_list_window() {
 
 void room_list_window::showRoomDetails(const QJsonObject &room) {
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("Бронирование аудитории: " + room["room_number"].toString());
+    dialog->setWindowTitle("Бронирование аудитории");
     dialog->setMinimumSize(360, 420);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(dialog);
@@ -126,7 +126,7 @@ void room_list_window::onRoomsLoaded(const QJsonArray &roomsArray) {
         if (idx >= 0) {
             ui->buildingCombo->setCurrentIndex(idx);
         }
-        initialBuildingName = ""; // Сбрасываем после применения
+        initialBuildingName = "";
     }
     applyBuildingFilter();
 }
@@ -172,9 +172,7 @@ void room_list_window::applyBuildingFilter() {
 }
 
 void room_list_window::updateViewForBuilding(const QString &buildingName) {
-    initialBuildingName = buildingName; // Сохраняем, чтобы применить при загрузке
-    
-    // Если данные уже есть, применяем сразу
+    initialBuildingName = buildingName;
     if (!allRooms.isEmpty()) {
         int idx = ui->buildingCombo->findText(buildingName);
         if (idx >= 0) ui->buildingCombo->setCurrentIndex(idx);
@@ -246,8 +244,6 @@ void room_list_window::updateGrid() {
 
 void room_list_window::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
-    // При первом показе принудительно обновляем сетку, 
-    // когда размеры уже известны системе
     updateGrid();
 }
 
