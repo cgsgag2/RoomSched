@@ -28,9 +28,9 @@ main_parent_window::main_parent_window(
     roomsWindow = new roomsched::roomlistwindow::room_list_window(existingApi, "", userEmail, "", this);
     bookingsWindow = new roomsched::bookings::user_bookings_window(existingApi, userId, this);
 
-    setupWindowHeader(homeWindow, "Добро пожаловать в RoomSched!");
-    setupWindowHeader(roomsWindow, "Выбор аудитории для бронирования");
-    setupWindowHeader(bookingsWindow, "Мои активные бронирования");
+    setupWindowHeader(homeWindow, "Добро пожаловать!");
+    setupWindowHeader(roomsWindow, "Выбор аудитории");
+    setupWindowHeader(bookingsWindow, "Мои бронирования");
 
     stackedWidget->addWidget(homeWindow); 
     stackedWidget->addWidget(roomsWindow);  
@@ -68,17 +68,18 @@ void main_parent_window::setupWindowHeader(QWidget *window, const QString &title
     if (!titleLabel) return;
     if (titleLabel->layout()) delete titleLabel->layout();
     titleLabel->setText(""); 
-    
+    titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    titleLabel->setFixedHeight(80);
     titleLabel->setStyleSheet(
         "background-color: #423358;"
         "border-radius: 8px;"
     );
 
     QHBoxLayout *headerLayout = new QHBoxLayout(titleLabel);
-    headerLayout->setContentsMargins(20, 5, 15, 5);
+    headerLayout->setContentsMargins(150, 5, 15, 5);
 
     QLabel *textLabel = new QLabel(titleText, titleLabel);
-    textLabel->setStyleSheet("color: #ffffff; font-size: 18px; font-weight: 600; background: transparent;");
+    textLabel->setStyleSheet("color: #ffffff; font-size: 22px; font-weight: 600; background: transparent;");
     headerLayout->addWidget(textLabel);
 
     headerLayout->addStretch();
@@ -100,7 +101,7 @@ void main_parent_window::setupWindowHeader(QWidget *window, const QString &title
     );
     stackedWidget->setContentsMargins(0, 0, 0, 0);
     connect(menuBtn, &QPushButton::clicked, this, &main_parent_window::toggleMenu);
-    headerLayout->addWidget(menuBtn);
+    headerLayout->addWidget(menuBtn, 0, Qt::AlignVCenter);
     titleLabel->setLayout(headerLayout);
 }
 
