@@ -10,10 +10,9 @@ namespace roomsched {
 
 int run_client(int argc, char *argv[]) {
     QApplication app(argc, argv);
-
+    app.setQuitOnLastWindowClosed(false);
     auto *api = new roomsched::client::ApiClient();
     auto *auth = new roomsched::authwindow::auth_window(api);
-    auth->setAttribute(Qt::WA_DeleteOnClose);
     auth->show();    
     return app.exec();
 }

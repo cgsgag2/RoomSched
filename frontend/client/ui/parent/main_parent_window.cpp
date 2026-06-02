@@ -13,7 +13,7 @@ main_parent_window::main_parent_window(
     const QString &userEmail,
     int userId,
     QWidget *parent
-) : QWidget(parent) {
+) : QWidget(parent), api(existingApi) {
     
     resize(800, 550);
     setWindowTitle("RoomSched");
@@ -66,6 +66,8 @@ main_parent_window::main_parent_window(
             bookingsWindow->loadBookings();
         }
     });
+
+    connect(sideMenu, &side_menu_widget::logoutRequested, this, &main_parent_window::handleLogout);
 }
 
 main_parent_window::~main_parent_window() {}
@@ -149,6 +151,14 @@ void main_parent_window::resizeEvent(QResizeEvent *event) {
             sideMenu->raise(); 
         }
     }
+}
+
+void main_parent_window::handleLogout() {
+    if (api) { 
+        api->clearSession(); 
+    }
+    emit logoutSuccessful(); 
+    this->close();
 }
 
 } // namespace roomsched::menu

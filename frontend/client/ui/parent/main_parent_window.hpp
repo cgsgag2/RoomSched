@@ -23,15 +23,20 @@ public:
     );
     ~main_parent_window();
 
+signals:
+    void logoutSuccessful();
+
 private slots:
     void toggleMenu();
     void showMenu();
     void hideMenu();
+    void handleLogout();
 
 private:
     QStackedWidget *stackedWidget;
     side_menu_widget *sideMenu;
     
+    roomsched::client::ApiClient *api;
     roomsched::mainmenu::main_menu_window *homeWindow;
     roomsched::roomlistwindow::room_list_window *roomsWindow; 
     roomsched::bookings::user_bookings_window *bookingsWindow; 

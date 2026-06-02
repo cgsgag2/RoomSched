@@ -57,6 +57,9 @@ auth_window::auth_window(roomsched::client::ApiClient *existingApi, QWidget *par
             nullptr 
         );
         mainWindow->setAttribute(Qt::WA_DeleteOnClose);
+        connect(mainWindow, &roomsched::menu::main_parent_window::logoutSuccessful, this, [this](){
+            this->show(); 
+        });
         mainWindow->show();
                 this->close();
         }
