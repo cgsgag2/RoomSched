@@ -44,6 +44,7 @@ main_parent_window::main_parent_window(
         hideMenu();
     });
     connect(sideMenu, &side_menu_widget::navigateToRooms, this, [this]() {
+        roomsWindow->updateViewForBuilding("Все корпуса");
         stackedWidget->setCurrentIndex(1);
         hideMenu();
     });
@@ -53,7 +54,10 @@ main_parent_window::main_parent_window(
     });
     
     connect(homeWindow, &roomsched::mainmenu::main_menu_window::buildingSelected, this, [this](const QString &buildingName) {
+        roomsWindow->updateViewForBuilding(buildingName);
         stackedWidget->setCurrentIndex(1); 
+        roomsWindow->update(); 
+        roomsWindow->show();
     });
 }
 

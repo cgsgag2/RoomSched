@@ -121,6 +121,13 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
 
 void room_list_window::onRoomsLoaded(const QJsonArray &roomsArray) {
     allRooms = roomsArray;
+    if (!initialBuildingName.isEmpty()) {
+        int idx = ui->buildingCombo->findText(initialBuildingName);
+        if (idx >= 0) {
+            ui->buildingCombo->setCurrentIndex(idx);
+        }
+        initialBuildingName = ""; // Сбрасываем после применения
+    }
     applyBuildingFilter();
 }
 
@@ -147,6 +154,9 @@ void room_list_window::onBuildingsLoaded(const QJsonArray &buildingsArray) {
 void room_list_window::applyBuildingFilter() {
     int buildingId = ui->buildingCombo->currentData().toInt();
     QJsonArray filtered;
+    if (allRooms.isEmpty()) {
+        return; 
+    }
     if (buildingId <= 0) {
         filtered = allRooms;
     } else {
@@ -161,6 +171,17 @@ void room_list_window::applyBuildingFilter() {
     renderRooms(rooms);
 }
 
+void room_list_window::updateViewForBuilding(const QString &buildingName) {
+    initialBuildingName = buildingName; // Сохраняем, чтобы применить при загрузке
+    
+    // Если данные уже есть, применяем сразу
+    if (!allRooms.isEmpty()) {
+        int idx = ui->buildingCombo->findText(buildingName);
+        if (idx >= 0) ui->buildingCombo->setCurrentIndex(idx);
+        applyBuildingFilter();
+    }
+}
+
 void room_list_window::renderRooms(const QJsonArray &roomsArray) {
     qDeleteAll(buttons);
     buttons.clear();
@@ -173,7 +194,7 @@ void room_list_window::renderRooms(const QJsonArray &roomsArray) {
         QPushButton *btn = new QPushButton(label, this);
         btn->setProperty("class", "RoomButton"); 
         btn->setMinimumSize(220, 140);  
-        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);    
         
         connect(btn, &QPushButton::clicked, [this, room]() {
             showRoomDetails(room);
@@ -185,34 +206,49 @@ void room_list_window::renderRooms(const QJsonArray &roomsArray) {
 
 void room_list_window::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
+    if (!isVisible() || buttons.isEmpty()) {
+        return;
+    }
     if (!rooms.isEmpty()) {
         resizeTimer->start(50);
     }
 }
 
 void room_list_window::updateGrid() {
+    if (buttons.isEmpty()) return;
+    int windowWidth = ui->scrollArea->width();
+    if (windowWidth < 100) return;
     QLayoutItem *item;
     while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
         if (item->widget()) {
             item->widget()->hide(); 
+            item->widget()->setParent(nullptr);
         }
         delete item;
     }
 
-    int windowWidth = ui->scrollArea->width(); 
     int buttonWidth = 220;
     int spacing = 15;
     int max_columns = qMax(1, windowWidth / (buttonWidth + spacing));
     int row = 0, col = 0;
     for (QPushButton *btn : buttons) {
         if (!btn) continue;
-        ui->gridLayout->addWidget(btn, row, col);
+        btn->show();
+        ui->gridLayout->addWidget(btn, row, col, Qt::AlignLeft | Qt::AlignTop);
         col++;
         if (col >= max_columns) {
             col = 0;
             row++;
         }
     }
+    ui->gridLayout->setColumnStretch(max_columns, 1);
+}
+
+void room_list_window::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    // При первом показе принудительно обновляем сетку, 
+    // когда размеры уже известны системе
+    updateGrid();
 }
 
 }  // namespace roomsched::roomlistwindow
