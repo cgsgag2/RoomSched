@@ -36,15 +36,21 @@ void user_bookings_window::onBookingsLoaded(const QJsonArray &bookingsArray) {
     for (int i = 0; i < bookingsArray.size(); ++i) {
         QJsonObject booking = bookingsArray[i].toObject();
         if (booking["status"].toString() == "cancelled") {
-            continue; // Пропускаем отмененные, не добавляем их в UI
+            continue; 
         }
         int bookingId = booking["id"].toInt();
-        int roomNum = booking["room_id"].toInt();
-        QString date = booking["booking_date"].toString();
-        QString start = booking["start_time"].toString();
-        QString end = booking["end_time"].toString();
-        QString infoText = QString("Аудитория %1, %2 с %3 до %4")
-                            .arg(roomNum)
+        int roomId = booking["room_id"].toInt();
+        QJsonObject roomInfo = api->getRoomInfo(roomId);
+        qDebug() << "DEBUG: RoomID:" << roomId << "RoomData:" << roomInfo;
+        QString roomName = roomInfo.value("room_number").toString("Ауд. " + QString::number(roomId));
+        QString buildingName = roomInfo.value("building").toString("Неизвестное здание");
+        QString date = QDate::fromString(booking["booking_date"].toString(), "yyyy-MM-dd")
+                                    .toString("dd.MM.yy");
+        QString start = booking["start_time"].toString().left(5);
+        QString end = booking["end_time"].toString().left(5);
+        QString infoText = QString("%1 | ауд. %2 | %3 | с %4 до %5")
+                            .arg(buildingName)
+                            .arg(roomName)
                             .arg(date)
                             .arg(start)
                             .arg(end);

@@ -262,6 +262,12 @@ void ApiClient::login(const QString &email, const QString &password) {
 void ApiClient::getRooms(int buildingId) {
     sendGet("/rooms", [this](QJsonObject obj) {
         if (obj.contains("rooms") && obj["rooms"].isArray()) {
+            QJsonArray roomsArray = obj["rooms"].toArray();
+            m_roomsCache.clear();
+            for (const auto &val : roomsArray) {
+                QJsonObject room = val.toObject();
+                m_roomsCache[room["id"].toInt()] = room;
+            }
             emit roomsLoaded(obj["rooms"].toArray());
         }
     }, [this](QString err) {
@@ -325,6 +331,7 @@ void ApiClient::getUserBookings(int userId) {
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
         QByteArray raw = reply->readAll();
+        qDebug() << "RAW RESPONSE:" << raw;
         int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         if (reply->error() != QNetworkReply::NoError) {
@@ -357,6 +364,10 @@ void ApiClient::cancelBooking(int bookingId) {
     }, [this](QString err) {
         emit bookingCancelled(false, err);
     });
+}
+
+QJsonObject ApiClient::getRoomInfo(int roomId) const {
+    return m_roomsCache.value(roomId);
 }
 
 void ApiClient::logout() {

@@ -23,6 +23,7 @@ public:
     void getUserBookings(int userId);
     void cancelBooking(int bookingId);
     void logout();
+    QJsonObject getRoomInfo(int roomId) const;
 
 signals:
     void loginSuccess(QJsonObject data);
@@ -33,6 +34,7 @@ signals:
     void bookingFinished(bool success, QString message);
     void bookingsLoaded(const QJsonArray &bookings);
     void bookingCancelled(bool success, const QString &message);
+    void roomsCacheUpdated();
 
 private:
     int m_currentUserId = -1;
@@ -60,6 +62,7 @@ private:
         int statusCode,
         const QByteArray &raw
     );
+    QMap<int, QJsonObject> m_roomsCache;
 };
 
 }  // namespace roomsched::client

@@ -137,17 +137,6 @@ crow::response bookings_handler::cancel_booking(int booking_id) {
     std::cout << "[DEBUG] Попытка отмены. Получен ID: " << booking_id << std::endl;
     std::lock_guard<std::mutex> lock(db_mutex_);
     
-    // ВАЖНО: Добавьте вывод всех ID, которые сейчас реально есть в базе
-    // (Это поможет увидеть, есть ли там вообще ваш booking_id)
-    auto all_books = db.bookings_service().get_all_bookings();
-    std::cout << "[DEBUG] Доступные ID в БД: ";
-    for (const auto& b : all_books) std::cout << b.id << " ";
-    std::cout << std::endl;
- /*   bool success = false;
-    {
-        std::lock_guard<std::mutex> lock(db_mutex_);
-        success = db.bookings_service().cancel_booking(booking_id);
-    } */
     bool success = db.bookings_service().cancel_booking(booking_id);
     if (!success) {
         return json_utils::error_response(
