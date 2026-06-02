@@ -43,6 +43,7 @@ room_list_window::room_list_window(
     connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
         if (success) {
             QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
+            int currentBuildingId = ui->buildingCombo->currentData().toInt();
             api->getRooms(); 
         } else {
             QMessageBox::warning(this, "Ошибка бронирования", message);
@@ -61,6 +62,7 @@ room_list_window::~room_list_window() {
 
 void room_list_window::showRoomDetails(const QJsonObject &room) {
     QDialog *dialog = new QDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setWindowTitle("Бронирование аудитории");
     dialog->setMinimumSize(360, 420);
 
