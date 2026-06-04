@@ -22,7 +22,7 @@ main_parent_window::main_parent_window(
     mainLayout->setSpacing(0);
     stackedWidget = new QStackedWidget(this);
     stackedWidget->setStyleSheet("background-color: #c9bfd4;");
-    mainLayout->addWidget(stackedWidget); // Добавьте stackedWidget в лейаут
+    mainLayout->addWidget(stackedWidget); 
     setLayout(mainLayout);
     homeWindow = new roomsched::mainmenu::main_menu_window(existingApi, userEmail, this);    
     roomsWindow = new roomsched::roomlistwindow::room_list_window(existingApi, "", userEmail, "", this);
@@ -141,12 +141,7 @@ void main_parent_window::resizeEvent(QResizeEvent *event) {
     if (sideMenu != nullptr) {
         int menuWidth = sideMenu->width();
         int windowHeight = this->height();
-        
-        // Позиционируем меню
         sideMenu->setGeometry(this->width() - menuWidth, 0, menuWidth, windowHeight);
-        
-        // Дополнительно: если меню скрыто (isVisible() == false), 
-        // его лучше не трогать, или убедиться, что raise() не вызывает проблем
         if (sideMenu->isVisible()) {
             sideMenu->raise(); 
         }

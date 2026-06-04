@@ -19,7 +19,7 @@
           border-bottom-right-radius: 12px;
         }
 
-        /* Тёмный скругленный прямоугольник для слова &quot;Меню&quot; */
+        /* Тёмный прямоугольник Меню; */
         QPushButton#btnMenuClose {
           background-color: #423358;
           color: #ffffff;
@@ -34,7 +34,7 @@
           background-color: #553e72; 
         }
 
-        /* Общий стиль для кнопок навигации (рамка со скруглением) */
+        /* Общий стиль для кнопок навигации  */
         QPushButton#btnHome, QPushButton#btnRooms, QPushButton#btnBookings {
           background-color: transparent;
           color: #ffffff;
@@ -58,7 +58,7 @@
           background-color: rgba(0, 0, 0, 0.15);
         }
 
-        /* Кнопка &quot;Выйти&quot; в самом низу (красноватый акцент) */
+        /* Кнопка Выйти */
         QPushButton#btnLogout {
           background-color: transparent;
           color: #bf7f7f;
