@@ -28,9 +28,6 @@ public:
     building_service &buildings();
     room_service &rooms();
     booking_service &bookings();
-    booking_service& bookings_service() {
-        return bookingService;
-    }
 };
 }  // namespace roomsched::db
 

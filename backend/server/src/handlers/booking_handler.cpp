@@ -12,6 +12,8 @@
 #include <sstream>
 #include <iomanip>
 
+namespace roomsched::server {
+
 bool is_past_time(const std::string& date_str, const std::string& time_str) {
     std::string full_datetime = date_str + " " + time_str; // "YYYY-MM-DD HH:MM"
     std::tm tm_struct = {};
@@ -25,8 +27,6 @@ bool is_past_time(const std::string& date_str, const std::string& time_str) {
     std::time_t now_t = std::chrono::system_clock::to_time_t(now);
     return booking_time_t < (now_t + 60);
 }
-
-namespace roomsched::server {
 
 bookings_handler::bookings_handler(db::database_manager &db_) : db(db_) {
 }
@@ -94,10 +94,8 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
 
     try {
         std::optional<roomsched::db::booking> created;
-        {
-            std::lock_guard<std::mutex> lock(db_mutex_);
-            created = db.bookings().create_booking(room_id, user_id, date, start, end);
-        }
+        std::lock_guard<std::mutex> lock(db_mutex_);
+        created = db.bookings().create_booking(room_id, user_id, date, start, end);
         
         if (!created) {
             std::cerr << "[BOOKING]: invalid time range on " << date
@@ -134,10 +132,10 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
 }
 
 crow::response bookings_handler::cancel_booking(int booking_id) {
-    std::cout << "[DEBUG] Попытка отмены. Получен ID: " << booking_id << std::endl;
+    std::cout << "[DEBUG] Attempting to cancel booking. Received ID: " << booking_id << std::endl;
     std::lock_guard<std::mutex> lock(db_mutex_);
     
-    bool success = db.bookings_service().cancel_booking(booking_id);
+    bool success = db.bookings().cancel_booking(booking_id);
     if (!success) {
         return json_utils::error_response(
             "Booking not found",
