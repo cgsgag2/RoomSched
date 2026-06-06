@@ -306,7 +306,7 @@ void room_list_window::renderRooms(const QJsonArray &roomsArray) {
         QPushButton *btn = new QPushButton(label, this);
         btn->setProperty("class", "RoomButton"); 
         btn->setMinimumSize(220, 140);
-        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
         connect(btn, &QPushButton::clicked, [this, room]() {
             showRoomDetails(room);
