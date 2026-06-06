@@ -5,8 +5,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QDateEdit>
-#include <QTimeEdit>
+
 #include <QHBoxLayout>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -14,10 +13,52 @@
 #include <QJsonObject>
 #include <QUrl>
 #include <QComboBox>
+#include <QDateEdit>
 #include <QDebug>
+#include <QTimeEdit>
+
 #include "ui_room_list_window.h"
 
+namespace {
+
+const QTime kDayStart(8, 0);
+const QTime kDayEnd(23, 0);
+
+void clampTimeRange(QTimeEdit *startEdit, QTimeEdit *endEdit) {
+    if (!startEdit || !endEdit) return;
+    if (startEdit->time() < kDayStart) startEdit->setTime(kDayStart);
+    if (endEdit->time() > kDayEnd) endEdit->setTime(kDayEnd);
+    if (endEdit->time() <= startEdit->time()) {
+        QTime next = startEdit->time().addSecs(3600);
+        if (next > kDayEnd) next = kDayEnd;
+        endEdit->setTime(next);
+    }
+}
+
+void disablePastDates(QDateEdit *dateEdit) {
+    if (!dateEdit) return;
+    dateEdit->setMinimumDate(QDate::currentDate());
+}
+
+}  // namespace
+
 namespace roomsched::roomlistwindow {
+
+QString roomTypeLabel(const QString &type) {
+    if (type == "lecture") {
+        return "Лекционная";
+    }
+    if (type == "seminar") {
+        return "Семинарная";
+    }
+    if (type == "coworking") {
+        return "Коворкинг";
+    }
+    if (type == "private_office") {
+        return "Офис";
+    }
+    return "Комната";
+}
 
 room_list_window::room_list_window(QWidget *parent)
     : QWidget(parent), ui(new Ui::room_list_window) {
@@ -37,7 +78,10 @@ room_list_window::room_list_window(
     ui->setupUi(this);
     resizeTimer = new QTimer(this);
     resizeTimer->setSingleShot(true);
-    connect(resizeTimer, &QTimer::timeout, this, &room_list_window::updateGrid);
+    filterTimer = new QTimer(this);
+    filterTimer->setSingleShot(true);
+    filterTimer->setInterval(250);
+    connect(filterTimer, &QTimer::timeout, this, &room_list_window::applyFilters);
     connect(api, &roomsched::client::ApiClient::roomsLoaded, this, &room_list_window::onRoomsLoaded);
     connect(api, &roomsched::client::ApiClient::buildingsLoaded, this, &room_list_window::onBuildingsLoaded);
     connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
@@ -49,7 +93,28 @@ room_list_window::room_list_window(
         }
     });
     connect(ui->buildingCombo, &QComboBox::currentIndexChanged, this, [this](int) {
-        applyFilters();
+        scheduleApplyFilters();
+    });
+    connect(ui->typeCombo, &QComboBox::currentIndexChanged, this, [this](int) {
+        scheduleApplyFilters();
+    });
+    connect(ui->capacityMinSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int) {
+        scheduleApplyFilters();
+    });
+    connect(ui->capacityMaxSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int) {
+        scheduleApplyFilters();
+    });
+    connect(ui->projectorCheck, &QCheckBox::stateChanged, this, [this](int) {
+        scheduleApplyFilters();
+    });
+    connect(ui->whiteboardCheck, &QCheckBox::stateChanged, this, [this](int) {
+        scheduleApplyFilters();
+    });
+    connect(ui->wifiCheck, &QCheckBox::stateChanged, this, [this](int) {
+        scheduleApplyFilters();
+    });
+    connect(ui->printersCheck, &QCheckBox::stateChanged, this, [this](int) {
+        scheduleApplyFilters();
     });
     if (ui->typeCombo->count() == 0) {
         ui->typeCombo->addItem("Все типы", "");
@@ -58,21 +123,6 @@ room_list_window::room_list_window(
         ui->typeCombo->addItem("Коворкинг", "coworking");
         ui->typeCombo->addItem("Офис", "private_office");
     }
-    ui->dateFilter->setDate(QDate::currentDate());
-    ui->startTimeFilter->setTime(QTime::currentTime());
-    ui->endTimeFilter->setTime(QTime::currentTime().addSecs(3600));
-    connect(ui->dateFilter, &QDateEdit::dateChanged, this, [this]() {
-        availabilityFilterEnabled = true;
-    });
-    connect(ui->startTimeFilter, &QTimeEdit::timeChanged, this, [this]() {
-        availabilityFilterEnabled = true;
-    });
-    connect(ui->endTimeFilter, &QTimeEdit::timeChanged, this, [this]() {
-        availabilityFilterEnabled = true;
-    });
-    connect(ui->applyFiltersButton, &QPushButton::clicked, this, [this]() {
-        applyFilters();
-    });
     api->getBuildings();
     applyFilters();
 }
@@ -94,14 +144,44 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
     titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #423358;");
     mainLayout->addWidget(titleLabel);
 
-    QLabel *infoLabel = new QLabel(QString("Корпус: %1\nВместимость: %2 человек")
-                                   .arg(room["building"].toString())
-                                   .arg(room["capacity"].toInt()), dialog);
+    const QString typeLabel = roomTypeLabel(room["type"].toString());
+    const int capacity = room["capacity"].toInt();
+
+    QLabel *infoLabel = new QLabel(
+        QString("Тип: %1\nКорпус: %2\nВместимость: %3 человек")
+            .arg(typeLabel)
+            .arg(room["building"].toString())
+            .arg(capacity),
+        dialog
+    );
     mainLayout->addWidget(infoLabel);
+
+    QStringList equipment;
+    if (room["has_projector"].toBool()) {
+        equipment << "Проектор";
+    }
+    if (room["has_whiteboard"].toBool()) {
+        equipment << "Доска";
+    }
+    if (room["has_wifi"].toBool()) {
+        equipment << "Wi-Fi";
+    }
+    if (room["has_printers"].toBool()) {
+        equipment << "Принтер";
+    }
+    if (room["has_phone"].toBool()) {
+        equipment << "Телефон";
+    }
+
+    const QString equipmentText = equipment.isEmpty()
+        ? "Оборудование: нет"
+        : QString("Оборудование: %1").arg(equipment.join(", "));
+    mainLayout->addWidget(new QLabel(equipmentText, dialog));
 
     mainLayout->addWidget(new QLabel("Выберите дату:", dialog));
     QDateEdit *dateEdit = new QDateEdit(QDate::currentDate(), dialog);
     dateEdit->setCalendarPopup(true);
+    disablePastDates(dateEdit);
     mainLayout->addWidget(dateEdit);
 
     QHBoxLayout *timeLayout = new QHBoxLayout();
@@ -109,12 +189,17 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
     QVBoxLayout *startLayout = new QVBoxLayout();
     startLayout->addWidget(new QLabel("Начало:", dialog));
     QTimeEdit *startTime = new QTimeEdit(QTime::currentTime(), dialog);
+    startTime->setMinimumTime(kDayStart);
+    startTime->setMaximumTime(kDayEnd);
     startLayout->addWidget(startTime);
     
     QVBoxLayout *endLayout = new QVBoxLayout();
     endLayout->addWidget(new QLabel("Окончание:", dialog));
     QTimeEdit *endTime = new QTimeEdit(QTime::currentTime().addSecs(3600), dialog);
+    endTime->setMinimumTime(kDayStart);
+    endTime->setMaximumTime(kDayEnd);
     endLayout->addWidget(endTime);
+    clampTimeRange(startTime, endTime);
 
     timeLayout->addLayout(startLayout);
     timeLayout->addLayout(endLayout);
@@ -129,10 +214,14 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
         QString start = startTime->time().toString("HH:mm:ss");
         QString end = endTime->time().toString("HH:mm:ss");
 
-        if (startTime->time() >= endTime->time()) {
-            QMessageBox::warning(dialog, "Ошибка", "Время начала должно быть меньше времени окончания.");
+        if (startTime->time() < kDayStart || endTime->time() > kDayEnd) {
+            QMessageBox::warning(dialog, "Ошибка", "Бронирование доступно с 08:00 до 23:00.");
             return;
         }
+         if (startTime->time() >= endTime->time()) {
+             QMessageBox::warning(dialog, "Ошибка", "Время начала должно быть меньше времени окончания.");
+             return;
+         }
 
         api->bookRoom(room["id"].toInt(), date, start, end);
         dialog->accept();
@@ -198,17 +287,6 @@ void room_list_window::applyFilters() {
     if (ui->printersCheck->isChecked()) {
         filters.hasPrinters = true;
     }
-    if (ui->phoneCheck->isChecked()) {
-        filters.hasPhone = true;
-    }
-
-    if (ui->dateFilter->date().isValid() && availabilityFilterEnabled) {
-        filters.date = ui->dateFilter->date();
-    }
-    if (availabilityFilterEnabled) {
-        filters.startTime = ui->startTimeFilter->time();
-        filters.endTime = ui->endTimeFilter->time();
-    }
 
     currentFilters = filters;
     api->getRooms(currentFilters);
@@ -219,15 +297,17 @@ void room_list_window::renderRooms(const QJsonArray &roomsArray) {
     buttons.clear();
     for (const QJsonValue &value : roomsArray) {
         QJsonObject room = value.toObject();
-        QString label = QString("Аудитория %1\n%2")
-                            .arg(room["room_number"].toString())
-                            .arg(room["building"].toString());
-                        
+        const QString typeLabel = roomTypeLabel(room["type"].toString());
+        const QString roomNumber = room["room_number"].toString();
+        QString label = QString("Аудитория №%1\n%2")
+                            .arg(roomNumber)
+                            .arg(typeLabel);
+
         QPushButton *btn = new QPushButton(label, this);
         btn->setProperty("class", "RoomButton"); 
-        btn->setMinimumSize(220, 140);  
+        btn->setMinimumSize(220, 140);
         btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        
+
         connect(btn, &QPushButton::clicked, [this, room]() {
             showRoomDetails(room);
         });
@@ -262,6 +342,10 @@ void room_list_window::updateGrid() {
             row++;
         }
     }
+}
+
+void room_list_window::scheduleApplyFilters() {
+    filterTimer->start();
 }
 
 }  // namespace roomsched::roomlistwindow

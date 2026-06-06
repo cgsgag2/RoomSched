@@ -7,8 +7,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
-#include <QDate>
-#include <QTime>
 #include <optional>
 
 namespace roomsched::client {
@@ -22,10 +20,6 @@ struct RoomFilters {
     std::optional<bool> hasWhiteboard;
     std::optional<bool> hasWifi;
     std::optional<bool> hasPrinters;
-    std::optional<bool> hasPhone;
-    std::optional<QDate> date;
-    std::optional<QTime> startTime;
-    std::optional<QTime> endTime;
 };
 
 class ApiClient : public QObject {

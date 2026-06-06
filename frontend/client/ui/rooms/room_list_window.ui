@@ -152,7 +152,7 @@
                             </property>
                             <property name="sizeHint" stdset="0">
                                 <size>
-                                    <width>40</width>
+                                    <width>20</width>
                                     <height>20</height>
                                 </size>
                             </property>
@@ -182,7 +182,13 @@
                     <widget class="QComboBox" name="typeCombo">
                       <property name="minimumSize">
                         <size>
-                          <width>150</width>
+                          <width>130</width>
+                          <height>30</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>130</width>
                           <height>30</height>
                         </size>
                       </property>
@@ -206,6 +212,18 @@
                       <property name="maximum">
                         <number>500</number>
                       </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>70</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>70</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
                     </widget>
                   </item>
                   <item>
@@ -223,49 +241,37 @@
                       <property name="maximum">
                         <number>500</number>
                       </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QLabel" name="dateLabel">
-                      <property name="text">
-                        <string>Дата:</string>
+                      <property name="minimumSize">
+                        <size>
+                          <width>70</width>
+                          <height>0</height>
+                        </size>
                       </property>
-                      <property name="styleSheet">
-                        <string>font-weight: 600; color: #423358; font-size: 14px;</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QDateEdit" name="dateFilter">
-                      <property name="calendarPopup">
-                        <bool>true</bool>
+                      <property name="maximumSize">
+                        <size>
+                          <width>70</width>
+                          <height>16777215</height>
+                        </size>
                       </property>
                     </widget>
                   </item>
-                  <item>
-                    <widget class="QLabel" name="timeFromLabel">
-                      <property name="text">
-                        <string>С:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QTimeEdit" name="startTimeFilter"/>
-                  </item>
-                  <item>
-                    <widget class="QLabel" name="timeToLabel">
-                      <property name="text">
-                        <string>По:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QTimeEdit" name="endTimeFilter"/>
-                  </item>
+
                   <item>
                     <widget class="QCheckBox" name="projectorCheck">
                       <property name="text">
                         <string>Проектор</string>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>90</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>90</width>
+                          <height>16777215</height>
+                        </size>
                       </property>
                     </widget>
                   </item>
@@ -274,12 +280,36 @@
                       <property name="text">
                         <string>Доска</string>
                       </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>75</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>75</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
                     </widget>
                   </item>
                   <item>
                     <widget class="QCheckBox" name="wifiCheck">
                       <property name="text">
                         <string>Wi-Fi</string>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>65</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>65</width>
+                          <height>16777215</height>
+                        </size>
                       </property>
                     </widget>
                   </item>
@@ -288,19 +318,17 @@
                       <property name="text">
                         <string>Принтер</string>
                       </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QCheckBox" name="phoneCheck">
-                      <property name="text">
-                        <string>Телефон</string>
+                      <property name="minimumSize">
+                        <size>
+                          <width>80</width>
+                          <height>0</height>
+                        </size>
                       </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QPushButton" name="applyFiltersButton">
-                      <property name="text">
-                        <string>Применить</string>
+                      <property name="maximumSize">
+                        <size>
+                          <width>80</width>
+                          <height>16777215</height>
+                        </size>
                       </property>
                     </widget>
                   </item>

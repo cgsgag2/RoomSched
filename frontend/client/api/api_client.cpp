@@ -195,7 +195,7 @@ void ApiClient::sendGet(
             return;
         }
 
-        if (trimmed == "null") {
+        if (trimmed.isEmpty() || trimmed == "null" || trimmed == "\"null\"") {
             QJsonObject finalObj;
             finalObj["rooms"] = QJsonArray();
             finalObj["status"] = "success";
@@ -291,18 +291,6 @@ void ApiClient::getRooms(const RoomFilters &filters) {
     if (filters.hasPrinters) {
         query.addQueryItem("has_printers", *filters.hasPrinters ? "1" : "0");
     }
-    if (filters.hasPhone) {
-        query.addQueryItem("has_phone", *filters.hasPhone ? "1" : "0");
-    }
-    if (filters.date) {
-        query.addQueryItem("date", filters.date->toString("yyyy-MM-dd"));
-    }
-    if (filters.startTime) {
-        query.addQueryItem("start_time", filters.startTime->toString("HH:mm:ss"));
-    }
-    if (filters.endTime) {
-        query.addQueryItem("end_time", filters.endTime->toString("HH:mm:ss"));
-    }
 
     QString path = "/rooms";
     const QString queryString = query.toString(QUrl::FullyEncoded);
@@ -313,6 +301,8 @@ void ApiClient::getRooms(const RoomFilters &filters) {
     sendGet(path, [this](QJsonObject obj) {
         if (obj.contains("rooms") && obj["rooms"].isArray()) {
             emit roomsLoaded(obj["rooms"].toArray());
+        } else {
+            emit roomsLoaded(QJsonArray());
         }
     }, [this](QString err) {
         qDebug() << "Rooms loading error:" << err;

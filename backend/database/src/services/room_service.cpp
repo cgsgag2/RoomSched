@@ -233,11 +233,13 @@ bool roomsched::db::room_service::is_room_available(
     const std::string &end
 ) {
     auto avail = availability_repo.find_availab_by_room_and_date(room_id, date);
-    if (!avail || !avail->is_available) {
-        return false;
-    }
-    if (start < avail->available_from || end > avail->available_to) {
-        return false;
+    if (avail) {
+        if (!avail->is_available) {
+            return false;
+        }
+        if (start < avail->available_from || end > avail->available_to) {
+            return false;
+        }
     }
     return true;
 }

@@ -46,14 +46,15 @@ private:
     void updateGrid();
     void showRoomDetails(const QJsonObject &room);
     void applyFilters();
+    void scheduleApplyFilters();
     void renderRooms(const QJsonArray &roomsArray);
     roomsched::client::ApiClient *api;
     roomsched::client::RoomFilters currentFilters;
     QJsonArray rooms;
     QList<QPushButton*> buttons;
     QTimer *resizeTimer;
+    QTimer *filterTimer;
     QString initialBuildingName;
-    bool availabilityFilterEnabled = false;
 };
 
 }  // namespace roomsched::roomlistwindow
