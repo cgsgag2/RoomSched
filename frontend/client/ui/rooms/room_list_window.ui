@@ -23,7 +23,7 @@
                 }
 
                 /* Шапка окон */
-                QLabel#label {
+                QLabel#titleLabel {
                     background-color: #423358; /* шапка */
                     color: #ffffff;            /* текст */
                     font-size: 22px;
@@ -102,7 +102,7 @@
                 <number>15</number>
             </property>
             <item>
-                <widget class="QLabel" name="label">
+                <widget class="QLabel" name="titleLabel">
                     <property name="text">
                         <string>Доступные аудитории для бронирования</string>
                     </property>

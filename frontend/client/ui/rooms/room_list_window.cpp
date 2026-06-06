@@ -133,7 +133,8 @@ room_list_window::~room_list_window() {
 
 void room_list_window::showRoomDetails(const QJsonObject &room) {
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("Бронирование аудитории: " + room["room_number"].toString());
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowTitle("Бронирование аудитории");
     dialog->setMinimumSize(360, 420);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(dialog);
@@ -292,6 +293,15 @@ void room_list_window::applyFilters() {
     api->getRooms(currentFilters);
 }
 
+void room_list_window::updateViewForBuilding(const QString &buildingName) {
+    initialBuildingName = buildingName;
+    if (!allRooms.isEmpty()) {
+        int idx = ui->buildingCombo->findText(buildingName);
+        if (idx >= 0) ui->buildingCombo->setCurrentIndex(idx);
+        applyBuildingFilter();
+    }
+}
+
 void room_list_window::renderRooms(const QJsonArray &roomsArray) {
     qDeleteAll(buttons);
     buttons.clear();
@@ -318,30 +328,47 @@ void room_list_window::renderRooms(const QJsonArray &roomsArray) {
 
 void room_list_window::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
+    if (!isVisible() || buttons.isEmpty()) {
+        return;
+    }
     if (!rooms.isEmpty()) {
         resizeTimer->start(50);
     }
 }
 
 void room_list_window::updateGrid() {
+    if (buttons.isEmpty()) return;
+    int windowWidth = ui->scrollArea->width();
+    if (windowWidth < 100) return;
     QLayoutItem *item;
     while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            item->widget()->hide(); 
+            item->widget()->setParent(nullptr);
+        }
         delete item;
     }
 
-    int windowWidth = ui->scrollArea->width(); 
     int buttonWidth = 220;
     int spacing = 15;
     int max_columns = qMax(1, windowWidth / (buttonWidth + spacing));
     int row = 0, col = 0;
     for (QPushButton *btn : buttons) {
-        ui->gridLayout->addWidget(btn, row, col);
+        if (!btn) continue;
+        btn->show();
+        ui->gridLayout->addWidget(btn, row, col, Qt::AlignLeft | Qt::AlignTop);
         col++;
         if (col >= max_columns) {
             col = 0;
             row++;
         }
     }
+    ui->gridLayout->setColumnStretch(max_columns, 1);
+}
+
+void room_list_window::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    updateGrid();
 }
 
 void room_list_window::scheduleApplyFilters() {

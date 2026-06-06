@@ -6,13 +6,13 @@
 #include "ui_auth_window.h"
 #include "register_window.hpp"
 #include "main_menu_window.hpp"
+#include "main_parent_window.hpp"
 
 namespace roomsched::authwindow {
 
-auth_window::auth_window(QWidget *parent)
-    : QWidget(parent), ui(new Ui::auth_window) {
+auth_window::auth_window(roomsched::client::ApiClient *existingApi, QWidget *parent)
+    : QWidget(parent), ui(new Ui::auth_window), api(existingApi) {
     ui->setupUi(this);
-    api = new roomsched::client::ApiClient(this);
     ui->errorLabel->hide();
     ui->registerButton->setFlat(true);
     connect(
@@ -21,7 +21,6 @@ auth_window::auth_window(QWidget *parent)
     connect(
         ui->passwordInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide
     );
-    ui->registerButton->setFlat(true);
     connect(
         ui->loginButton, &QPushButton::clicked, this,
         &auth_window::on_login_clicked
@@ -45,14 +44,24 @@ auth_window::auth_window(QWidget *parent)
     );
     connect(
         api, &roomsched::client::ApiClient::loginSuccess, this,
-        [this](QJsonObject) {
-            auto *menu = new roomsched::mainmenu::main_menu_window(
-                api, 
-                ui->mailInput->text(), 
-                nullptr 
-            );
-            menu->show();
-            this->close();
+        [this](QJsonObject data) {
+            int userId = -1;
+        if (data.contains("user") && data["user"].isObject()) {
+            userId = data["user"].toObject().value("id").toInt(-1);
+        }
+        api->setParent(nullptr);
+        auto *mainWindow = new roomsched::menu::main_parent_window(
+            api, 
+            ui->mailInput->text(), 
+            userId,
+            nullptr 
+        );
+        mainWindow->setAttribute(Qt::WA_DeleteOnClose);
+        connect(mainWindow, &roomsched::menu::main_parent_window::logoutSuccessful, this, [this](){
+            this->show(); 
+        });
+        mainWindow->show();
+                this->close();
         }
     );
 }

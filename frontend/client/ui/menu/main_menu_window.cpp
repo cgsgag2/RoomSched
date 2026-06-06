@@ -16,11 +16,9 @@ main_menu_window::main_menu_window(
       email(userEmail) {
     ui->setupUi(this);
 
-    // Логика подписок на сигналы API и кнопки
     connect(api, &roomsched::client::ApiClient::buildingsLoaded, this, &main_menu_window::onBuildingsLoaded);
     connect(ui->continueButton, &QPushButton::clicked, this, &main_menu_window::onContinueClicked);
 
-    // Запрашиваем список зданий
     api->getBuildings();
 }
 
@@ -64,16 +62,7 @@ void main_menu_window::onContinueClicked() {
     return;
     }
 
-    auto *rooms = new roomsched::roomlistwindow::room_list_window(
-        api,
-        "", // Передаем пустое имя, если его нет в этом окне
-        email,
-        "", // Передаем пустой телефон
-        nullptr, // Открываем как самостоятельное окно
-        buildingName
-    );
-    rooms->show();
-    this->close();
+    emit buildingSelected(buildingName);
 }
 
 }  // namespace roomsched::mainmenu

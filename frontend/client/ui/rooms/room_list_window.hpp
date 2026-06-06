@@ -33,6 +33,7 @@ public:
         const QString &initialBuilding = {}
     );
     ~room_list_window();
+    void updateViewForBuilding(const QString &buildingName);
 
 private slots:
     void onRoomsLoaded(const QJsonArray &roomsArray);
@@ -40,6 +41,7 @@ private slots:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
 private:
     Ui::room_list_window *ui;
