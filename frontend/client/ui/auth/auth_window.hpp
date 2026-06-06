@@ -20,7 +20,7 @@ class auth_window : public QWidget {
     Q_OBJECT
 
 public:
-    explicit auth_window(QWidget *parent = nullptr);
+    auth_window(roomsched::client::ApiClient *existingApi, QWidget *parent = nullptr);
     ~auth_window();
     auth_window(const auth_window &) = delete;
     auth_window &operator=(const auth_window &) = delete;

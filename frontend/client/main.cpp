@@ -10,17 +10,10 @@ namespace roomsched {
 
 int run_client(int argc, char *argv[]) {
     QApplication app(argc, argv);
-
-    int test_case = 0;
-    if (test_case == 0) {
-        roomsched::authwindow::auth_window auth;
-        auth.show();
-        return app.exec();
-    } else if (test_case == 1) {
-        roomsched::roomlistwindow::room_list_window room_list;
-        room_list.show();
-        return app.exec();
-    }
+    app.setQuitOnLastWindowClosed(false);
+    auto *api = new roomsched::client::ApiClient();
+    auto *auth = new roomsched::authwindow::auth_window(api);
+    auth->show();    
     return app.exec();
 }
 

@@ -26,6 +26,9 @@ public:
     );
     ~main_menu_window();
 
+signals:
+    void buildingSelected(const QString &buildingName);
+
 private slots:
     void onBuildingsLoaded(const QJsonArray &buildingsArray);
     void onContinueClicked();

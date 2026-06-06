@@ -75,7 +75,6 @@ void roomsched::server::setup_all_routes(
             return server.get_booking_handler().get_bookings_by_room(room_id);
         });
 
-    // Not MVP
     CROW_ROUTE(app_ref, "/booking/<int>/cancel")
         .methods("POST"_method)([&server](int booking_id) {
             return server.get_booking_handler().cancel_booking(booking_id);

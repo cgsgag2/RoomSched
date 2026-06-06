@@ -140,6 +140,9 @@ void ApiClient::sendPost(
 ) {
     QNetworkRequest req(BASE_URL + url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    if (!m_token.isEmpty()) {
+        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+    }
     auto reply = manager.post(req, QJsonDocument(body).toJson());
 
     connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
@@ -175,6 +178,9 @@ void ApiClient::sendGet(
     std::function<void(QString)> onError
 ) {
     QNetworkRequest req(BASE_URL + url);
+    if (!m_token.isEmpty()) {
+        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+    }
     auto reply = manager.get(req);
 
     connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
@@ -235,11 +241,15 @@ void ApiClient::login(const QString &email, const QString &password) {
 
     sendPost("/login", body,
         [this](QJsonObject response) {
-            // Сохраняем ID, который пришел от сервера
             if (response.contains("user")) {
                 m_currentUserId = response["user"].toObject()["id"].toInt();
             } else if (response.contains("id")) {
                 m_currentUserId = response["id"].toInt();
+            }
+            if (response.contains("token")) {
+                m_token = response["token"].toString();
+            } else if (response.contains("jwt")) { 
+                m_token = response["jwt"].toString();
             }
             emit loginSuccess(response);
         },
@@ -252,6 +262,12 @@ void ApiClient::login(const QString &email, const QString &password) {
 void ApiClient::getRooms(int buildingId) {
     sendGet("/rooms", [this](QJsonObject obj) {
         if (obj.contains("rooms") && obj["rooms"].isArray()) {
+            QJsonArray roomsArray = obj["rooms"].toArray();
+            m_roomsCache.clear();
+            for (const auto &val : roomsArray) {
+                QJsonObject room = val.toObject();
+                m_roomsCache[room["id"].toInt()] = room;
+            }
             emit roomsLoaded(obj["rooms"].toArray());
         }
     }, [this](QString err) {
@@ -261,6 +277,9 @@ void ApiClient::getRooms(int buildingId) {
 
 void ApiClient::getBuildings() {
     QNetworkRequest req(BASE_URL + "/buildings");
+    if (!m_token.isEmpty()) {
+        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+    }
     auto reply = manager.get(req);
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
@@ -300,6 +319,61 @@ void ApiClient::bookRoom(int roomId, const QString &date, const QString &start, 
     }, [this](QString err) {
         emit bookingFinished(false, err);
     });
+}
+
+void ApiClient::getUserBookings(int userId) {
+    QNetworkRequest req;
+    req.setUrl(QUrl(BASE_URL + QString("/bookings/user/%1").arg(userId)));
+    if (!m_token.isEmpty()) {
+        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+    }
+    QNetworkReply *reply = manager.get(req);
+
+    connect(reply, &QNetworkReply::finished, [this, reply]() {
+        QByteArray raw = reply->readAll();
+        qDebug() << "RAW RESPONSE:" << raw;
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qDebug() << "User bookings loading error:" << formatError(reply, statusCode, raw);
+            emit bookingsLoaded(QJsonArray());
+            reply->deleteLater();
+            return;
+        }
+
+        QJsonDocument doc = QJsonDocument::fromJson(raw);
+        if (doc.isArray()) {
+            emit bookingsLoaded(doc.array());
+        } else if (doc.isObject() && doc.object().contains("bookings")) {
+            emit bookingsLoaded(doc.object().value("bookings").toArray());
+        } else {
+            qDebug() << "User bookings loading error: unexpected JSON structure";
+            emit bookingsLoaded(QJsonArray());
+        }
+
+        reply->deleteLater();
+    });
+}
+
+void ApiClient::cancelBooking(int bookingId) {
+    QJsonObject emptyBody;
+    QString urlPath = QString("/booking/%1/cancel").arg(bookingId);
+
+    sendPost(urlPath, emptyBody, [this](QJsonObject obj) {
+        emit bookingCancelled(true, "Бронирование успешно отменено!");
+    }, [this](QString err) {
+        emit bookingCancelled(false, err);
+    });
+}
+
+QJsonObject ApiClient::getRoomInfo(int roomId) const {
+    return m_roomsCache.value(roomId);
+}
+
+void ApiClient::logout() {
+    m_currentUserId = -1;
+    m_token.clear(); 
+    qDebug() << "User logged out, session cleared.";
 }
 
 }  // namespace roomsched::client

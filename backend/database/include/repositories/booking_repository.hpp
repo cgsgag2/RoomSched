@@ -18,7 +18,7 @@ private:
 public:
     booking_repository(database &db_);
 
-    void create_booking(const booking &new_booking);
+    int create_booking(const booking &new_booking);
     void delete_booking(int id);
 
     std::optional<booking> get_booking_by_id(int id);
@@ -27,6 +27,7 @@ public:
     std::vector<booking> get_bookings_by_room(int room_id);
 
     bool update_status(int id, booking_status new_status);
+    void delete_past_bookings();
 
     bool is_room_already_booked(
         int room_id,
