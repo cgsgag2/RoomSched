@@ -7,11 +7,85 @@
 #include "server/utils/json_utils.hpp"
 
 namespace roomsched::server {
+namespace {
+std::optional<bool> parse_bool(const char *value) {
+    if (!value) {
+        return std::nullopt;
+    }
+    std::string str(value);
+    if (str == "1" || str == "true" || str == "TRUE") {
+        return true;
+    }
+    if (str == "0" || str == "false" || str == "FALSE") {
+        return false;
+    }
+    return std::nullopt;
+}
+
+std::optional<int> parse_int(const char *value) {
+    if (!value) {
+        return std::nullopt;
+    }
+    try {
+        return std::stoi(value);
+    } catch (const std::exception &) {
+        return std::nullopt;
+    }
+}
+
+std::optional<std::string> parse_string(const char *value) {
+    if (!value) {
+        return std::nullopt;
+    }
+    return std::string(value);
+}
+
+int get_room_capacity(const db::room &room) {
+    if (room.is_lecture_room()) {
+        return room.capacity.value_or(0);
+    }
+    if (room.is_coworking_room()) {
+        return room.total_capacity.value_or(0);
+    }
+    if (room.is_office_room()) {
+        return room.number_of_chairs.value_or(0);
+    }
+    return 0;
+}
+}  // namespace
+
 room_handler::room_handler(db::database_manager &db_) : db(db_) {
 }
 
-crow::response room_handler::get_all_rooms() {
-    auto rooms = db.rooms().get_all_rooms();
+crow::response room_handler::get_all_rooms(const crow::request &req) {
+    db::room_filter filter;
+    filter.building = parse_string(req.url_params.get("building"));
+
+    if (auto type = req.url_params.get("type")) {
+        try {
+            filter.type = db::convert_string_to_roomtype(type);
+        } catch (const std::exception &) {
+            return json_utils::error_response(
+                "Unknown room type",
+                400,
+                error_codes::kBadRequest
+            );
+        }
+    }
+
+    filter.capacity_min = parse_int(req.url_params.get("capacity_min"));
+    filter.capacity_max = parse_int(req.url_params.get("capacity_max"));
+    filter.has_projector = parse_bool(req.url_params.get("has_projector"));
+    filter.has_whiteboard = parse_bool(req.url_params.get("has_whiteboard"));
+    filter.has_wifi = parse_bool(req.url_params.get("has_wifi"));
+    filter.has_printers = parse_bool(req.url_params.get("has_printers"));
+    filter.has_phone = parse_bool(req.url_params.get("has_phone"));
+
+    filter.date = parse_string(req.url_params.get("date"));
+    filter.start_time = parse_string(req.url_params.get("start_time"));
+    filter.end_time = parse_string(req.url_params.get("end_time"));
+
+    auto rooms = db.rooms().find_rooms(filter);
 
     crow::json::wvalue resp;
 
@@ -23,6 +97,33 @@ crow::response room_handler::get_all_rooms() {
         resp[i]["total_area"] = rooms[i].total_area;
         resp[i]["description"] = rooms[i].description;
         resp[i]["type"] = db::convert_roomtype_to_string(rooms[i].type);
+        resp[i]["capacity"] = get_room_capacity(rooms[i]);
+
+        if (rooms[i].has_projector) {
+            resp[i]["has_projector"] = rooms[i].has_projector.value();
+        }
+        if (rooms[i].has_whiteboard) {
+            resp[i]["has_whiteboard"] = rooms[i].has_whiteboard.value();
+        }
+        if (rooms[i].capacity) {
+            resp[i]["lecture_capacity"] = rooms[i].capacity.value();
+        }
+        if (rooms[i].total_capacity) {
+            resp[i]["coworking_capacity"] =
+                rooms[i].total_capacity.value();
+        }
+        if (rooms[i].has_wifi) {
+            resp[i]["has_wifi"] = rooms[i].has_wifi.value();
+        }
+        if (rooms[i].has_printers) {
+            resp[i]["has_printers"] = rooms[i].has_printers.value();
+        }
+        if (rooms[i].number_of_chairs) {
+            resp[i]["office_chairs"] = rooms[i].number_of_chairs.value();
+        }
+        if (rooms[i].has_phone) {
+            resp[i]["has_phone"] = rooms[i].has_phone.value();
+        }
     }
 
     return crow::response(200, resp);

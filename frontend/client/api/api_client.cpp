@@ -2,6 +2,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QNetworkRequest>
+#include <QUrlQuery>
 
 namespace roomsched::client {
 
@@ -145,31 +146,35 @@ void ApiClient::sendPost(
     }
     auto reply = manager.post(req, QJsonDocument(body).toJson());
 
-    connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
-        QByteArray raw = reply->readAll();
-        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        QJsonDocument doc = QJsonDocument::fromJson(raw);
+    connect(
+        reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
+            QByteArray raw = reply->readAll();
+            int statusCode =
+                reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                    .toInt();
+            QJsonDocument doc = QJsonDocument::fromJson(raw);
 
-        if (reply->error() != QNetworkReply::NoError) {
-            onError(formatError(reply, statusCode, raw));
+            if (reply->error() != QNetworkReply::NoError) {
+                onError(formatError(reply, statusCode, raw));
+                reply->deleteLater();
+                return;
+            }
+
+            if (!doc.isObject()) {
+                onError("Сервер прислал пустой ответ или не JSON");
+                reply->deleteLater();
+                return;
+            }
+
+            QJsonObject obj = doc.object();
+            if (obj.value("status").toString() == "error") {
+                onError(formatError(obj, statusCode, reply->errorString()));
+            } else {
+                onSuccess(obj);
+            }
             reply->deleteLater();
-            return;
         }
-
-        if (!doc.isObject()) {
-            onError("Сервер прислал пустой ответ или не JSON");
-            reply->deleteLater();
-            return;
-        }
-
-        QJsonObject obj = doc.object();
-        if (obj.value("status").toString() == "error") {
-            onError(formatError(obj, statusCode, reply->errorString()));
-        } else {
-            onSuccess(obj);
-        }
-        reply->deleteLater();
-    });
+    );
 }
 
 void ApiClient::sendGet(
@@ -177,49 +182,78 @@ void ApiClient::sendGet(
     std::function<void(QJsonObject)> onSuccess,
     std::function<void(QString)> onError
 ) {
-    QNetworkRequest req(BASE_URL + url);
+    QUrl finalUrl(url);
+    if (!finalUrl.isValid() || finalUrl.isRelative()) {
+        finalUrl = QUrl(BASE_URL + url);
+    }
+    qDebug() << "GET request" << finalUrl.toString();
+    QNetworkRequest req(finalUrl);
     if (!m_token.isEmpty()) {
-        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+        req.setRawHeader(
+            "Authorization", QString("Bearer %1").arg(m_token).toUtf8()
+        );
     }
     auto reply = manager.get(req);
 
-    connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
-        QByteArray raw = reply->readAll();
-        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        qDebug() << "GET" << reply->url().toString() << "Response:" << raw;
+    connect(
+        reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
+            QByteArray raw = reply->readAll();
+            QByteArray trimmed = raw.trimmed();
+            int statusCode =
+                reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                    .toInt();
+            qDebug() << "GET" << reply->url().toString() << "Response:" << raw;
 
-        if (reply->error() != QNetworkReply::NoError) {
-            onError(formatError(reply, statusCode, raw));
+            if (reply->error() != QNetworkReply::NoError) {
+                onError(formatError(reply, statusCode, raw));
+                reply->deleteLater();
+                return;
+            }
+
+            if (trimmed.isEmpty() || trimmed == "null" ||
+                trimmed == "\"null\"") {
+                QJsonObject finalObj;
+                finalObj["rooms"] = QJsonArray();
+                finalObj["status"] = "success";
+                onSuccess(finalObj);
+                reply->deleteLater();
+                return;
+            }
+
+            QJsonDocument doc = QJsonDocument::fromJson(raw);
+            if (doc.isNull()) {
+                onError("Сервер прислал пустой ответ или не JSON");
+                reply->deleteLater();
+                return;
+            }
+
+            QJsonObject finalObj;
+            if (doc.isArray()) {
+                finalObj["rooms"] = doc.array();
+                finalObj["status"] = "success";
+            } else if (doc.isObject()) {
+                finalObj = doc.object();
+            }
+
+            if (finalObj.value("status").toString() == "error") {
+                onError(
+                    formatError(finalObj, statusCode, reply->errorString())
+                );
+            } else {
+                onSuccess(finalObj);
+            }
+
             reply->deleteLater();
-            return;
         }
-
-        QJsonDocument doc = QJsonDocument::fromJson(raw);
-        if (doc.isNull()) {
-            onError("Сервер прислал пустой ответ или не JSON");
-            reply->deleteLater();
-            return;
-        }
-
-        QJsonObject finalObj;
-        if (doc.isArray()) {
-            finalObj["rooms"] = doc.array();
-            finalObj["status"] = "success";
-        } else if (doc.isObject()) {
-            finalObj = doc.object();
-        }
-
-        if (finalObj.value("status").toString() == "error") {
-            onError(formatError(finalObj, statusCode, reply->errorString()));
-        } else {
-            onSuccess(finalObj);
-        }
-
-        reply->deleteLater();
-    });
+    );
 }
 
-void ApiClient::registerUser(const QString &fullname, const QString &email, const QString &phone, const QString &password) {
+void ApiClient::registerUser(
+    const QString &fullname,
+    const QString &email,
+    const QString &phone,
+    const QString &password
+) {
     QJsonObject body{
         {"fullname", fullname},
         {"email", email},
@@ -227,11 +261,13 @@ void ApiClient::registerUser(const QString &fullname, const QString &email, cons
         {"password", password}
     };
 
-    sendPost("/register", body, [this](QJsonObject obj) {
-        emit registrationFinished(true, "Регистрация успешна");
-    }, [this](QString err) {
-        emit registrationFinished(false, err);
-    });
+    sendPost(
+        "/register", body,
+        [this](QJsonObject obj) {
+            emit registrationFinished(true, "Регистрация успешна");
+        },
+        [this](QString err) { emit registrationFinished(false, err); }
+    );
 }
 
 void ApiClient::login(const QString &email, const QString &password) {
@@ -239,7 +275,8 @@ void ApiClient::login(const QString &email, const QString &password) {
     body["email"] = email.trimmed();
     body["password"] = password.trimmed();
 
-    sendPost("/login", body,
+    sendPost(
+        "/login", body,
         [this](QJsonObject response) {
             if (response.contains("user")) {
                 m_currentUserId = response["user"].toObject()["id"].toInt();
@@ -248,31 +285,65 @@ void ApiClient::login(const QString &email, const QString &password) {
             }
             if (response.contains("token")) {
                 m_token = response["token"].toString();
-            } else if (response.contains("jwt")) { 
+            } else if (response.contains("jwt")) {
                 m_token = response["jwt"].toString();
             }
             emit loginSuccess(response);
         },
-        [this](QString error) {
-            emit loginFailed(error);
-        }
+        [this](QString error) { emit loginFailed(error); }
     );
 }
 
-void ApiClient::getRooms(int buildingId) {
-    sendGet("/rooms", [this](QJsonObject obj) {
-        if (obj.contains("rooms") && obj["rooms"].isArray()) {
-            QJsonArray roomsArray = obj["rooms"].toArray();
-            m_roomsCache.clear();
-            for (const auto &val : roomsArray) {
-                QJsonObject room = val.toObject();
-                m_roomsCache[room["id"].toInt()] = room;
+void ApiClient::getRooms(const RoomFilters &filters) {
+    QUrlQuery query;
+    if (filters.building && !filters.building->isEmpty()) {
+        query.addQueryItem("building", *filters.building);
+    }
+    if (filters.type && !filters.type->isEmpty()) {
+        query.addQueryItem("type", *filters.type);
+    }
+    if (filters.capacityMin) {
+        query.addQueryItem(
+            "capacity_min", QString::number(*filters.capacityMin)
+        );
+    }
+    if (filters.capacityMax) {
+        query.addQueryItem(
+            "capacity_max", QString::number(*filters.capacityMax)
+        );
+    }
+    if (filters.hasProjector) {
+        query.addQueryItem("has_projector", *filters.hasProjector ? "1" : "0");
+    }
+    if (filters.hasWhiteboard) {
+        query.addQueryItem(
+            "has_whiteboard", *filters.hasWhiteboard ? "1" : "0"
+        );
+    }
+    if (filters.hasWifi) {
+        query.addQueryItem("has_wifi", *filters.hasWifi ? "1" : "0");
+    }
+    if (filters.hasPrinters) {
+        query.addQueryItem("has_printers", *filters.hasPrinters ? "1" : "0");
+    }
+
+    QString path = "/rooms";
+    const QString queryString = query.toString(QUrl::FullyEncoded);
+    if (!queryString.isEmpty()) {
+        path += "?" + queryString;
+    }
+
+    sendGet(
+        path,
+        [this](QJsonObject obj) {
+            if (obj.contains("rooms") && obj["rooms"].isArray()) {
+                emit roomsLoaded(obj["rooms"].toArray());
+            } else {
+                emit roomsLoaded(QJsonArray());
             }
-            emit roomsLoaded(obj["rooms"].toArray());
-        }
-    }, [this](QString err) {
-        qDebug() << "Rooms loading error:" << err;
-    });
+        },
+        [this](QString err) { qDebug() << "Rooms loading error:" << err; }
+    );
 }
 
 void ApiClient::getBuildings() {
@@ -284,10 +355,12 @@ void ApiClient::getBuildings() {
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
         QByteArray raw = reply->readAll();
-        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        int statusCode =
+            reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << "Buildings loading error:" << formatError(reply, statusCode, raw);
+            qDebug() << "Buildings loading error:"
+                     << formatError(reply, statusCode, raw);
             reply->deleteLater();
             return;
         }
@@ -305,20 +378,28 @@ void ApiClient::getBuildings() {
     });
 }
 
-void ApiClient::bookRoom(int roomId, const QString &date, const QString &start, const QString &end) {
+void ApiClient::bookRoom(
+    int roomId,
+    const QString &date,
+    const QString &start,
+    const QString &end
+) {
     QJsonObject body;
     body["room_id"] = roomId;
     body["user_id"] = m_currentUserId;
     body["booking_date"] = date;
     body["start_time"] = start;
     body["end_time"] = end;
-    qDebug() << "Sending JSON:" << QJsonDocument(body).toJson(QJsonDocument::Compact);
+    qDebug() << "Sending JSON:"
+             << QJsonDocument(body).toJson(QJsonDocument::Compact);
 
-    sendPost("/book-room", body, [this](QJsonObject obj) {
-        emit bookingFinished(true, "Успешно забронировано!");
-    }, [this](QString err) {
-        emit bookingFinished(false, err);
-    });
+    sendPost(
+        "/book-room", body,
+        [this](QJsonObject obj) {
+            emit bookingFinished(true, "Успешно забронировано!");
+        },
+        [this](QString err) { emit bookingFinished(false, err); }
+    );
 }
 
 void ApiClient::getUserBookings(int userId) {

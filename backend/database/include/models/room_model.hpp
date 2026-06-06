@@ -15,6 +15,7 @@ enum class room_type {
     LECTURE,
     COWORKING,
     PRIVATE_OFFICE,
+    SEMINAR,
 };
 
 inline room_type convert_string_to_roomtype(const std::string &str) {
@@ -24,6 +25,8 @@ inline room_type convert_string_to_roomtype(const std::string &str) {
         return room_type::COWORKING;
     } else if (str == "PRIVATE_OFFICE" || str == "private_office") {
         return room_type::PRIVATE_OFFICE;
+    } else if (str == "SEMINAR" || str == "seminar") {
+        return room_type::SEMINAR;
     } else {
         throw std::runtime_error("Unknown room type!");
     }
@@ -36,6 +39,8 @@ inline std::string convert_roomtype_to_string(room_type type) {
         return "coworking";
     } else if (type == room_type::PRIVATE_OFFICE) {
         return "private_office";
+    } else if (type == room_type::SEMINAR) {
+        return "seminar";
     } else {
         throw std::runtime_error("Unknown room type!");
     }
@@ -77,6 +82,10 @@ public:
 
     bool is_office_room() const {
         return type == room_type::PRIVATE_OFFICE;
+    }
+
+    bool is_seminar_room() const {
+        return type == room_type::SEMINAR;
     }
 };
 

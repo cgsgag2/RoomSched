@@ -132,6 +132,73 @@ std::vector<roomsched::db::room> roomsched::db::room_repository::get_all_rooms(
     return all_rooms;
 }
 
+std::vector<roomsched::db::room>
+roomsched::db::room_repository::get_all_rooms_detailed() {
+    std::vector<room> all_rooms;
+
+    try {
+        const auto result = db.query(
+            "SELECT r.id, r.room_number, r.building, r.floor, r.total_area, "
+            "r.description, r.type, lr.has_projector, lr.has_whiteboard, "
+            "lr.capacity, cs.total_capacity, cs.has_wifi, cs.has_printers, "
+            "po.number_of_chairs, po.has_phone FROM rooms_all r "
+            "LEFT JOIN lecture_room lr ON r.id = lr.room_id "
+            "LEFT JOIN coworking_space cs ON r.id = cs.room_id "
+            "LEFT JOIN private_office po ON r.id = po.room_id "
+            "ORDER BY r.id"
+        );
+
+        for (const auto &row : result) {
+            room current_room;
+            current_room.id = row["id"].as<int>();
+            current_room.room_number = row["room_number"].as<std::string>();
+            current_room.building = row["building"].as<std::string>();
+            current_room.floor = row["floor"].as<int>();
+            current_room.total_area = row["total_area"].as<double>();
+            current_room.description = row["description"].as<std::string>();
+            current_room.type =
+                convert_string_to_roomtype(row["type"].as<std::string>());
+
+            if (!row["has_projector"].is_null()) {
+                current_room.has_projector = row["has_projector"].as<bool>();
+            }
+            if (!row["has_whiteboard"].is_null()) {
+                current_room.has_whiteboard = row["has_whiteboard"].as<bool>();
+            }
+            if (!row["capacity"].is_null()) {
+                current_room.capacity = row["capacity"].as<int>();
+            }
+            if (!row["total_capacity"].is_null()) {
+                current_room.total_capacity = row["total_capacity"].as<int>();
+            }
+            if (!row["has_wifi"].is_null()) {
+                current_room.has_wifi = row["has_wifi"].as<bool>();
+            }
+            if (!row["has_printers"].is_null()) {
+                current_room.has_printers = row["has_printers"].as<bool>();
+            }
+            if (!row["number_of_chairs"].is_null()) {
+                current_room.number_of_chairs =
+                    row["number_of_chairs"].as<int>();
+            }
+            if (!row["has_phone"].is_null()) {
+                current_room.has_phone = row["has_phone"].as<bool>();
+            }
+
+            all_rooms.push_back(current_room);
+        }
+    } catch (const pqxx::sql_error &e) {
+        std::cerr << "[SQL ERROR in get_all_rooms_detailed]: " << e.what()
+                  << std::endl
+                  << "Query: " << e.query() << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "[DB EXCEPTION in get_all_rooms_detailed]: " << e.what()
+                  << std::endl;
+    }
+
+    return all_rooms;
+}
+
 void roomsched::db::room_repository::create_lecture_room(
     int room_id,
     const room &r

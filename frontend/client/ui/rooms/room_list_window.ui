@@ -152,15 +152,189 @@
                             </property>
                             <property name="sizeHint" stdset="0">
                                 <size>
-                                    <width>40</width>
+                                    <width>20</width>
                                     <height>20</height>
                                 </size>
                             </property>
                         </spacer>
                     </item>
                 </layout>
-            </item>
-            <item>
+              </item>
+              <item>
+                <layout class="QHBoxLayout" name="advancedFilterLayout">
+                  <property name="leftMargin">
+                    <number>20</number>
+                  </property>
+                  <property name="rightMargin">
+                    <number>20</number>
+                  </property>
+                  <item>
+                    <widget class="QLabel" name="typeLabel">
+                      <property name="text">
+                        <string>Тип:</string>
+                      </property>
+                      <property name="styleSheet">
+                        <string>font-weight: 600; color: #423358; font-size: 14px;</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QComboBox" name="typeCombo">
+                      <property name="minimumSize">
+                        <size>
+                          <width>130</width>
+                          <height>30</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>130</width>
+                          <height>30</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QLabel" name="capacityLabel">
+                      <property name="text">
+                        <string>Места:</string>
+                      </property>
+                      <property name="styleSheet">
+                        <string>font-weight: 600; color: #423358; font-size: 14px;</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QSpinBox" name="capacityMinSpin">
+                      <property name="minimum">
+                        <number>0</number>
+                      </property>
+                      <property name="maximum">
+                        <number>500</number>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>70</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>70</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QLabel" name="capacityDashLabel">
+                      <property name="text">
+                        <string>-</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QSpinBox" name="capacityMaxSpin">
+                      <property name="minimum">
+                        <number>0</number>
+                      </property>
+                      <property name="maximum">
+                        <number>500</number>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>70</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>70</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+
+                  <item>
+                    <widget class="QCheckBox" name="projectorCheck">
+                      <property name="text">
+                        <string>Проектор</string>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>90</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>90</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QCheckBox" name="whiteboardCheck">
+                      <property name="text">
+                        <string>Доска</string>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>75</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>75</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QCheckBox" name="wifiCheck">
+                      <property name="text">
+                        <string>Wi-Fi</string>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>65</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>65</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QCheckBox" name="printersCheck">
+                      <property name="text">
+                        <string>Принтер</string>
+                      </property>
+                      <property name="minimumSize">
+                        <size>
+                          <width>80</width>
+                          <height>0</height>
+                        </size>
+                      </property>
+                      <property name="maximumSize">
+                        <size>
+                          <width>80</width>
+                          <height>16777215</height>
+                        </size>
+                      </property>
+                    </widget>
+                  </item>
+                </layout>
+              </item>
+              <item>
                 <widget class="QScrollArea" name="scrollArea">
                     <property name="widgetResizable">
                         <bool>true</bool>
