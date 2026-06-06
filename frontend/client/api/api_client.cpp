@@ -181,6 +181,9 @@ void ApiClient::sendGet(
     }
     qDebug() << "GET request" << finalUrl.toString();
     QNetworkRequest req(finalUrl);
+    if (!m_token.isEmpty()) {
+        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+    }
     auto reply = manager.get(req);
 
     connect(reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
@@ -256,6 +259,9 @@ void ApiClient::login(const QString &email, const QString &password) {
                 m_currentUserId = response["user"].toObject()["id"].toInt();
             } else if (response.contains("id")) {
                 m_currentUserId = response["id"].toInt();
+            }
+            if (response.contains("token")) {
+                m_token = response["token"].toString();
             }
             emit loginSuccess(response);
         },

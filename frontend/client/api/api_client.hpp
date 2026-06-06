@@ -43,6 +43,7 @@ signals:
 
 private:
     int m_currentUserId = -1;
+    QString m_token;
     QNetworkAccessManager manager;
     void sendPost(
         const QString &url,
