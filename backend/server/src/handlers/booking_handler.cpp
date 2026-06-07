@@ -190,6 +190,8 @@ crow::response bookings_handler::get_bookings_by_user(int user_id) {
         resp[i]["created_at"] = bookings[i].created_at;
         resp[i]["status"] =
             db::convert_booking_status_to_string(bookings[i].status);
+        resp[i]["room_number"] = bookings[i].room_number;
+        resp[i]["building_name"] = bookings[i].building_name;
     }
 
     return crow::response(200, resp);

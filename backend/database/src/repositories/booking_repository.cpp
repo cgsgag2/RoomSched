@@ -126,8 +126,11 @@ std::vector<booking> booking_repository::get_bookings_by_user(int user_id) {
 
     try {
         auto rows = db.query(
-            "SELECT id, room_id, user_id, booking_date, start_time, end_time, created_at, status "
-            "FROM room_booking WHERE user_id = $1 AND status != 'cancelled' ORDER BY booking_date DESC, start_time DESC",
+            "SELECT rb.id, rb.room_id, rb.user_id, rb.booking_date, rb.start_time, rb.end_time, rb.created_at, rb.status, "
+            "ra.room_number, ra.building "
+            "FROM room_booking rb "
+            "LEFT JOIN rooms_all ra ON rb.room_id = ra.id "
+            "WHERE rb.user_id = $1 AND rb.status != 'cancelled' ORDER BY rb.booking_date DESC, rb.start_time DESC",
             user_id
         );
 
@@ -140,7 +143,9 @@ std::vector<booking> booking_repository::get_bookings_by_user(int user_id) {
             b.start_time = row["start_time"].as<std::string>();
             b.end_time = row["end_time"].as<std::string>();
             b.created_at = row["created_at"].as<std::string>();
-            b.status = convert_string_to_booking_status(row["status"].as<std::string>());   
+            b.status = convert_string_to_booking_status(row["status"].as<std::string>());
+            b.room_number = row["room_number"].as<std::string>();
+            b.building_name = row["building"].as<std::string>();
             bookings.push_back(b);
         }
     } catch (const std::exception &e) {
