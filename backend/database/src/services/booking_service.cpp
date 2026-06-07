@@ -41,15 +41,14 @@ roomsched::db::booking_service::create_booking(
     }
 
     booking b;
-
     b.room_id = room_id;
     b.user_id = user_id;
     b.date = date;
     b.start_time = start;
     b.end_time = end;
     b.status = db::booking_status::CONFIRMED;
-
-    booking_repo.create_booking(b);
+    int new_id = booking_repo.create_booking(b);
+    b.id = new_id;
 
     return b;
 }
@@ -82,4 +81,8 @@ roomsched::db::booking_service::get_user_bookings(int user_id) {
 std::vector<roomsched::db::booking>
 roomsched::db::booking_service::get_room_bookings(int room_id) {
     return booking_repo.get_bookings_by_room(room_id);
+}
+
+void roomsched::db::booking_service::delete_past_bookings() {
+    booking_repo.delete_past_bookings();
 }

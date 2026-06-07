@@ -24,6 +24,9 @@ public:
 
     std::string created_at;
     booking_status status;
+
+    std::string room_number;
+    std::string building_name;
 };
 
 inline booking_status convert_string_to_booking_status(const std::string &str) {

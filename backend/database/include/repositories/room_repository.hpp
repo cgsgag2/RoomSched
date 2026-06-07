@@ -28,6 +28,7 @@ public:
     int create_room(const room &new_room);
     std::optional<room> get_room_by_id(int id);
     std::vector<room> get_all_rooms();
+    std::vector<room> get_all_rooms_detailed();
 };
 }  // namespace roomsched::db
 

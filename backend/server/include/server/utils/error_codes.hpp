@@ -15,6 +15,7 @@ constexpr const char *kPhoneExists = "PHONE_EXISTS";
 constexpr const char *kFullnameExists = "FULLNAME_EXISTS";
 constexpr const char *kRegistrationFailed = "REGISTRATION_FAILED";
 constexpr const char *kInvalidCredentials = "INVALID_CREDENTIALS";
+constexpr const char *kBadRequest = "BAD_REQUEST";
 constexpr const char *kBookingConflict = "BOOKING_CONFLICT";
 constexpr const char *kInvalidTimeRange = "INVALID_TIME_RANGE";
 constexpr const char *kBookingNotFound = "BOOKING_NOT_FOUND";

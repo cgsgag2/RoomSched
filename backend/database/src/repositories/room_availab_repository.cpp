@@ -62,7 +62,7 @@ roomsched::db::room_availab_repository::find_availab_by_room_and_date(
             std::cout << "Can't find availability for room with id: " << room_id
                       << " and date: " << date << std::endl;
 
-            return avail;
+            return std::nullopt;
         }
         const auto row = result[0];
 
@@ -89,7 +89,8 @@ roomsched::db::room_availab_repository::find_availab_by_room_and_date(
 }
 
 std::vector<roomsched::db::room_availability>
-roomsched::db::room_availab_repository::get_all_availabs_by_roomid(int room_id
+roomsched::db::room_availab_repository::get_all_availabs_by_roomid(
+    int room_id
 ) {
     std::vector<room_availability> all_avails;
 
