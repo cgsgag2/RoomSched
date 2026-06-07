@@ -63,6 +63,8 @@ bool roomsched::db::database::is_connected_db() const {
 }
 
 void roomsched::db::database::execute_raw(const std::string &sql) {
+    std::scoped_lock lock(db_mutex);
+
     if (!is_connected || !conn) {
         throw std::runtime_error("Database not connected");
     }

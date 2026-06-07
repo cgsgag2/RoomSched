@@ -8,6 +8,7 @@
 #include <exception>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <pqxx/pqxx>
 #include <utility>
 #include "db_config.hpp"
@@ -20,6 +21,8 @@ private:
     db_config config;  // TODO: later log from special config file - ?
     bool is_connected = false;
 
+    std::mutex db_mutex;
+
 public:
     database(const db_config &config_);
 
@@ -29,6 +32,8 @@ public:
 
     template <typename... Args>
     pqxx::result query(const std::string &sql, Args &&...args) {
+        std::scoped_lock lock(db_mutex);
+
         if (!is_connected || !conn) {
             throw std::runtime_error("Database not connected");
         }
@@ -52,6 +57,8 @@ public:
 
     template <typename... Args>
     void execute(const std::string &sql, Args &&...args) {
+        std::scoped_lock lock(db_mutex);
+
         if (!is_connected || !conn) {
             throw std::runtime_error("Database not connected");
         }

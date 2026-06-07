@@ -49,17 +49,18 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
             );
         }
 
-        bool success = db.telegram().send_message(
-            1392046019, "Room with '" + std::to_string(room_id) +
-                            "' id booked successfully!"
-        );
-        if (!success) {
-            std::cerr
-                << "[BOOKING] [TELEGRAM ERROR]: Message for telegram FAILED!"
-                << std::endl;
-            return json_utils::error_response(
-                "Message for telegram failed", 500, error_codes::kTelegramError
-            );
+        auto chat_id = db.users().get_telegram_chat_id(user_id);
+        if (chat_id) {
+            std::string message =
+                "Booking confirmed!\n\nRoom: " + std::to_string(room_id) +
+                "\nDate: " + date + "\nTime: " + start + " - " + end;
+
+            bool success = db.telegram().send_message(*chat_id, message);
+
+            if (!success) {
+                std::cerr << "[BOOKING][TELEGRAM] "
+                          << "failed to send notification" << std::endl;
+            }
         }
 
         crow::json::wvalue resp;

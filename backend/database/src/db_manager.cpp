@@ -10,7 +10,7 @@ roomsched::db::database_manager::database_manager(const db_config &config)
       buildingService(db),
       roomService(db),
       bookingService(db, roomService),
-      telegramService() {
+      telegramService(db) {
     db.connect();
 }
 

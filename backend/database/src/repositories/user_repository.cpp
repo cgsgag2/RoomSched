@@ -185,4 +185,46 @@ void user_repository::print_all_users() {
     }
 }
 
+bool user_repository::set_telegram_chat_id(int user_id, std::int64_t chat_id) {
+    try {
+        db.execute(
+            "UPDATE users SET telegram_chat_id = $1 WHERE id = $2", chat_id,
+            user_id
+        );
+
+        return true;
+    } catch (const pqxx::sql_error &e) {
+        std::cerr << "[SQL ERROR in set_telegram_chat_id]: " << e.what()
+                  << std::endl
+                  << "Query: " << e.query() << std::endl;
+        return false;
+    } catch (const std::exception &e) {
+        std::cerr << "[DB EXCEPTION in set_telegram_chat_id]: " << e.what()
+                  << std::endl;
+        return false;
+    }
+}
+
+std::optional<std::int64_t> user_repository::get_telegram_chat_id(int user_id) {
+    try {
+        auto result = db.query(
+            "SELECT telegram_chat_id FROM users WHERE id = $1", user_id
+        );
+
+        if (result.empty()) {
+            return std::nullopt;
+        }
+
+        if (result[0]["telegram_chat_id"].is_null()) {
+            return std::nullopt;
+        }
+
+        return result[0]["telegram_chat_id"].as<std::int64_t>();
+    } catch (const std::exception &e) {
+        std::cerr << "[DB ERROR in get_telegram_chat_id]: " << e.what()
+                  << std::endl;
+        return std::nullopt;
+    }
+}
+
 }  // namespace roomsched::db

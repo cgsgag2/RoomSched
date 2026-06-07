@@ -14,7 +14,8 @@ app::app()
       authHandler(db_manager),
       roomHandler(db_manager),
       bookingHandler(db_manager),
-      buildingsHandler(db_manager) {
+      buildingsHandler(db_manager),
+      telegramHandler(db_manager) {
     // server_app.loglevel(crow::LogLevel::Debug);
 
     db_manager.buildings().create_default_buildings();
@@ -40,6 +41,10 @@ bookings_handler &app::get_booking_handler() {
 
 buildings_handler &app::get_buildings_handler() {
     return buildingsHandler;
+}
+
+telegram_handler &app::get_telegram_handler() {
+    return telegramHandler;
 }
 
 void app::run(int port) {

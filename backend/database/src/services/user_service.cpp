@@ -123,4 +123,8 @@ bool user_service::is_password_strong(const std::string &password) {
     return true;
 }
 
+std::optional<std::int64_t> user_service::get_telegram_chat_id(int user_id) {
+    return repo.get_telegram_chat_id(user_id);
+}
+
 }  // namespace roomsched::db

@@ -46,6 +46,8 @@ public:
 
     bool email_exists(const std::string &email);
 
+    std::optional<std::int64_t> get_telegram_chat_id(int user_id);
+
 private:
     std::string hash_password(const std::string &password);
     bool verify_password(const std::string &password, const std::string &hash);

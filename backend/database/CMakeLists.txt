@@ -10,7 +10,13 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libcpr/cpr.git
     GIT_TAG 1.11.0
 )
-FetchContent_MakeAvailable(cpr)
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+
+FetchContent_MakeAvailable(cpr json)
 
 file(GLOB_RECURSE DB_SOURCES "src/*.cpp")
 
@@ -27,4 +33,5 @@ target_link_libraries(db
     PUBLIC
         ${PQXX_LIBRARIES}
         cpr::cpr
+        nlohmann_json::nlohmann_json
 )

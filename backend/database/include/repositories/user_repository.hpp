@@ -5,6 +5,7 @@
 #ifndef USER_REPOSITORY_HPP_
 #define USER_REPOSITORY_HPP_
 
+#include <cstdint>
 #include <optional>
 #include "../core/db_core.hpp"
 #include "../models/user_model.hpp"
@@ -28,6 +29,9 @@ public:
     std::optional<user> get_user_by_email(const std::string &email);
     std::vector<user> get_all_users();
     void print_all_users();
+
+    bool set_telegram_chat_id(int user_id, std::int64_t chat_id);
+    std::optional<std::int64_t> get_telegram_chat_id(int user_id);
 };
 }  // namespace roomsched::db
 
