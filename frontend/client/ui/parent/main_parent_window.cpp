@@ -26,7 +26,7 @@ main_parent_window::main_parent_window(
     setLayout(mainLayout);
     homeWindow = new roomsched::mainmenu::main_menu_window(existingApi, userEmail, this);    
     roomsWindow = new roomsched::roomlistwindow::room_list_window(existingApi, "", userEmail, "", this);
-    existingApi->getRooms(1);
+    existingApi->getRooms();
     bookingsWindow = new roomsched::bookings::user_bookings_window(existingApi, userId, this);
 
     setupWindowHeader(homeWindow, "Добро пожаловать!");
