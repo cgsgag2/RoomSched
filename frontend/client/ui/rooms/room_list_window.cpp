@@ -295,11 +295,11 @@ void room_list_window::applyFilters() {
 
 void room_list_window::updateViewForBuilding(const QString &buildingName) {
     initialBuildingName = buildingName;
-    if (!allRooms.isEmpty()) {
-        int idx = ui->buildingCombo->findText(buildingName);
-        if (idx >= 0) ui->buildingCombo->setCurrentIndex(idx);
-        applyBuildingFilter();
+    int idx = ui->buildingCombo->findText(buildingName);
+    if (idx >= 0) {
+        ui->buildingCombo->setCurrentIndex(idx);
     }
+    applyFilters();
 }
 
 void room_list_window::renderRooms(const QJsonArray &roomsArray) {

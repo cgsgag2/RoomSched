@@ -40,10 +40,8 @@ void user_bookings_window::onBookingsLoaded(const QJsonArray &bookingsArray) {
         }
         int bookingId = booking["id"].toInt();
         int roomId = booking["room_id"].toInt();
-        QJsonObject roomInfo = api->getRoomInfo(roomId);
-        qDebug() << "DEBUG: RoomID:" << roomId << "RoomData:" << roomInfo;
-        QString roomName = roomInfo.value("room_number").toString("Ауд. " + QString::number(roomId));
-        QString buildingName = roomInfo.value("building").toString("Неизвестное здание");
+        QString roomName = booking["room_number"].toString("Ауд. " + QString::number(roomId));
+        QString buildingName = booking["building_name"].toString("Неизвестное здание");
         QString date = QDate::fromString(booking["booking_date"].toString(), "yyyy-MM-dd")
                                     .toString("dd.MM.yy");
         QString start = booking["start_time"].toString().left(5);
