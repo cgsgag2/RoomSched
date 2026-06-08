@@ -89,6 +89,9 @@ room_list_window::room_list_window(
             QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
             applyFilters();
         } else {
+            if (message == "Некорректный интервал времени.") {
+                message = "Комната уже забронирована на это время! Выберите другое.";
+            }
             QMessageBox::warning(this, "Ошибка бронирования", message);
         }
     });
@@ -226,7 +229,7 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
         QString end = endTime->time().toString("HH:mm:ss");
 
         if (startTime->time() < kDayStart || endTime->time() > kDayEnd) {
-            QMessageBox::warning(dialog, "Ошибка", "Бронирование доступно с 08:00 до 23:00.");
+            QMessageBox::warning(dialog, "Ошибка", "Бронирование доступно с 08:00 до 23:59.");
             return;
         }
          if (startTime->time() >= endTime->time()) {
