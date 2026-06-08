@@ -35,7 +35,10 @@
         }
 
         /* Общий стиль для кнопок навигации  */
-        QPushButton#btnHome, QPushButton#btnRooms, QPushButton#btnBookings {
+        QPushButton#btnHome, 
+        QPushButton#btnRooms, 
+        QPushButton#btnBookings,
+        QPushButton#btnTelegram {
           background-color: transparent;
           color: #ffffff;
           border: 2px solid #68518c;
@@ -49,7 +52,10 @@
           max-height: 45px;
         }
 
-        QPushButton#btnHome:hover, QPushButton#btnRooms:hover, QPushButton#btnBookings:hover {
+        QPushButton#btnHome:hover, 
+        QPushButton#btnRooms:hover, 
+        QPushButton#btnBookings:hover,
+        QPushButton#btnTelegram:hover {
           background-color: rgba(255, 255, 255, 0.12);
           border-color: #553e72;
         }
@@ -143,6 +149,20 @@
      </property>
      <property name="text">
       <string>📋 Мои бронирования</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnTelegram">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+      </sizepolicy>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>📱 Привязать Telegram</string>
      </property>
     </widget>
    </item>

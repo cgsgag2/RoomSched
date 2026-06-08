@@ -7,7 +7,15 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(20) UNIQUE NOT NULL,
     role VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP DEFAULT NOW(),
-    last_login TIMESTAMP
+    last_login TIMESTAMP,
+    telegram_chat_id BIGINT UNIQUE
+);
+
+-- telegram data
+CREATE TABLE IF NOT EXISTS telegram_links (
+    code VARCHAR(16) PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- buildings data

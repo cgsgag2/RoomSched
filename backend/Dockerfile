@@ -13,6 +13,8 @@ RUN apt update && apt install -y \
     libboost-date-time-dev \
     libssl-dev \
     libgtest-dev \
+    libcurl4-openssl-dev \
+    nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

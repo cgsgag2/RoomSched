@@ -11,6 +11,7 @@
 #include "server/handlers/booking_handler.hpp"
 #include "server/handlers/buildings_handler.hpp"
 #include "server/handlers/room_handler.hpp"
+#include "server/handlers/telegram_handler.hpp"
 
 // project namespace, server module namespace
 namespace roomsched::server {
@@ -23,6 +24,7 @@ private:
     room_handler roomHandler;
     bookings_handler bookingHandler;
     buildings_handler buildingsHandler;
+    telegram_handler telegramHandler;
 
     void setup_routes();
 
@@ -34,6 +36,7 @@ public:
     room_handler &get_room_handler();
     bookings_handler &get_booking_handler();
     buildings_handler &get_buildings_handler();
+    telegram_handler &get_telegram_handler();
 
     void run(int port);
 };

@@ -3,19 +3,20 @@
  ***/
 
 #include "server/handlers/booking_handler.hpp"
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include "db_manager.hpp"
 #include "server/utils/error_codes.hpp"
 #include "server/utils/json_utils.hpp"
-#include <ctime>
-#include <chrono>
-#include <sstream>
-#include <iomanip>
 
 namespace roomsched::server {
 
-bool is_past_time(const std::string& date_str, const std::string& time_str) {
-    std::string full_datetime = date_str + " " + time_str; // "YYYY-MM-DD HH:MM"
+bool is_past_time(const std::string &date_str, const std::string &time_str) {
+    std::string full_datetime =
+        date_str + " " + time_str;  // "YYYY-MM-DD HH:MM"
     std::tm tm_struct = {};
     std::istringstream ss(full_datetime);
     ss >> std::get_time(&tm_struct, "%Y-%m-%d %H:%M");
@@ -47,11 +48,13 @@ void bookings_handler::run_cleanup_worker() {
         for (int i = 0; i < 300 && !stop_worker_; ++i) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-        if (stop_worker_) break;
+        if (stop_worker_) {
+            break;
+        }
         try {
             std::lock_guard<std::mutex> lock(db_mutex_);
-            db.bookings().delete_past_bookings(); 
-        } catch (const std::exception& e) {
+            db.bookings().delete_past_bookings();
+        } catch (const std::exception &e) {
             std::cerr << "[CLEANUP WORKER ERROR]: " << e.what() << std::endl;
         }
     }
@@ -61,9 +64,7 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
     auto json = crow::json::load(req.body);
     if (!json) {
         return json_utils::error_response(
-            "Invalid JSON",
-            400,
-            error_codes::kInvalidJson
+            "Invalid JSON", 400, error_codes::kInvalidJson
         );
     }
 
@@ -72,9 +73,7 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
             {"room_id", "user_id", "booking_date", "start_time", "end_time"}
         )) {
         return json_utils::error_response(
-            "Missing fields in json data",
-            400,
-            error_codes::kMissingFields
+            "Missing fields in json data", 400, error_codes::kMissingFields
         );
     }
 
@@ -86,8 +85,7 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
 
     if (is_past_time(date, start)) {
         return json_utils::error_response(
-            "Cannot create booking for past time",
-            400,
+            "Cannot create booking for past time", 400,
             error_codes::kInvalidTimeRange
         );
     }
@@ -95,17 +93,34 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
     try {
         std::optional<roomsched::db::booking> created;
         std::lock_guard<std::mutex> lock(db_mutex_);
-        created = db.bookings().create_booking(room_id, user_id, date, start, end);
-        
+        created =
+            db.bookings().create_booking(room_id, user_id, date, start, end);
+
         if (!created) {
             std::cerr << "[BOOKING]: invalid time range on " << date
                       << " from '" << start << "' to '" << end << "' "
                       << std::endl;
             return json_utils::error_response(
-                "Invalid time range",
-                422,
-                error_codes::kInvalidTimeRange
+                "Invalid time range", 422, error_codes::kInvalidTimeRange
             );
+        }
+
+        auto chat_id = db.users().get_telegram_chat_id(user_id);
+        auto room_info = db.rooms().get_room_by_id(room_id);
+
+        if (chat_id && room_info) {
+            std::string message =
+                "Ваше бронирование успешно создано.\n\nАудитория: " +
+                room_info->room_number + "\nКорпус: " + room_info->building +
+                "\nДата: " + date + "\nВремя: " + start + " - " + end +
+                "\n\nПодробная информация доступна в приложении RoomSched.";
+
+            bool success = db.telegram().send_message(*chat_id, message);
+
+            if (!success) {
+                std::cerr << "[BOOKING][TELEGRAM] "
+                          << "failed to send notification" << std::endl;
+            }
         }
 
         crow::json::wvalue resp;
@@ -114,40 +129,67 @@ crow::response bookings_handler::create_booking(const crow::request &req) {
 
         std::cout << "[BOOKING]: booking creation success: " << std::endl;
         return crow::response(200, resp);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::string err_msg = e.what();
         if (err_msg == "ROOM_ALREADY_BOOKED") {
             return json_utils::error_response(
-                "Room is already booked for this time",
-                409,
+                "Room is already booked for this time", 409,
                 error_codes::kBookingConflict
             );
         }
         return json_utils::error_response(
-            "Unexpected booking error",
-            500,
-            error_codes::kInternalError
+            "Unexpected booking error", 500, error_codes::kInternalError
         );
     }
 }
 
 crow::response bookings_handler::cancel_booking(int booking_id) {
-    std::cout << "[DEBUG] Attempting to cancel booking. Received ID: " << booking_id << std::endl;
+    std::cout << "[DEBUG] Attempting to cancel booking. Received ID: "
+              << booking_id << std::endl;
     std::lock_guard<std::mutex> lock(db_mutex_);
-    
+
+    auto book_info = db.bookings().get_booking_by_id(booking_id);
+    if (!book_info) {
+        return json_utils::error_response(
+            "Booking not found", 404, error_codes::kBookingNotFound
+        );
+    }
+
     bool success = db.bookings().cancel_booking(booking_id);
     if (!success) {
         return json_utils::error_response(
-            "Booking not found",
-            404,
-            error_codes::kBookingNotFound
+            "Booking not found", 404, error_codes::kBookingNotFound
         );
+    }
+
+    int user_id = book_info->user_id;
+    int room_id = book_info->room_id;
+    std::string date = book_info->date;
+    std::string start = book_info->start_time;
+    std::string end = book_info->end_time;
+
+    auto chat_id = db.users().get_telegram_chat_id(user_id);
+    auto room_info = db.rooms().get_room_by_id(room_id);
+    if (chat_id && room_info) {
+        std::string message =
+            "Бронирование успешно отменено.\n\nАудитория: " +
+            room_info->room_number + "\nКорпус: " + room_info->building +
+            "\nДата: " + date + "\nВремя: " + start + " - " + end +
+            "\n\nИзменения сохранены.\nПодробности доступны в приложении "
+            "RoomSched.";
+
+        bool success = db.telegram().send_message(*chat_id, message);
+
+        if (!success) {
+            std::cerr << "[BOOKING][TELEGRAM] "
+                      << "failed to send notification" << std::endl;
+        }
     }
 
     crow::json::wvalue response_json;
     response_json["status"] = "success";
     response_json["message"] = "Booking cancelled";
-    
+
     return crow::response(200, response_json);
 }
 
@@ -173,7 +215,7 @@ crow::response bookings_handler::get_all_bookings() {
 
 crow::response bookings_handler::get_bookings_by_user(int user_id) {
     std::vector<roomsched::db::booking> bookings;
-        {
+    {
         std::lock_guard<std::mutex> lock(db_mutex_);
         bookings = db.bookings().get_user_bookings(user_id);
     };

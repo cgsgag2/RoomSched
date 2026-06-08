@@ -1,14 +1,16 @@
 #ifndef USER_BOOKINGS_WINDOW_HPP_
 #define USER_BOOKINGS_WINDOW_HPP_
 
-#include <QWidget>
 #include <QJsonArray>
-#include "api_client.hpp" 
+#include <QWidget>
+#include "api_client.hpp"
 
 QT_BEGIN_NAMESPACE
+
 namespace Ui {
 class user_bookings_window;
 }
+
 QT_END_NAMESPACE
 
 namespace roomsched::bookings {
@@ -37,6 +39,6 @@ private:
     int currentUserId;
 };
 
-} // namespace roomsched::bookings
+}  // namespace roomsched::bookings
 
-#endif // USER_BOOKINGS_WINDOW_HPP_
+#endif  // USER_BOOKINGS_WINDOW_HPP_

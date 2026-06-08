@@ -5,6 +5,7 @@
 #ifndef USER_MODEL_HPP_
 #define USER_MODEL_HPP_
 
+#include <cstdint>
 #include <ostream>
 #include <string>
 
@@ -20,6 +21,7 @@ public:
     std::string role;
     std::string created_at;
     std::string last_login;
+    std::int64_t telegram_chat_id;
 };
 
 }  // namespace roomsched::db
