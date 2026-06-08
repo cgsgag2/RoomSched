@@ -5,11 +5,13 @@
 
 #include "auth_window.hpp"
 #include "room_list_window.hpp"
+#include "LabelSelectorFilter.hpp"
 
 namespace roomsched {
 
 int run_client(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    app.installEventFilter(new LabelSelectorFilter());
     app.setQuitOnLastWindowClosed(false);
     auto *api = new roomsched::client::ApiClient();
     auto *auth = new roomsched::authwindow::auth_window(api);

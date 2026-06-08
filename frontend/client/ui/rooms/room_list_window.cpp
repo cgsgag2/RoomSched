@@ -22,7 +22,7 @@
 namespace {
 
 const QTime kDayStart(8, 0);
-const QTime kDayEnd(23, 0);
+const QTime kDayEnd(23, 59);
 
 void clampTimeRange(QTimeEdit *startEdit, QTimeEdit *endEdit) {
     if (!startEdit || !endEdit) return;
@@ -201,6 +201,16 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
     endTime->setMaximumTime(kDayEnd);
     endLayout->addWidget(endTime);
     clampTimeRange(startTime, endTime);
+
+    clampTimeRange(startTime, endTime);
+
+    QObject::connect(startTime, &QTimeEdit::timeChanged, dialog, [startTime, endTime]() {
+        clampTimeRange(startTime, endTime);
+    });
+
+    QObject::connect(endTime, &QTimeEdit::timeChanged, dialog, [startTime, endTime]() {
+        clampTimeRange(startTime, endTime);
+    });
 
     timeLayout->addLayout(startLayout);
     timeLayout->addLayout(endLayout);
