@@ -29,6 +29,7 @@ public:
     bool cancel_booking(int booking_id);
     void delete_past_bookings();
 
+    std::optional<booking> get_booking_by_id(int booking_id);
     std::vector<booking> get_all_bookings();
     std::vector<booking> get_user_bookings(int user_id);
     std::vector<booking> get_room_bookings(int room_id);

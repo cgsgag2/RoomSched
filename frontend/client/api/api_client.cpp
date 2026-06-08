@@ -142,12 +142,15 @@ void ApiClient::sendPost(
     QNetworkRequest req(BASE_URL + url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (!m_token.isEmpty()) {
-        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+        req.setRawHeader(
+            "Authorization", QString("Bearer %1").arg(m_token).toUtf8()
+        );
     }
     auto reply = manager.post(req, QJsonDocument(body).toJson());
 
     connect(
-        reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
+        reply, &QNetworkReply::finished,
+        [this, reply, onSuccess, onError]() {
             QByteArray raw = reply->readAll();
             int statusCode =
                 reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
@@ -196,7 +199,8 @@ void ApiClient::sendGet(
     auto reply = manager.get(req);
 
     connect(
-        reply, &QNetworkReply::finished, [this, reply, onSuccess, onError]() {
+        reply, &QNetworkReply::finished,
+        [this, reply, onSuccess, onError]() {
             QByteArray raw = reply->readAll();
             QByteArray trimmed = raw.trimmed();
             int statusCode =
@@ -236,8 +240,7 @@ void ApiClient::sendGet(
             }
 
             if (finalObj.value("status").toString() == "error") {
-                onError(
-                    formatError(finalObj, statusCode, reply->errorString())
+                onError(formatError(finalObj, statusCode, reply->errorString())
                 );
             } else {
                 onSuccess(finalObj);
@@ -258,8 +261,7 @@ void ApiClient::registerUser(
         {"fullname", fullname},
         {"email", email},
         {"phone", phone},
-        {"password", password}
-    };
+        {"password", password}};
 
     sendPost(
         "/register", body,
@@ -349,7 +351,9 @@ void ApiClient::getRooms(const RoomFilters &filters) {
 void ApiClient::getBuildings() {
     QNetworkRequest req(BASE_URL + "/buildings");
     if (!m_token.isEmpty()) {
-        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+        req.setRawHeader(
+            "Authorization", QString("Bearer %1").arg(m_token).toUtf8()
+        );
     }
     auto reply = manager.get(req);
 
@@ -406,17 +410,21 @@ void ApiClient::getUserBookings(int userId) {
     QNetworkRequest req;
     req.setUrl(QUrl(BASE_URL + QString("/bookings/user/%1").arg(userId)));
     if (!m_token.isEmpty()) {
-        req.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+        req.setRawHeader(
+            "Authorization", QString("Bearer %1").arg(m_token).toUtf8()
+        );
     }
     QNetworkReply *reply = manager.get(req);
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
         QByteArray raw = reply->readAll();
         qDebug() << "RAW RESPONSE:" << raw;
-        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        int statusCode =
+            reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << "User bookings loading error:" << formatError(reply, statusCode, raw);
+            qDebug() << "User bookings loading error:"
+                     << formatError(reply, statusCode, raw);
             emit bookingsLoaded(QJsonArray());
             reply->deleteLater();
             return;
@@ -428,7 +436,8 @@ void ApiClient::getUserBookings(int userId) {
         } else if (doc.isObject() && doc.object().contains("bookings")) {
             emit bookingsLoaded(doc.object().value("bookings").toArray());
         } else {
-            qDebug() << "User bookings loading error: unexpected JSON structure";
+            qDebug(
+            ) << "User bookings loading error: unexpected JSON structure";
             emit bookingsLoaded(QJsonArray());
         }
 
@@ -440,11 +449,13 @@ void ApiClient::cancelBooking(int bookingId) {
     QJsonObject emptyBody;
     QString urlPath = QString("/booking/%1/cancel").arg(bookingId);
 
-    sendPost(urlPath, emptyBody, [this](QJsonObject obj) {
-        emit bookingCancelled(true, "Бронирование успешно отменено!");
-    }, [this](QString err) {
-        emit bookingCancelled(false, err);
-    });
+    sendPost(
+        urlPath, emptyBody,
+        [this](QJsonObject obj) {
+            emit bookingCancelled(true, "Бронирование успешно отменено!");
+        },
+        [this](QString err) { emit bookingCancelled(false, err); }
+    );
 }
 
 QJsonObject ApiClient::getRoomInfo(int roomId) const {
@@ -453,8 +464,23 @@ QJsonObject ApiClient::getRoomInfo(int roomId) const {
 
 void ApiClient::logout() {
     m_currentUserId = -1;
-    m_token.clear(); 
+    m_token.clear();
     qDebug() << "User logged out, session cleared.";
+}
+
+void ApiClient::requestTelegramLinkCode(int userId) {
+    QJsonObject body;
+    body["user_id"] = userId;
+
+    sendPost(
+        "/telegram/link", body,
+
+        [this](QJsonObject obj) {
+            emit telegramCodeReceived(obj["code"].toString());
+        },
+
+        [this](QString err) { emit telegramLinkFailed(err); }
+    );
 }
 
 }  // namespace roomsched::client

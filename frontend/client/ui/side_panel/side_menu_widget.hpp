@@ -4,7 +4,11 @@
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class side_menu_widget; }
+
+namespace Ui {
+class side_menu_widget;
+}
+
 QT_END_NAMESPACE
 
 namespace roomsched::menu {
@@ -20,12 +24,13 @@ signals:
     void navigateToHome();
     void navigateToRooms();
     void navigateToBookings();
+    void navigateToTelegram();
     void logoutRequested();
 
 private:
     Ui::side_menu_widget *ui;
 };
 
-} // namespace roomsched::menu
+}  // namespace roomsched::menu
 
-#endif // SIDE_MENU_WIDGET_HPP_
+#endif  // SIDE_MENU_WIDGET_HPP_

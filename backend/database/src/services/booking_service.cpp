@@ -68,6 +68,15 @@ bool roomsched::db::booking_service::cancel_booking(int booking_id) {
     return true;
 }
 
+void roomsched::db::booking_service::delete_past_bookings() {
+    booking_repo.delete_past_bookings();
+}
+
+std::optional<roomsched::db::booking>
+roomsched::db::booking_service::get_booking_by_id(int booking_id) {
+    return booking_repo.get_booking_by_id(booking_id);
+}
+
 std::vector<roomsched::db::booking>
 roomsched::db::booking_service::get_all_bookings() {
     return booking_repo.get_all_bookings();
@@ -81,8 +90,4 @@ roomsched::db::booking_service::get_user_bookings(int user_id) {
 std::vector<roomsched::db::booking>
 roomsched::db::booking_service::get_room_bookings(int room_id) {
     return booking_repo.get_bookings_by_room(room_id);
-}
-
-void roomsched::db::booking_service::delete_past_bookings() {
-    booking_repo.delete_past_bookings();
 }

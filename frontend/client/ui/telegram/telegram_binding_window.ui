@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+
+<class>telegram_binding_window</class>
+
+<widget class="QWidget" name="telegram_binding_window">
+
+ <property name="geometry">
+  <rect>
+   <x>0</x>
+   <y>0</y>
+   <width>700</width>
+   <height>450</height>
+  </rect>
+ </property>
+
+ <property name="styleSheet">
+  <string notr="true">
+
+QWidget {
+    background-color: #c9bfd4;
+    color: #2d213d;
+    font-family: "Inter", "Roboto", "Ubuntu", sans-serif;
+    font-size: 14px;
+}
+
+QLabel#titleLabel {
+    background-color: #423358;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+QFrame#contentFrame {
+    background-color: #dbd3e3;
+    border-radius: 10px;
+}
+
+QLabel#telegramIcon {
+    font-size: 48px;
+    background: transparent;
+}
+
+QLabel#introLabel {
+    font-size: 18px;
+    font-weight: 600;
+    background: transparent;
+}
+
+QLabel#instructionLabel {
+    font-size: 14px;
+    background: transparent;
+    line-height: 150%;
+}
+
+QPushButton#getCodeButton {
+    background-color: #6c528d;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-weight: 600;
+}
+
+QPushButton#getCodeButton:hover {
+    background-color: #553e72;
+}
+
+QPushButton#getCodeButton:pressed {
+    background-color: #423358;
+}
+
+  </string>
+ </property>
+
+ <layout class="QVBoxLayout" name="mainLayout">
+
+  <item>
+   <widget class="QLabel" name="titleLabel">
+    <property name="text">
+     <string>Привязка Telegram</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </item>
+
+  <item>
+   <widget class="QFrame" name="contentFrame">
+
+    <layout class="QVBoxLayout" name="contentLayout">
+
+     <property name="spacing">
+      <number>15</number>
+     </property>
+
+     <property name="leftMargin">
+      <number>25</number>
+     </property>
+
+     <property name="topMargin">
+      <number>25</number>
+     </property>
+
+     <property name="rightMargin">
+      <number>25</number>
+     </property>
+
+     <property name="bottomMargin">
+      <number>25</number>
+     </property>
+
+     <item>
+      <widget class="QLabel" name="telegramIcon">
+       <property name="text">
+        <string>📨</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+
+     <item>
+      <widget class="QLabel" name="introLabel">
+       <property name="text">
+        <string>
+Хотите получать уведомления о бронированиях прямо в Telegram?
+Подключите аккаунт и получайте подтверждения мгновенно.
+        </string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="instructionLabel">
+       <property name="text">
+       <string>Как подключить уведомления:
+
+       1. Откройте Telegram-бота:
+       https://t.me/roomsched_notifications_bot
+
+       2. Нажмите команду /start
+
+       3. Нажмите кнопку «Получить код» ниже
+
+       4. Отправьте боту команду:
+         /link ВАШ_КОД
+
+       5. После подтверждения уведомления будут подключены автоматически.</string>
+       </property>
+        <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="getCodeButton">
+       <property name="minimumHeight">
+        <number>45</number>
+       </property>
+       <property name="text">
+        <string>Получить код</string>
+       </property>
+      </widget>
+     </item>
+
+    </layout>
+
+   </widget>
+  </item>
+
+ </layout>
+
+</widget>
+
+<resources/>
+<connections/>
+
+</ui>

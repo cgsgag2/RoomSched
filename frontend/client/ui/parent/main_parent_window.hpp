@@ -1,13 +1,14 @@
 #ifndef MAIN_PARENT_WINDOW_HPP_
 #define MAIN_PARENT_WINDOW_HPP_
 
-#include <QWidget>
 #include <QStackedWidget>
+#include <QWidget>
 #include "api_client.hpp"
-#include "side_menu_widget.hpp"
 #include "main_menu_window.hpp"
-#include "user_bookings_window.hpp"
 #include "room_list_window.hpp"
+#include "side_menu_widget.hpp"
+#include "telegram_binding_window.hpp"
+#include "user_bookings_window.hpp"
 
 namespace roomsched::menu {
 
@@ -35,16 +36,17 @@ private slots:
 private:
     QStackedWidget *stackedWidget;
     side_menu_widget *sideMenu;
-    
+
     roomsched::client::ApiClient *api;
     roomsched::mainmenu::main_menu_window *homeWindow;
-    roomsched::roomlistwindow::room_list_window *roomsWindow; 
-    roomsched::bookings::user_bookings_window *bookingsWindow; 
+    roomsched::roomlistwindow::room_list_window *roomsWindow;
+    roomsched::bookings::user_bookings_window *bookingsWindow;
+    roomsched::telegram::telegram_binding_window *telegramWindow;
 
     void setupWindowHeader(QWidget *window, const QString &titleText);
     void resizeEvent(QResizeEvent *event) override;
 };
 
-} // namespace roomsched::menu
+}  // namespace roomsched::menu
 
-#endif // MAIN_PARENT_WINDOW_HPP_
+#endif  // MAIN_PARENT_WINDOW_HPP_
