@@ -93,33 +93,37 @@ The desktop client communicates with the backend using a REST API built on Crow.
 
 ## Login Window
 
-<img src="assets/register.png" width="220" alt="RoomSched Logo">
-<img src="assets/entry.png" width="220" alt="RoomSched Logo">
+<p>
+  <img src="assets/register.png" width="220" alt="RoomSched registrate 1">
+  <img src="assets/entry.png" width="220" alt="RoomSched registrate 2">
+</p>
 
 ---
 
 ## Main Menu
 
-<img src="assets/main.png" width="220" alt="RoomSched Logo">
-<img src="assets/rooms.png" width="220" alt="RoomSched Logo">
+<p>
+  <img src="assets/main.png" width="380" alt="Регистрация">
+  <img src="assets/rooms.png" width="380" alt="Вход в систему">
+</p>
 
 ---
 
 ## Room Search and Booking
 
-<img src="assets/bookings.png" width="220" alt="RoomSched Logo">
+<img src="assets/bookings.png" width="300" alt="RoomSched book room">
 
 ---
 
 ## My Bookings
 
-<img src="assets/my_bookings.png" width="220" alt="RoomSched Logo">
+<img src="assets/my_bookings.png" width="400" alt="RoomSched my bookings">
 
 ---
 
 ## Telegram Integration
 
-<img src="assets/tg.png" width="220" alt="RoomSched Logo">
+<img src="assets/tg.png" width="400" alt="RoomSched telegram">
 
 ---
 
@@ -389,12 +393,6 @@ docker exec -it <container_name> psql -U rsched_user -d roomsched
 docker compose run --service-ports backend ./build/tests/backend_tests
 ```
 
-### E2E Tests
-
-```bash
-# add e2e test command here
-```
-
 ---
 
 # Launching The Client
@@ -404,8 +402,6 @@ Navigate to:
 ```bash
 cd frontend/client
 ```
-
-## Linux
 
 Build:
 
@@ -419,10 +415,6 @@ Run:
 ```bash
 ./build/RoomSchedClient
 ```
-
-## Windows
-
-> Instructions will be added later.
 
 ---
 

@@ -93,19 +93,19 @@
 
 ## Регистрация и аутентификация
 
-<div style="display: flex; align-items: flex-start; gap: 15px;">
+<p>
   <img src="assets/register.png" width="220" alt="RoomSched registrate 1">
   <img src="assets/entry.png" width="220" alt="RoomSched registrate 2">
-</div>
+</p>
 
 ---
 
 ## Главное меню
 
-<div style="align-items: flex-start;">
+<p>
   <img src="assets/main.png" width="380" alt="Регистрация">
   <img src="assets/rooms.png" width="380" alt="Вход в систему">
-</div>
+</p>
 
 ---
 
@@ -393,12 +393,6 @@ docker exec -it <container_name> psql -U rsched_user -d roomsched
 docker compose run --service-ports backend ./build/tests/backend_tests
 ```
 
-### E2E тесты
-
-```bash
-
-```
-
 ---
 
 # Запуск клиента
@@ -408,8 +402,6 @@ docker compose run --service-ports backend ./build/tests/backend_tests
 ```bash
 cd frontend/client
 ```
-
-## Linux
 
 Сборка:
 
@@ -423,10 +415,6 @@ cmake --build build
 ```bash
 ./build/RoomSchedClient
 ```
-
-## Windows
-
-> Инструкция будет добавлена позже.
 
 ---
 
