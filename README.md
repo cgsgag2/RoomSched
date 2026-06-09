@@ -102,7 +102,7 @@
 
 <p>
   <img src="assets/main.png" width="220" alt="RoomSched Menu 1">
-  <img src="assets/rooms.png" width="220" alt="RoomSched Menu 2" style="margin-left: 10px;">
+  <img src="assets/rooms.png" width="220" alt="RoomSched Menu 2">
 </p>
 
 ---
