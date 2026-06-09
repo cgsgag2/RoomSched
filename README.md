@@ -93,7 +93,7 @@
 
 ## Регистрация и аутентификация
 
-<div style="align-items: flex-start;">
+<div style="display: flex; align-items: flex-start; gap: 15px;">
   <img src="assets/register.png" width="220" alt="RoomSched registrate 1">
   <img src="assets/entry.png" width="220" alt="RoomSched registrate 2">
 </div>
