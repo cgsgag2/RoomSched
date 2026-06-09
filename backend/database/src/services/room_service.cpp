@@ -16,6 +16,11 @@ void roomsched::db::room_service::create_room(const room &new_room) {
 }
 
 void roomsched::db::room_service::create_default_rooms() {
+    std::vector<room> already_exists = get_all_rooms();
+    if (!already_exists.empty()) {
+        return;
+    }
+
     room lecture;
     room cowork;
     room seminar;

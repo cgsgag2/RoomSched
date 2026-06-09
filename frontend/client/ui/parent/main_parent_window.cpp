@@ -6,10 +6,10 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 
-namespace roomsched::menu {
+namespace roomsched::client::menu {
 
 main_parent_window::main_parent_window(
-    roomsched::client::ApiClient *existingApi,
+    ApiClient *existingApi,
     const QString &userEmail,
     int userId,
     QWidget *parent
@@ -24,18 +24,15 @@ main_parent_window::main_parent_window(
     stackedWidget->setStyleSheet("background-color: #c9bfd4;");
     mainLayout->addWidget(stackedWidget);
     setLayout(mainLayout);
-    homeWindow =
-        new roomsched::mainmenu::main_menu_window(existingApi, userEmail, this);
-    roomsWindow = new roomsched::roomlistwindow::room_list_window(
+    homeWindow = new mainmenu::main_menu_window(existingApi, userEmail, this);
+    roomsWindow = new roomlistwindow::room_list_window(
         existingApi, "", userEmail, "", this
     );
     existingApi->getRooms();
-    bookingsWindow = new roomsched::bookings::user_bookings_window(
-        existingApi, userId, this
-    );
-    telegramWindow = new roomsched::telegram::telegram_binding_window(
-        existingApi, userId, this
-    );
+    bookingsWindow =
+        new bookings::user_bookings_window(existingApi, userId, this);
+    telegramWindow =
+        new telegram::telegram_binding_window(existingApi, userId, this);
 
     setupWindowHeader(homeWindow, "Добро пожаловать!");
     setupWindowHeader(roomsWindow, "Выбор аудитории");
@@ -70,8 +67,7 @@ main_parent_window::main_parent_window(
     });
 
     connect(
-        homeWindow, &roomsched::mainmenu::main_menu_window::buildingSelected,
-        this,
+        homeWindow, &mainmenu::main_menu_window::buildingSelected, this,
         [this](const QString &buildingName) {
             roomsWindow->updateViewForBuilding(buildingName);
             stackedWidget->setCurrentIndex(1);
@@ -194,4 +190,4 @@ void main_parent_window::handleLogout() {
     this->close();
 }
 
-}  // namespace roomsched::menu
+}  // namespace roomsched::client::menu

@@ -10,14 +10,14 @@
 #include "telegram_binding_window.hpp"
 #include "user_bookings_window.hpp"
 
-namespace roomsched::menu {
+namespace roomsched::client::menu {
 
 class main_parent_window : public QWidget {
     Q_OBJECT
 
 public:
     explicit main_parent_window(
-        roomsched::client::ApiClient *existingApi,
+        ApiClient *existingApi,
         const QString &userEmail,
         int userId,
         QWidget *parent = nullptr
@@ -37,16 +37,16 @@ private:
     QStackedWidget *stackedWidget;
     side_menu_widget *sideMenu;
 
-    roomsched::client::ApiClient *api;
-    roomsched::mainmenu::main_menu_window *homeWindow;
-    roomsched::roomlistwindow::room_list_window *roomsWindow;
-    roomsched::bookings::user_bookings_window *bookingsWindow;
-    roomsched::telegram::telegram_binding_window *telegramWindow;
+    ApiClient *api;
+    mainmenu::main_menu_window *homeWindow;
+    roomlistwindow::room_list_window *roomsWindow;
+    bookings::user_bookings_window *bookingsWindow;
+    telegram::telegram_binding_window *telegramWindow;
 
     void setupWindowHeader(QWidget *window, const QString &titleText);
     void resizeEvent(QResizeEvent *event) override;
 };
 
-}  // namespace roomsched::menu
+}  // namespace roomsched::client::menu
 
 #endif  // MAIN_PARENT_WINDOW_HPP_

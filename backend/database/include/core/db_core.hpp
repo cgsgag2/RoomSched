@@ -18,7 +18,7 @@ namespace roomsched::db {
 class database {
 private:
     std::unique_ptr<pqxx::connection> conn;
-    db_config config;  // TODO: later log from special config file - ?
+    db_config config;
     bool is_connected = false;
 
     std::mutex db_mutex;

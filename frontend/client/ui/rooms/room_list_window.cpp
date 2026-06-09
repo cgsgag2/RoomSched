@@ -1,22 +1,20 @@
 #include "room_list_window.hpp"
-#include <QDialog>
-#include <QGridLayout>
-#include <QLabel>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
-
-#include <QHBoxLayout>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QUrl>
 #include <QComboBox>
 #include <QDateEdit>
 #include <QDebug>
+#include <QDialog>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QLabel>
+#include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QPushButton>
 #include <QTimeEdit>
-
+#include <QUrl>
+#include <QVBoxLayout>
 #include "ui_room_list_window.h"
 
 namespace {
@@ -25,24 +23,34 @@ const QTime kDayStart(8, 0);
 const QTime kDayEnd(23, 59);
 
 void clampTimeRange(QTimeEdit *startEdit, QTimeEdit *endEdit) {
-    if (!startEdit || !endEdit) return;
-    if (startEdit->time() < kDayStart) startEdit->setTime(kDayStart);
-    if (endEdit->time() > kDayEnd) endEdit->setTime(kDayEnd);
+    if (!startEdit || !endEdit) {
+        return;
+    }
+    if (startEdit->time() < kDayStart) {
+        startEdit->setTime(kDayStart);
+    }
+    if (endEdit->time() > kDayEnd) {
+        endEdit->setTime(kDayEnd);
+    }
     if (endEdit->time() <= startEdit->time()) {
         QTime next = startEdit->time().addSecs(3600);
-        if (next > kDayEnd) next = kDayEnd;
+        if (next > kDayEnd) {
+            next = kDayEnd;
+        }
         endEdit->setTime(next);
     }
 }
 
 void disablePastDates(QDateEdit *dateEdit) {
-    if (!dateEdit) return;
+    if (!dateEdit) {
+        return;
+    }
     dateEdit->setMinimumDate(QDate::currentDate());
 }
 
 }  // namespace
 
-namespace roomsched::roomlistwindow {
+namespace roomsched::client::roomlistwindow {
 
 QString roomTypeLabel(const QString &type) {
     if (type == "lecture") {
@@ -66,47 +74,66 @@ room_list_window::room_list_window(QWidget *parent)
 }
 
 room_list_window::room_list_window(
-    roomsched::client::ApiClient *existingApi,
+    ApiClient *existingApi,
     QString userName,
     QString userEmail,
     QString userPhone,
     QWidget *parent,
     const QString &initialBuilding
 )
-    : QWidget(parent), ui(new Ui::room_list_window), 
-    api(existingApi), initialBuildingName(initialBuilding) {
+    : QWidget(parent),
+      ui(new Ui::room_list_window),
+      api(existingApi),
+      initialBuildingName(initialBuilding) {
     ui->setupUi(this);
     resizeTimer = new QTimer(this);
     resizeTimer->setSingleShot(true);
     filterTimer = new QTimer(this);
     filterTimer->setSingleShot(true);
     filterTimer->setInterval(250);
-    connect(filterTimer, &QTimer::timeout, this, &room_list_window::applyFilters);
-    connect(api, &roomsched::client::ApiClient::roomsLoaded, this, &room_list_window::onRoomsLoaded);
-    connect(api, &roomsched::client::ApiClient::buildingsLoaded, this, &room_list_window::onBuildingsLoaded);
-    connect(api, &roomsched::client::ApiClient::bookingFinished, this, [this](bool success, QString message) {
-        if (success) {
-            QMessageBox::information(this, "Успех", "Комната успешно забронирована!");
-            applyFilters();
-        } else {
-            if (message == "Некорректный интервал времени.") {
-                message = "Комната уже забронирована на это время! Выберите другое.";
+    connect(
+        filterTimer, &QTimer::timeout, this, &room_list_window::applyFilters
+    );
+    connect(
+        api, &ApiClient::roomsLoaded, this, &room_list_window::onRoomsLoaded
+    );
+    connect(
+        api, &ApiClient::buildingsLoaded, this,
+        &room_list_window::onBuildingsLoaded
+    );
+    connect(
+        api, &ApiClient::bookingFinished, this,
+        [this](bool success, QString message) {
+            if (success) {
+                QMessageBox::information(
+                    this, "Успех", "Комната успешно забронирована!"
+                );
+                applyFilters();
+            } else {
+                if (message == "Некорректный интервал времени.") {
+                    message =
+                        "Комната уже забронирована на это время! Выберите "
+                        "другое.";
+                }
+                QMessageBox::warning(this, "Ошибка бронирования", message);
             }
-            QMessageBox::warning(this, "Ошибка бронирования", message);
         }
-    });
-    connect(ui->buildingCombo, &QComboBox::currentIndexChanged, this, [this](int) {
-        scheduleApplyFilters();
-    });
+    );
+    connect(
+        ui->buildingCombo, &QComboBox::currentIndexChanged, this,
+        [this](int) { scheduleApplyFilters(); }
+    );
     connect(ui->typeCombo, &QComboBox::currentIndexChanged, this, [this](int) {
         scheduleApplyFilters();
     });
-    connect(ui->capacityMinSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int) {
-        scheduleApplyFilters();
-    });
-    connect(ui->capacityMaxSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int) {
-        scheduleApplyFilters();
-    });
+    connect(
+        ui->capacityMinSpin, QOverload<int>::of(&QSpinBox::valueChanged), this,
+        [this](int) { scheduleApplyFilters(); }
+    );
+    connect(
+        ui->capacityMaxSpin, QOverload<int>::of(&QSpinBox::valueChanged), this,
+        [this](int) { scheduleApplyFilters(); }
+    );
     connect(ui->projectorCheck, &QCheckBox::stateChanged, this, [this](int) {
         scheduleApplyFilters();
     });
@@ -144,8 +171,12 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
     mainLayout->setSpacing(15);
     mainLayout->setContentsMargins(20, 20, 20, 20);
 
-    QLabel *titleLabel = new QLabel(QString("Аудитория №%1").arg(room["room_number"].toString()), dialog);
-    titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #423358;");
+    QLabel *titleLabel = new QLabel(
+        QString("Аудитория №%1").arg(room["room_number"].toString()), dialog
+    );
+    titleLabel->setStyleSheet(
+        "font-size: 20px; font-weight: bold; color: #423358;"
+    );
     mainLayout->addWidget(titleLabel);
 
     const QString typeLabel = roomTypeLabel(room["type"].toString());
@@ -177,9 +208,10 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
         equipment << "Телефон";
     }
 
-    const QString equipmentText = equipment.isEmpty()
-        ? "Оборудование: нет"
-        : QString("Оборудование: %1").arg(equipment.join(", "));
+    const QString equipmentText =
+        equipment.isEmpty()
+            ? "Оборудование: нет"
+            : QString("Оборудование: %1").arg(equipment.join(", "));
     mainLayout->addWidget(new QLabel(equipmentText, dialog));
 
     mainLayout->addWidget(new QLabel("Выберите дату:", dialog));
@@ -189,17 +221,18 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
     mainLayout->addWidget(dateEdit);
 
     QHBoxLayout *timeLayout = new QHBoxLayout();
-    
+
     QVBoxLayout *startLayout = new QVBoxLayout();
     startLayout->addWidget(new QLabel("Начало:", dialog));
     QTimeEdit *startTime = new QTimeEdit(QTime::currentTime(), dialog);
     startTime->setMinimumTime(kDayStart);
     startTime->setMaximumTime(kDayEnd);
     startLayout->addWidget(startTime);
-    
+
     QVBoxLayout *endLayout = new QVBoxLayout();
     endLayout->addWidget(new QLabel("Окончание:", dialog));
-    QTimeEdit *endTime = new QTimeEdit(QTime::currentTime().addSecs(3600), dialog);
+    QTimeEdit *endTime =
+        new QTimeEdit(QTime::currentTime().addSecs(3600), dialog);
     endTime->setMinimumTime(kDayStart);
     endTime->setMaximumTime(kDayEnd);
     endLayout->addWidget(endTime);
@@ -207,39 +240,49 @@ void room_list_window::showRoomDetails(const QJsonObject &room) {
 
     clampTimeRange(startTime, endTime);
 
-    QObject::connect(startTime, &QTimeEdit::timeChanged, dialog, [startTime, endTime]() {
-        clampTimeRange(startTime, endTime);
-    });
+    QObject::connect(
+        startTime, &QTimeEdit::timeChanged, dialog,
+        [startTime, endTime]() { clampTimeRange(startTime, endTime); }
+    );
 
-    QObject::connect(endTime, &QTimeEdit::timeChanged, dialog, [startTime, endTime]() {
-        clampTimeRange(startTime, endTime);
-    });
+    QObject::connect(
+        endTime, &QTimeEdit::timeChanged, dialog,
+        [startTime, endTime]() { clampTimeRange(startTime, endTime); }
+    );
 
     timeLayout->addLayout(startLayout);
     timeLayout->addLayout(endLayout);
     mainLayout->addLayout(timeLayout);
 
     QPushButton *confirmBtn = new QPushButton("Забронировать", dialog);
-    confirmBtn->setObjectName("loginButton"); 
+    confirmBtn->setObjectName("loginButton");
     mainLayout->addWidget(confirmBtn);
 
-    connect(confirmBtn, &QPushButton::clicked, [this, room, dateEdit, startTime, endTime, dialog]() {
-        QString date = dateEdit->date().toString("yyyy-MM-dd");
-        QString start = startTime->time().toString("HH:mm:ss");
-        QString end = endTime->time().toString("HH:mm:ss");
+    connect(
+        confirmBtn, &QPushButton::clicked,
+        [this, room, dateEdit, startTime, endTime, dialog]() {
+            QString date = dateEdit->date().toString("yyyy-MM-dd");
+            QString start = startTime->time().toString("HH:mm:ss");
+            QString end = endTime->time().toString("HH:mm:ss");
 
-        if (startTime->time() < kDayStart || endTime->time() > kDayEnd) {
-            QMessageBox::warning(dialog, "Ошибка", "Бронирование доступно с 08:00 до 23:59.");
-            return;
+            if (startTime->time() < kDayStart || endTime->time() > kDayEnd) {
+                QMessageBox::warning(
+                    dialog, "Ошибка", "Бронирование доступно с 08:00 до 23:59."
+                );
+                return;
+            }
+            if (startTime->time() >= endTime->time()) {
+                QMessageBox::warning(
+                    dialog, "Ошибка",
+                    "Время начала должно быть меньше времени окончания."
+                );
+                return;
+            }
+
+            api->bookRoom(room["id"].toInt(), date, start, end);
+            dialog->accept();
         }
-         if (startTime->time() >= endTime->time()) {
-             QMessageBox::warning(dialog, "Ошибка", "Время начала должно быть меньше времени окончания.");
-             return;
-         }
-
-        api->bookRoom(room["id"].toInt(), date, start, end);
-        dialog->accept();
-    });
+    );
 
     dialog->exec();
 }
@@ -256,8 +299,7 @@ void room_list_window::onBuildingsLoaded(const QJsonArray &buildingsArray) {
     for (const auto &value : buildingsArray) {
         QJsonObject building = value.toObject();
         ui->buildingCombo->addItem(
-            building["name"].toString(),
-            building["name"].toString()
+            building["name"].toString(), building["name"].toString()
         );
     }
 
@@ -271,7 +313,7 @@ void room_list_window::onBuildingsLoaded(const QJsonArray &buildingsArray) {
 }
 
 void room_list_window::applyFilters() {
-    roomsched::client::RoomFilters filters;
+    RoomFilters filters;
     const QString building = ui->buildingCombo->currentData().toString();
     if (!building.isEmpty()) {
         filters.building = building;
@@ -322,12 +364,11 @@ void room_list_window::renderRooms(const QJsonArray &roomsArray) {
         QJsonObject room = value.toObject();
         const QString typeLabel = roomTypeLabel(room["type"].toString());
         const QString roomNumber = room["room_number"].toString();
-        QString label = QString("Аудитория №%1\n%2")
-                            .arg(roomNumber)
-                            .arg(typeLabel);
+        QString label =
+            QString("Аудитория №%1\n%2").arg(roomNumber).arg(typeLabel);
 
         QPushButton *btn = new QPushButton(label, this);
-        btn->setProperty("class", "RoomButton"); 
+        btn->setProperty("class", "RoomButton");
         btn->setMinimumSize(220, 140);
         btn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -350,13 +391,17 @@ void room_list_window::resizeEvent(QResizeEvent *event) {
 }
 
 void room_list_window::updateGrid() {
-    if (buttons.isEmpty()) return;
+    if (buttons.isEmpty()) {
+        return;
+    }
     int windowWidth = ui->scrollArea->width();
-    if (windowWidth < 100) return;
+    if (windowWidth < 100) {
+        return;
+    }
     QLayoutItem *item;
     while ((item = ui->gridLayout->takeAt(0)) != nullptr) {
         if (item->widget()) {
-            item->widget()->hide(); 
+            item->widget()->hide();
             item->widget()->setParent(nullptr);
         }
         delete item;
@@ -367,7 +412,9 @@ void room_list_window::updateGrid() {
     int max_columns = qMax(1, windowWidth / (buttonWidth + spacing));
     int row = 0, col = 0;
     for (QPushButton *btn : buttons) {
-        if (!btn) continue;
+        if (!btn) {
+            continue;
+        }
         btn->show();
         ui->gridLayout->addWidget(btn, row, col, Qt::AlignLeft | Qt::AlignTop);
         col++;
@@ -388,4 +435,4 @@ void room_list_window::scheduleApplyFilters() {
     filterTimer->start();
 }
 
-}  // namespace roomsched::roomlistwindow
+}  // namespace roomsched::client::roomlistwindow

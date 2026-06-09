@@ -2,15 +2,15 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QRegularExpressionValidator>
-#include "room_list_window.hpp"
-#include "ui_auth_window.h"
-#include "register_window.hpp"
 #include "main_menu_window.hpp"
 #include "main_parent_window.hpp"
+#include "register_window.hpp"
+#include "room_list_window.hpp"
+#include "ui_auth_window.h"
 
-namespace roomsched::authwindow {
+namespace roomsched::client::authwindow {
 
-auth_window::auth_window(roomsched::client::ApiClient *existingApi, QWidget *parent)
+auth_window::auth_window(ApiClient *existingApi, QWidget *parent)
     : QWidget(parent), ui(new Ui::auth_window), api(existingApi) {
     ui->setupUi(this);
     ui->errorLabel->hide();
@@ -19,51 +19,44 @@ auth_window::auth_window(roomsched::client::ApiClient *existingApi, QWidget *par
         ui->mailInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide
     );
     connect(
-        ui->passwordInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide
+        ui->passwordInput, &QLineEdit::textChanged, ui->errorLabel,
+        &QLabel::hide
     );
     connect(
         ui->loginButton, &QPushButton::clicked, this,
         &auth_window::on_login_clicked
     );
-    connect(
-        ui->registerButton, &QPushButton::clicked, this,
-        [this]() {
-            this->hide();
-            QCoreApplication::processEvents();
-            auto *regWindow = new roomsched::registerwindow::register_window();
-            connect(regWindow, &roomsched::registerwindow::register_window::backToLogin, this, &auth_window::show);
-            regWindow->show();
-        }
-    );
-    connect(
-        api, &roomsched::client::ApiClient::loginFailed, this,
-        [this](QString err) { 
-            ui->errorLabel->setText(err);
-            ui->errorLabel->show(); 
-        }
-    );
-    connect(
-        api, &roomsched::client::ApiClient::loginSuccess, this,
-        [this](QJsonObject data) {
-            int userId = -1;
+    connect(ui->registerButton, &QPushButton::clicked, this, [this]() {
+        this->hide();
+        QCoreApplication::processEvents();
+        auto *regWindow = new registerwindow::register_window();
+        connect(
+            regWindow, &registerwindow::register_window::backToLogin, this,
+            &auth_window::show
+        );
+        regWindow->show();
+    });
+    connect(api, &ApiClient::loginFailed, this, [this](QString err) {
+        ui->errorLabel->setText(err);
+        ui->errorLabel->show();
+    });
+    connect(api, &ApiClient::loginSuccess, this, [this](QJsonObject data) {
+        int userId = -1;
         if (data.contains("user") && data["user"].isObject()) {
             userId = data["user"].toObject().value("id").toInt(-1);
         }
         api->setParent(nullptr);
-        auto *mainWindow = new roomsched::menu::main_parent_window(
-            api, 
-            ui->mailInput->text(), 
-            userId,
-            nullptr 
+        auto *mainWindow = new menu::main_parent_window(
+            api, ui->mailInput->text(), userId, nullptr
         );
         mainWindow->setAttribute(Qt::WA_DeleteOnClose);
-        connect(mainWindow, &roomsched::menu::main_parent_window::logoutSuccessful, this, [this](){
-            this->show(); 
-        });
+        connect(
+            mainWindow, &menu::main_parent_window::logoutSuccessful, this,
+            [this]() { this->show(); }
+        );
         mainWindow->show();
-                this->close();
-        }
-    );
+        this->close();
+    });
 }
 
 auth_window::~auth_window() {
@@ -105,4 +98,4 @@ void auth_window::on_login_clicked() {
     api->login(email, password);
 }
 
-}  // namespace roomsched::authwindow
+}  // namespace roomsched::client::authwindow

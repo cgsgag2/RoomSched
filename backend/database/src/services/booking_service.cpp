@@ -5,11 +5,8 @@
 #include "services/booking_service.hpp"
 #include <iostream>
 
-roomsched::db::booking_service::booking_service(
-    database &db,
-    room_service &room_service_ref
-)
-    : booking_repo(db), roomService(room_service_ref) {
+roomsched::db::booking_service::booking_service(database &db)
+    : booking_repo(db) {
 }
 
 std::optional<roomsched::db::booking>
@@ -20,7 +17,6 @@ roomsched::db::booking_service::create_booking(
     const std::string &start,
     const std::string &end
 ) {
-    // TODO: add room availability later!
     // bool available = roomService.is_room_available(room_id, date, start,
     // end);
 
@@ -37,7 +33,6 @@ roomsched::db::booking_service::create_booking(
     if (booking_repo.is_room_already_booked(room_id, date, start, end)) {
         std::cerr << "Room '" << room_id << "' is already booked" << std::endl;
         return std::nullopt;
-        // throw std::runtime_error("ROOM_ALREADY_BOOKED");
     }
 
     booking b;

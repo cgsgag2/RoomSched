@@ -1,13 +1,13 @@
-#ifndef ROOMLISTWINDOW_HPP_
-#define ROOMLISTWINDOW_HPP_
+#ifndef ROOM_LIST_WINDOW_HPP_
+#define ROOM_LIST_WINDOW_HPP_
 
-#include <QWidget>
-#include "api_client.hpp"
+#include <QCheckBox>
 #include <QJsonArray>
 #include <QPushButton>
-#include <QTimer>
 #include <QSpinBox>
-#include <QCheckBox>
+#include <QTimer>
+#include <QWidget>
+#include "api_client.hpp"
 
 QT_BEGIN_NAMESPACE
 
@@ -17,7 +17,7 @@ class room_list_window;
 
 QT_END_NAMESPACE
 
-namespace roomsched::roomlistwindow {
+namespace roomsched::client::roomlistwindow {
 
 class room_list_window : public QWidget {
     Q_OBJECT
@@ -25,7 +25,7 @@ class room_list_window : public QWidget {
 public:
     explicit room_list_window(QWidget *parent = nullptr);
     room_list_window(
-        roomsched::client::ApiClient *existingApi,
+        ApiClient *existingApi,
         QString userName,
         QString userEmail,
         QString userPhone,
@@ -50,15 +50,15 @@ private:
     void applyFilters();
     void scheduleApplyFilters();
     void renderRooms(const QJsonArray &roomsArray);
-    roomsched::client::ApiClient *api;
-    roomsched::client::RoomFilters currentFilters;
+    ApiClient *api;
+    RoomFilters currentFilters;
     QJsonArray rooms;
-    QList<QPushButton*> buttons;
+    QList<QPushButton *> buttons;
     QTimer *resizeTimer;
     QTimer *filterTimer;
     QString initialBuildingName;
 };
 
-}  // namespace roomsched::roomlistwindow
+}  // namespace roomsched::client::roomlistwindow
 
-#endif  // ROOMLISTWINDOW_HPP_
+#endif  // ROOM_LIST_WINDOW_HPP_

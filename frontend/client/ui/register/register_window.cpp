@@ -1,43 +1,58 @@
 #include "register_window.hpp"
-#include "ui_register_window.h"
 #include <QMessageBox>
 #include <QRegularExpression>
+#include "ui_register_window.h"
 
-namespace roomsched::registerwindow {
+namespace roomsched::client::registerwindow {
 
 register_window::register_window(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::register_window)
-{
+    : QWidget(parent), ui(new Ui::register_window) {
     ui->setupUi(this);
-    api = new roomsched::client::ApiClient(this);
+    api = new ApiClient(this);
     ui->errorLabel->hide();
-    connect(ui->nameInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
-    connect(ui->mailInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
-    connect(ui->phoneInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
-    connect(ui->passwordInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide);
+    connect(
+        ui->nameInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide
+    );
+    connect(
+        ui->mailInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide
+    );
+    connect(
+        ui->phoneInput, &QLineEdit::textChanged, ui->errorLabel, &QLabel::hide
+    );
+    connect(
+        ui->passwordInput, &QLineEdit::textChanged, ui->errorLabel,
+        &QLabel::hide
+    );
 
-    connect(api, &roomsched::client::ApiClient::registrationFinished, this, [this](bool success, QString msg) {
-        if (success) {
-            QMessageBox::information(this, "Успех", "Вы успешно зарегистрированы!");
-            emit backToLogin(); 
-            this->close();
-        } else {
-            ui->errorLabel->setText(msg);
-            ui->errorLabel->show();
-        }   
-    });
-    connect(ui->registerSubmitButton, &QPushButton::clicked, this, &register_window::onRegisterButtonClicked);
+    connect(
+        api, &ApiClient::registrationFinished, this,
+        [this](bool success, QString msg) {
+            if (success) {
+                QMessageBox::information(
+                    this, "Успех", "Вы успешно зарегистрированы!"
+                );
+                emit backToLogin();
+                this->close();
+            } else {
+                ui->errorLabel->setText(msg);
+                ui->errorLabel->show();
+            }
+        }
+    );
+    connect(
+        ui->registerSubmitButton, &QPushButton::clicked, this,
+        &register_window::onRegisterButtonClicked
+    );
     connect(ui->backButton, &QPushButton::clicked, this, [this]() {
         emit backToLogin();
         this->close();
     });
 }
 
-register_window::~register_window()
-{
+register_window::~register_window() {
     delete ui;
 }
+
 bool register_window::check_name(QString enterName) {
     const QStringList parts =
         enterName.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
@@ -50,18 +65,18 @@ bool register_window::check_email(QString enterEmail) {
     return emailRegex.match(doneEmail).hasMatch();
 }
 
-bool register_window::check_phone(){
+bool register_window::check_phone() {
     return ui->phoneInput->hasAcceptableInput();
 }
 
-void register_window::onRegisterButtonClicked()
-{
+void register_window::onRegisterButtonClicked() {
     QString username = ui->nameInput->text();
     QString email = ui->mailInput->text();
     QString phone = ui->phoneInput->text();
     QString password = ui->passwordInput->text();
 
-    if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+    if (username.isEmpty() || email.isEmpty() || phone.isEmpty() ||
+        password.isEmpty()) {
         ui->errorLabel->setText("Заполните все поля.");
         ui->errorLabel->show();
         return;
@@ -89,4 +104,4 @@ void register_window::onRegisterButtonClicked()
     api->registerUser(username, email, phone, password);
 }
 
-} // namespace roomsched::registerwindow
+}  // namespace roomsched::client::registerwindow

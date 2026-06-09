@@ -31,7 +31,7 @@ VALUES ('Канатный цех', ''),
        ('Седова', ''),
        ('Грибоедова', '') ON CONFLICT (name) DO NOTHING;
 
--- book module data
+-- room data
 CREATE TABLE IF NOT EXISTS rooms_all (
     id SERIAL PRIMARY KEY,
     room_number VARCHAR(10) NOT NULL UNIQUE,
@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS room_availability (
     UNIQUE (room_id, date, available_from,available_to)
 );
 
+-- book module data
 CREATE TYPE booking_status AS ENUM (
     'pending',
     'confirmed',

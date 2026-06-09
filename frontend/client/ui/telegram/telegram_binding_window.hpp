@@ -12,14 +12,14 @@ class telegram_binding_window;
 
 QT_END_NAMESPACE
 
-namespace roomsched::telegram {
+namespace roomsched::client::telegram {
 
 class telegram_binding_window : public QWidget {
     Q_OBJECT
 
 public:
     explicit telegram_binding_window(
-        roomsched::client::ApiClient *existingApi,
+        ApiClient *existingApi,
         int userId,
         QWidget *parent = nullptr
     );
@@ -31,10 +31,10 @@ private slots:
 
 private:
     Ui::telegram_binding_window *ui;
-    roomsched::client::ApiClient *api;
+    ApiClient *api;
     int currentUserId;
 };
 
-}  // namespace roomsched::telegram
+}  // namespace roomsched::client::telegram
 
 #endif  // TELEGRAM_BINDING_WINDOW_HPP_

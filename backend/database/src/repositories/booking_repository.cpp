@@ -4,7 +4,7 @@
 
 #include <exception>
 #include <iostream>
-// Local libs
+// Local includes
 #include "repositories/booking_repository.hpp"
 
 namespace roomsched::db {
@@ -20,7 +20,7 @@ int booking_repository::create_booking(const booking &new_booking) {
             new_booking.room_id, new_booking.user_id, new_booking.date,
             new_booking.start_time, new_booking.end_time
         );
-        
+
         if (!result.empty()) {
             return result[0][0].as<int>();
         }
@@ -51,7 +51,8 @@ void roomsched::db::booking_repository::delete_booking(int id) {
 std::optional<booking> booking_repository::get_booking_by_id(int id) {
     try {
         auto result = db.query(
-            "SELECT id, room_id, user_id, booking_date, start_time, end_time, created_at, status "
+            "SELECT id, room_id, user_id, booking_date, start_time, end_time, "
+            "created_at, status "
             "FROM room_booking WHERE id = $1 AND status != 'cancelled' LIMIT 1",
             id
         );
@@ -126,11 +127,13 @@ std::vector<booking> booking_repository::get_bookings_by_user(int user_id) {
 
     try {
         auto rows = db.query(
-            "SELECT rb.id, rb.room_id, rb.user_id, rb.booking_date, rb.start_time, rb.end_time, rb.created_at, rb.status, "
+            "SELECT rb.id, rb.room_id, rb.user_id, rb.booking_date, "
+            "rb.start_time, rb.end_time, rb.created_at, rb.status, "
             "ra.room_number, ra.building "
             "FROM room_booking rb "
             "LEFT JOIN rooms_all ra ON rb.room_id = ra.id "
-            "WHERE rb.user_id = $1 AND rb.status != 'cancelled' ORDER BY rb.booking_date DESC, rb.start_time DESC",
+            "WHERE rb.user_id = $1 AND rb.status != 'cancelled' ORDER BY "
+            "rb.booking_date DESC, rb.start_time DESC",
             user_id
         );
 
@@ -143,7 +146,9 @@ std::vector<booking> booking_repository::get_bookings_by_user(int user_id) {
             b.start_time = row["start_time"].as<std::string>();
             b.end_time = row["end_time"].as<std::string>();
             b.created_at = row["created_at"].as<std::string>();
-            b.status = convert_string_to_booking_status(row["status"].as<std::string>());
+            b.status =
+                convert_string_to_booking_status(row["status"].as<std::string>()
+                );
             b.room_number = row["room_number"].as<std::string>();
             b.building_name = row["building"].as<std::string>();
             bookings.push_back(b);
@@ -243,13 +248,16 @@ void booking_repository::delete_past_bookings() {
     try {
         db.execute(
             "DELETE FROM room_booking "
-            "WHERE (booking_date || ' ' || end_time)::timestamp + INTERVAL '1 hour' < NOW()"
+            "WHERE (booking_date || ' ' || end_time)::timestamp + INTERVAL '1 "
+            "hour' < NOW()"
         );
     } catch (const pqxx::sql_error &e) {
-        std::cerr << "[SQL ERROR in delete_past_bookings]: " << e.what() << std::endl
+        std::cerr << "[SQL ERROR in delete_past_bookings]: " << e.what()
+                  << std::endl
                   << "Query: " << e.query() << std::endl;
     } catch (const std::exception &e) {
-        std::cerr << "[DB EXCEPTION in delete_past_bookings]: " << e.what() << std::endl;
+        std::cerr << "[DB EXCEPTION in delete_past_bookings]: " << e.what()
+                  << std::endl;
     }
 }
 

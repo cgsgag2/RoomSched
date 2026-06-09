@@ -1,5 +1,5 @@
-#ifndef AUTHWINDOW_HPP_
-#define AUTHWINDOW_HPP_
+#ifndef AUTH_WINDOW_HPP_
+#define AUTH_WINDOW_HPP_
 
 #include <QObject>
 #include <QString>
@@ -14,13 +14,16 @@ class auth_window;
 
 QT_END_NAMESPACE
 
-namespace roomsched::authwindow {
+namespace roomsched::client::authwindow {
 
 class auth_window : public QWidget {
     Q_OBJECT
 
 public:
-    auth_window(roomsched::client::ApiClient *existingApi, QWidget *parent = nullptr);
+    auth_window(
+        roomsched::client::ApiClient *existingApi,
+        QWidget *parent = nullptr
+    );
     ~auth_window();
     auth_window(const auth_window &) = delete;
     auth_window &operator=(const auth_window &) = delete;
@@ -33,6 +36,6 @@ private:
     roomsched::client::ApiClient *api;
 };
 
-}  // namespace roomsched::authwindow
+}  // namespace roomsched::client::authwindow
 
-#endif
+#endif  // AUTH_WINDOW_HPP_
