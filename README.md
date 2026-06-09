@@ -93,25 +93,25 @@
 
 ## Регистрация и аутентификация
 
-<p>
+<div style="align-items: flex-start;">
   <img src="assets/register.png" width="220" alt="RoomSched registrate 1">
   <img src="assets/entry.png" width="220" alt="RoomSched registrate 2">
-</p>
+</div>
 
 ---
 
 ## Главное меню
 
-<p>
-  <img src="assets/main.png" width="400" alt="RoomSched Menu 1">
-  <img src="assets/rooms.png" width="400" alt="RoomSched Menu 2">
-</p>
+<div style="align-items: flex-start;">
+  <img src="assets/main.png" width="380" alt="Регистрация">
+  <img src="assets/rooms.png" width="380" alt="Вход в систему">
+</div>
 
 ---
 
 ## Поиск и бронирование помещений
 
-<img src="assets/bookings.png" width="400" alt="RoomSched book room">
+<img src="assets/bookings.png" width="300" alt="RoomSched book room">
 
 ---
 
