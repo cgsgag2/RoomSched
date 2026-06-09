@@ -93,43 +93,33 @@ The desktop client communicates with the backend using a REST API built on Crow.
 
 ## Login Window
 
-```text
-assets/register.png
-assets/entry.png
-```
+<img src="assets/register.png" width="220" alt="RoomSched Logo">
+<img src="assets/entry.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Main Menu
 
-```text
-assets/main.png
-assets/rooms.png
-```
+<img src="assets/main.png" width="220" alt="RoomSched Logo">
+<img src="assets/rooms.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Room Search and Booking
 
-```text
-assets/bookings.png
-```
+<img src="assets/bookings.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## My Bookings
 
-```text
-assets/my_bookings.png
-```
+<img src="assets/my_bookings.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Telegram Integration
 
-```text
-assets/tg.png
-```
+<img src="assets/tg.png" width="220" alt="RoomSched Logo">
 
 ---
 

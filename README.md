@@ -93,43 +93,33 @@
 
 ## Регистрация и аутентификация
 
-```text
-assets/register.png
-assets/entry.png
-```
+<img src="assets/register.png" width="220" alt="RoomSched Logo">
+<img src="assets/entry.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Главное меню
 
-```text
-assets/main.png
-assets/rooms.png
-```
+<img src="assets/main.png" width="220" alt="RoomSched Logo">
+<img src="assets/rooms.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Поиск и бронирование помещений
 
-```text
-assets/bookings.png
-```
+<img src="assets/bookings.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Мои бронирования
 
-```text
-assets/my_bookings.png
-```
+<img src="assets/my_bookings.png" width="220" alt="RoomSched Logo">
 
 ---
 
 ## Telegram
 
-```text
-assets/tg.png
-```
+<img src="assets/tg.png" width="220" alt="RoomSched Logo">
 
 ---
 
