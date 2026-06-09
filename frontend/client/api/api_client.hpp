@@ -1,5 +1,5 @@
-#ifndef API_CLIENT_HPP
-#define API_CLIENT_HPP
+#ifndef API_CLIENT_HPP_
+#define API_CLIENT_HPP_
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -97,4 +97,4 @@ private:
 
 }  // namespace roomsched::client
 
-#endif  // API_CLIENT_HPP
+#endif  // API_CLIENT_HPP_

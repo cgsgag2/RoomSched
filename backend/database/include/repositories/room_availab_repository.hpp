@@ -18,7 +18,7 @@ public:
     room_availab_repository(database &db_);
 
     bool create_availab(const room_availability &room_av);
-    // TODO: later (maybe not in MVP)
+
     void update_availab(const room_availability &room_av);
     void remove_availab(int room_id);
 
@@ -26,7 +26,6 @@ public:
     std::optional<room_availability>
     find_availab_by_room_and_date(int room_id, const std::string &date);
 
-    // TODO: later (maybe not in MVP)
     std::vector<room_availability> get_all_availabs_by_roomid(int room_id);
 };
 }  // namespace roomsched::db

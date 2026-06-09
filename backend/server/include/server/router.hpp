@@ -7,9 +7,6 @@
 
 #include <crow/app.h>
 
-// TODO: think abot it vs forward declaration
-// #include "server/app.hpp"
-
 // project namespace, server module namespace
 namespace roomsched::server {
 

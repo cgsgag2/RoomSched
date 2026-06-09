@@ -13,7 +13,7 @@ namespace roomsched::db {
 TEST_F(backend_db_test, RoomBookingFlow_CreateConflictCancel) {
     user_service users(*global_db);
     room_service rooms(*global_db);
-    booking_service bookings(*global_db, rooms);
+    booking_service bookings(*global_db);
 
     users.register_user("flow@gmail.com", "pwd123shgdf!", "Flow User", "123");
 

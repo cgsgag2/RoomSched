@@ -7,10 +7,10 @@
 
 #include <crow/http_response.h>
 #include <crow/json.h>
+#include <atomic>
 #include <optional>
 #include <string>
-#include <thread> 
-#include <atomic>
+#include <thread>
 #include "db_manager.hpp"
 
 // project namespace, server module namespace
@@ -31,7 +31,7 @@ public:
 private:
     void run_cleanup_worker();
     db::database_manager &db;  // database manager
-    std::thread cleanup_thread_;      
+    std::thread cleanup_thread_;
     std::atomic<bool> stop_worker_{false};
     std::mutex db_mutex_;
 };

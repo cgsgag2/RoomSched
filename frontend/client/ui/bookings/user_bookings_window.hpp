@@ -13,14 +13,14 @@ class user_bookings_window;
 
 QT_END_NAMESPACE
 
-namespace roomsched::bookings {
+namespace roomsched::client::bookings {
 
 class user_bookings_window : public QWidget {
     Q_OBJECT
 
 public:
     explicit user_bookings_window(
-        roomsched::client::ApiClient *existingApi,
+        ApiClient *existingApi,
         int userId,
         QWidget *parent = nullptr
     );
@@ -35,10 +35,10 @@ private slots:
 
 private:
     Ui::user_bookings_window *ui;
-    roomsched::client::ApiClient *api;
+    ApiClient *api;
     int currentUserId;
 };
 
-}  // namespace roomsched::bookings
+}  // namespace roomsched::client::bookings
 
 #endif  // USER_BOOKINGS_WINDOW_HPP_

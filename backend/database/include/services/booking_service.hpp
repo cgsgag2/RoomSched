@@ -6,17 +6,15 @@
 #define BOOKING_SERVICE_HPP_
 
 #include "../repositories/booking_repository.hpp"
-#include "room_service.hpp"
 
 // project namespace, database module namespace
 namespace roomsched::db {
 class booking_service {
 private:
     booking_repository booking_repo;
-    room_service &roomService;
 
 public:
-    booking_service(database &db, room_service &room_service_ref);
+    booking_service(database &db);
 
     std::optional<booking> create_booking(
         int room_id,

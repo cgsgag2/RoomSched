@@ -38,7 +38,6 @@ crow::response telegram_handler::link_telegram(const crow::request &req) {
         );
     }
 
-    // TODO: need JWT-tokens here?
     crow::json::wvalue resp;
     resp["status"] = "success";
     resp["code"] = code;

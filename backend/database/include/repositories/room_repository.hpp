@@ -5,9 +5,9 @@
 #ifndef ROOM_REPOSITORY_HPP_
 #define ROOM_REPOSITORY_HPP_
 
+#include <optional>
 #include "../core/db_core.hpp"
 #include "../models/room_model.hpp"
-#include <optional>
 
 // project namespace, database module namespace
 namespace roomsched::db {
@@ -18,9 +18,6 @@ private:
     void create_lecture_room(int room_id, const room &r);
     void create_coworking_space(int room_id, const room &r);
     void create_private_office(int room_id, const room &r);
-
-    // room_type convert_string_to_roomtype(const std::string &str);
-    // std::string convert_roomtype_to_string(room_type type);
 
 public:
     room_repository(database &db_);

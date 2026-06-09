@@ -11,7 +11,7 @@ class side_menu_widget;
 
 QT_END_NAMESPACE
 
-namespace roomsched::menu {
+namespace roomsched::client::menu {
 
 class side_menu_widget : public QWidget {
     Q_OBJECT
@@ -31,6 +31,6 @@ private:
     Ui::side_menu_widget *ui;
 };
 
-}  // namespace roomsched::menu
+}  // namespace roomsched::client::menu
 
 #endif  // SIDE_MENU_WIDGET_HPP_

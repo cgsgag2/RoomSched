@@ -49,7 +49,7 @@ telegram_handler &app::get_telegram_handler() {
 
 void app::run(int port) {
     std::cout << "SERVER STARTED SUCCESSFULLY" << std::endl;
-    // TODO: think about it!
+
     // server_app.port(port).multithreaded().run();
     bookingHandler.start_cleanup();
     server_app.port(port).run();

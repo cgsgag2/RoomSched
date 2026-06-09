@@ -38,11 +38,9 @@ bool roomsched::db::room_availab_repository::create_availab(
 void roomsched::db::room_availab_repository::update_availab(
     const room_availability &room_av
 ) {
-    // TODO: later!
 }
 
 void roomsched::db::room_availab_repository::remove_availab(int room_id) {
-    // TODO: later!
 }
 
 // Note: date must be in format 'YYYY-MM-DD', otherwise UB
@@ -89,14 +87,9 @@ roomsched::db::room_availab_repository::find_availab_by_room_and_date(
 }
 
 std::vector<roomsched::db::room_availability>
-roomsched::db::room_availab_repository::get_all_availabs_by_roomid(
-    int room_id
+roomsched::db::room_availab_repository::get_all_availabs_by_roomid(int room_id
 ) {
     std::vector<room_availability> all_avails;
 
-    // TODO: when will think about different dates for one room, so
-    // (room_id) is not unique, but (room_id, date, ?? from-to??) is unique.
-    // First task - "find_availab_by_room_and_date" function.
-    // Second task - this function.
     return all_avails;
 }

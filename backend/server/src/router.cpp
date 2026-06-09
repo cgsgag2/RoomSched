@@ -37,16 +37,16 @@ void roomsched::server::setup_all_routes(
     });
 
     /* Rooms and room availability module */
-    CROW_ROUTE(app_ref, "/rooms").methods("GET"_method)([&server](const crow::request &req) {
-        return server.get_room_handler().get_all_rooms(req);
-    });
+    CROW_ROUTE(app_ref, "/rooms")
+        .methods("GET"_method)([&server](const crow::request &req) {
+            return server.get_room_handler().get_all_rooms(req);
+        });
 
     CROW_ROUTE(app_ref, "/rooms/<int>")
         .methods("GET"_method)([&server](int room_id) {
             return server.get_room_handler().get_room_by_id(room_id);
         });
 
-    // TODO: not tested yet, after MVP
     CROW_ROUTE(app_ref, "/rooms/<int>/availability")
         .methods("GET"_method
         )([&server](const crow::request &req, int room_id) {
@@ -86,17 +86,6 @@ void roomsched::server::setup_all_routes(
     });
 
     /* Telegram notifications module */
-    CROW_ROUTE(app_ref, "/telegram/test").methods("POST"_method)([&server]() {
-        bool success = server.get_db().telegram().send_message(
-            1392046019, "First telegram message!"
-        );
-
-        return crow::response(
-            success ? 200 : 500, success ? "Message for telegram successed!"
-                                         : "Message for telegram FAILED!"
-        );
-    });
-
     CROW_ROUTE(app_ref, "/telegram/link")
         .methods("POST"_method)([&server](const crow::request &req) {
             return server.get_telegram_handler().link_telegram(req);

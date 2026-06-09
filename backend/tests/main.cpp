@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
-// Local libs
+// Local includes
 #include "core/db_core.hpp"
 
 std::unique_ptr<roomsched::db::database> global_db;

@@ -1,7 +1,7 @@
 #include "side_menu_widget.hpp"
 #include "ui_side_menu_widget.h"
 
-namespace roomsched::menu {
+namespace roomsched::client::menu {
 
 side_menu_widget::side_menu_widget(QWidget *parent)
     : QWidget(parent), ui(new Ui::side_menu_widget) {
@@ -36,4 +36,4 @@ side_menu_widget::~side_menu_widget() {
     delete ui;
 }
 
-}  // namespace roomsched::menu
+}  // namespace roomsched::client::menu

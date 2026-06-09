@@ -18,4 +18,3 @@ public:
 }  // namespace roomsched::db
 
 #endif  // BUILDING_MODEL_HPP_
-

@@ -2,10 +2,10 @@
 #include <QMessageBox>
 #include "ui_telegram_binding_window.h"
 
-namespace roomsched::telegram {
+namespace roomsched::client::telegram {
 
 telegram_binding_window::telegram_binding_window(
-    roomsched::client::ApiClient *existingApi,
+    ApiClient *existingApi,
     int userId,
     QWidget *parent
 )
@@ -21,7 +21,7 @@ telegram_binding_window::telegram_binding_window(
     );
 
     connect(
-        api, &roomsched::client::ApiClient::telegramCodeReceived, this,
+        api, &ApiClient::telegramCodeReceived, this,
         [this](const QString &code) {
             ui->getCodeButton->setEnabled(false);
             ui->getCodeButton->setText("Код получен, telegram привязан");
@@ -40,7 +40,7 @@ telegram_binding_window::telegram_binding_window(
     );
 
     connect(
-        api, &roomsched::client::ApiClient::telegramLinkFailed, this,
+        api, &ApiClient::telegramLinkFailed, this,
         [this](const QString &message) {
             QMessageBox::critical(this, "Ошибка", message);
         }
@@ -55,4 +55,4 @@ void telegram_binding_window::onGetCodeClicked() {
     api->requestTelegramLinkCode(currentUserId);
 }
 
-}  // namespace roomsched::telegram
+}  // namespace roomsched::client::telegram

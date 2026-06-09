@@ -2,25 +2,24 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
-
+#include "LabelSelectorFilter.hpp"
 #include "auth_window.hpp"
 #include "room_list_window.hpp"
-#include "LabelSelectorFilter.hpp"
 
-namespace roomsched {
+namespace roomsched::client {
 
 int run_client(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.installEventFilter(new LabelSelectorFilter());
     app.setQuitOnLastWindowClosed(false);
-    auto *api = new roomsched::client::ApiClient();
-    auto *auth = new roomsched::authwindow::auth_window(api);
-    auth->show();    
+    auto *api = new ApiClient();
+    auto *auth = new authwindow::auth_window(api);
+    auth->show();
     return app.exec();
 }
 
-}  // namespace roomsched
+}  // namespace roomsched::client
 
 int main(int argc, char *argv[]) {
-    return roomsched::run_client(argc, argv);
+    return roomsched::client::run_client(argc, argv);
 }
